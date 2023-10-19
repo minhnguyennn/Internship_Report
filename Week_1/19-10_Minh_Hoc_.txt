@@ -1,0 +1,355 @@
+Lệnh cài đặt mysql-server 
+
+	sudo apt update 
+
+	sudo apt install mysql-server 
+
+	sudo systemctl start mysql.service: để khởi động dịch vụ MySQL trên hệ thống Linux. 
+
+	sudo mysql: để kết nối với máy chủ mysql trên hệ thống linux của mình 
+
+	sudo mysql_secure_installation: dùng tăng cường bảo mật cho máy chủ Mysql cục bộ, gồm cài đặt mật khẩu, … 
+
+Lệnh với database 
+
+	create database tên: dùng tạo database mới 
+
+	drop database tên: xóa database 
+
+Lệnh tạo bảng 
+
+	CREATE TABLE databasename.Person ( 
+
+	    PersonID INT, 
+
+	    LastName VARCHAR(255), 
+
+	    FirstName VARCHAR(255), 
+
+	    Address VARCHAR(255), 
+
+	    City VARCHAR(255) 
+
+	) 
+
+	=> Tạo bảng Person trong databasename,  có các cột như trên và kiểu dữ liệu 
+
+Lệnh lấy ra thành phần của bảng 
+
+	SELECT * FROM databasename.Person;		
+	=> lấy thông tin của bảng Person trong databasename 
+
+Làm việc với bảng 
+
+	Thêm dữ liệu vào bảng: 
+
+		insert into Person (PersonID, LastName, FirstName, Address,City) 
+
+		value ('1', 'Tom', 'Erichen','Stavager','Norway'); 
+
+	Thêm dữ liệu vào bảng cách 2: 
+
+		insert into Person  
+
+		value ('1', 'Tom', 'Erichen','Stavager','Norway'); 
+
+	Xóa các dữ liệu trong bảng: 
+
+		truncate table tên_bảng	 
+
+	Xóa bảng : 
+
+		drop table tên_bảng 
+
+	Thêm cột vào bảng: 
+
+		alter table Person 
+
+		add Email varchar(255); 
+
+	Xoá 1 cột trong bảng 
+
+		alter table Person 
+
+		drop column Email; 
+
+	Đổi kiểu dữ liệu của 1 cột 
+
+		alter table Person 
+
+		modify PersonID varchar(255); 
+
+Lệnh sử dụng database : use databasename 
+
+Các ràng buộc trong cơ sở dữ liệu:
+
+	Có 6 loại ràng buộc trong SQL: 
+
+		NOT NULL	đảm bảo 1 cột ko có giá trị null 
+
+		UNIQUE		đảm bảo các giá trị trong 1 cột là khác nhau 
+
+		PRIMARY KEY	khóa chính 
+
+		FOREIGN KEY	khóa phụ, ngăn chặn các hành động phá huy liên kết giữa các bảng 
+
+		CHECK		đảm bảo các giá trị trong 1 cột thỏa mãn 1 điều kiện 
+
+		DEFAULT		đặt giá trị mặc định cho 1 cột 
+
+		Ví dụ code: 
+
+			Thêm thuộc ràng buộc unique cho city: 	alter table Persons 
+								add unique (City);
+								
+			Xóa ràng buộc cho city:	ALTER TABLE `demo`.`Persons`  
+							DROP INDEX `City` ; 
+
+ 
+
+Các thao tác với khóa chính: 
+
+	Tạo một bảng có khóa chính là ID	 
+
+		CREATE TABLE Persons (  
+
+		ID int NOT NULL,  
+
+		LastName varchar(255) NOT NULL,  
+
+		FirstName varchar(255),  
+
+		Age int,  
+
+		PRIMARY KEY (ID)  
+
+		); 
+
+
+	Xóa khóa chính:		
+		alter table Persons 
+		drop primary key; 
+
+ 
+
+	Thêm khóa chính: 	
+		alter table Persons 
+		add primary key (age); 
+
+ 
+
+Các thao tác với khóa phụ: 
+
+Tạo bảng orders với 1 khóa phụ personid liên kết với  khóa chính personid 
+
+CREATE TABLE Orders ( 
+
+OrderID int NOT NULL, 
+
+OrderNumber int NOT NULL, 
+
+PersonID int, 
+
+PRIMARY KEY (OrderID), 
+
+FOREIGN KEY (PersonID) REFERENCES Persons(PersonID) 
+
+); 
+
+Thêm khóa phụ cho bảng: 
+
+	ALTER TABLE Orders  
+
+ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID); 
+
+Lệnh thao tác với ràng buộc check 
+
+	Tạo 1 bảng với ràng buộc check 
+
+		CREATE TABLE demo.Persons (  
+
+ID int NOT NULL,  
+
+LastName varchar(255) NOT NULL,  
+
+FirstName varchar(255),  
+
+Age int,  
+
+CHECK (Age>=18)  
+
+); 
+
+=> Nếu nhập số tuổi bé hơn 18 sẽ lỗi 
+
+Thao tác với ràng buộc default 
+
+	CREATE TABLE Persons ( 
+
+ID int NOT NULL, 
+
+LastName varchar(255) NOT NULL, 
+
+FirstName varchar(255), 
+
+Age int, 
+
+City varchar(255) DEFAULT 'Sandnes' 
+
+); 
+
+=> khi không thêm city thì vẫn ko sao 
+
+INSERT INTO demo.Persons (ID, LastName, FirstName, Age) 
+
+VALUES ('1', 'Tom B', 'Stavanger', '20'); 
+
+=> vì city có 1 nội dùng ban đầu là sandnes rồi 
+
+Lệnh loại bỏ default 
+
+	ALTER TABLE Persons  
+
+ALTER City DROP DEFAULT; 
+
+Lệnh thêm default 
+
+	ALTER TABLE Persons 
+
+	ALTER City SET DEFAULT 'Sandnes'; 
+
+Tạo index (chỉ mục) cho cột 
+
+	Tác dụng : làm bảng chạy nhanh hơn 
+
+	Ví dụ: 
+
+		CREATE INDEX idx_lastname 
+
+ON Persons (LastName); 
+
+CREATE INDEX idx_pname 
+
+ON Persons (LastName, FirstName); 
+
+Lệnh chọn giá trị không trùng nhau (distinct) 
+
+	select distinct Country from customers 
+
+	=> chọn các giá trị không trùng nhau 
+
+Lệnh đếm (count) 
+
+	select count(distinct Country) from customers 
+
+	=> trả ra số lượng giá trị không trùng nhau 
+
+Lệnh đặt điều kiện (where) 
+
+	select * from customers 
+
+where Country = "Mexico"; 
+
+=> chọn tất cả nhưng điều kiện country phải là mexico 
+
+Lệnh điều kiện and 
+
+	select * from customers 
+
+where Country = "Germany" and City = "Berlin"; 
+
+=> chọn tất cả mà phải thỏa 2 điều kiện mới được chọn 
+
+Lệnh điều kiện or 
+
+	 select * from customers 
+
+where Country = "Germany" or  City = "Berlin"; 
+
+=> thỏa 1 trong 2 điều kiện là được 
+
+Lệnh điều kiện NOT 
+
+select * from customers 
+
+where not Country = "Germany"; 
+
+=> nhưng mà đất nước không phải đức 
+
+Lệnh kết hợp điều kiện 
+
+	SELECT * FROM customers 
+
+WHERE Country = 'Germany' AND (City = 'Berlin' OR City = 'Stuttgart'); 
+
+Lệnh sắp xếp tăng dần 
+
+	SELECT * FROM customers 
+
+order by Country; 
+
+=> sắp xếp mặc định là tăng dần, tăng dần theo bảng chữ cái 
+
+Lệnh sắp xếp giảm dần 
+
+	SELECT * FROM customers 
+
+order by Country DESC; 
+
+=> giảm dần ngược bảng chữ cái 
+
+ 
+
+Sắp xếp 2 cột 
+
+	SELECT * FROM customers 
+
+order by Country, CustomerName; 
+
+=> ưu tiên sắp xếp country trước, nếu country trùng mới sắp xếp customerName 
+
+ 
+
+SELECT * FROM customers 
+
+order by Country ASC, CustomerName DESC; 
+
+=> ưu tiên sắp xếp tăng dần country trước, nếu country trùng, mới sắp xếp customerName 	     giảm dần 
+
+Lệnh chọn tìm ra các giá trị null 
+
+	select * from customers where Address IS NULL 
+
+Lệnh cập nhật các giá trị cho cột 
+
+	update customers 
+
+set ContactName = 'Minh', City = 'VietNam' 
+
+where CustomerID < 5 
+
+=>sửa đổi các giá trị cho cột với điều kiên id 
+
+Xóa 1 thực thể trong bảng 
+
+	DELETE FROM customers WHERE CustomerName = 'Alfreds Futterkiste'; 
+
+	=> xóa 1 hàng trong bảng có customerName là Alfreds Futterkiste 
+
+Lệnh giới hạn (limit) 
+
+select * from customers 
+
+limit 3; 
+
+=> limit 3  <=>  limit 0, 3    => lấy 3 phần tử tiếp theo bắt đầu từ index 0 
+
+ 
+
+ví dụ 2: 
+
+select * from customers 
+
+limit 1,3; 
+
+=> lấy 3 phần tử tiếp theo bắt đầu từ index 1 
