@@ -1,0 +1,144 @@
+Ruby primer
+	Introduction To Ruby Objects
+		Introduction to Objects:
+			self	: know objet current (usually main)
+			2.even?	: check 2 is even or odd
+			1.next.next : 2 number next of 1
+		More Objects and Methods:
+			Look methods:
+				1.method: know method of object
+				1.methods.sort : to sort of methods
+			Arguments methods:
+				['a','b','c'].index('b') : find index of b in array
+				2.between? 1,3 : return true if 2 in 1 -> 3
+	Introduction to Strings
+		Literal forms
+			"" or ' ' : create a string
+		String Length
+			'Rubymonk'.length : return lenghth of string
+		String Basics
+			String Interpolation
+				Use #{} to create String Interpolation
+				Vd: puts "The number #{a} is less than #{b}"
+				Quotes '' will help not String Interpolation
+			Search in a String
+				Tip: usually, Boolean methods will end with quotes ? 
+				String.include?	: find a string in string
+				String.start_with? : find start of string
+				String.end_with? : find end of string
+				"I am a Rubyist".index "R" : find index of R in string
+			String case change
+				String.upcase : convert lower case to upper case
+				String.downcase : convert upper case to lower case
+				String.swapcase : if upper will swap lower else lower will swap upper
+		Advanced String Operations
+			Splitting Strings
+				String.split(" ") : The string on space ' ' to get a collection of words in the string.
+			Concatenating Strings
+				'Ruby' + 'Monk'	: You can create a new string by adding two strings together in Ruby
+				"Ruby".concat("Monk") : one way of concatenating strings
+			Replacing a substring
+				"I should look".sub('I','We') : we would replace 'I' with 'We' in a given string
+				"I should look I get time".gsub('I','We') : replace all occurrences 
+				'RubyMonk Is Pretty Brilliant'.gsub(/[A-Z]/,'0') : replace all capital with number '0' 
+				'RubyMonk'.gsub(/[aeiou]/,'1') : replaces all the vowels with the number 1
+			Find a substring using RegEx
+				'RubyMonk Is Pretty Brilliant'.match(/ ./) : find the characters next to a whitespace
+				'RubyMonk Is Pretty Brilliant'.match(/ ./, 9) : 9 is index will find
+	Conditions and Loops
+		Boolean Expressions
+			Unless expression
+				It == if not
+				vd:
+					age = 10
+					unless age >= 18
+					    puts "Sorry, you need to be at least eighteen to drive a car. Grow up fast!"
+					end
+					=> If age < 18 will start
+			Truthiness of objects
+				 The objects false and nil equates to false
+				 Every other object like say 1, 0, "" are all evaluated to be true
+	Arrays in Ruby
+		Introduction to Arrays
+			Looking up data in Arrays
+				[1, 2, 3, 4, 5][2] : check index 2 in array
+			Growing arrays
+				[1, 2, 3, 4, 5]<<6 : add 6 in array
+				[1, 2, 3, 4, 5].push("woot") : add woot in array
+		Basic Array Operations
+			Transforming arrays
+				[1, 2, 3, 4, 5].map { |i| i + 1 } : increase each number +1
+			Filtering elements of an Array
+				[1,2,3,4,5,6].select {|number| number % 2 == 0} : Filtering elements in a collection % 2
+			Deleting elements
+				[1,2,3,4,5,6,7].delete_if{|i| i < 4 } : delete elemnet < 4
+		Iteration
+			for` loops
+				Example 1: 
+					array = [1, 2, 3, 4, 5]
+					for i in array
+					  puts i
+					end
+				Example 2:
+					def array_copy(source)
+					  destination = []
+					  for number in source
+					    # Add number to destination if number
+					    # is less than 4
+					    destination << number if number < 4
+					  end
+					  return destination
+					end
+			looping with `each`
+				
+				Example 1:
+					array = [1, 2, 3, 4, 5]
+					array.each do |i|
+					  puts i
+					end
+				Example 2:
+					def array_copy(source)
+					  destination = []
+					  source.each do |number|
+					    # Add number to destination if number
+					    # is less than 4
+					    destination << number if number < 4
+					  end
+					  return destination
+					end
+	Hashes in Ruby
+		Introduction to Ruby Hashes
+			Creating a Hash
+				Example:
+					restaurant_menu = {
+					  "Ramen" => 3,
+					  "Dal Makhani" => 4,
+					  "Tea" => 2
+					}
+			Fetch values from a Hash
+				Example:
+					restaurant_menu["Ramen"] : take value of Ramen
+			Modifying a Hash
+				Example:
+					restaurant_menu = {}
+					restaurant_menu["Dal Makhani"] = 4.5
+					restaurant_menu["Tea"] = 2
+		Hashes, in and out
+			Iterating over a Hash
+				Example:
+					restaurant_menu = { "Ramen" => 3, "Dal Makhani" => 4, "Coffee" => 2 }
+					restaurant_menu.each do | item, price |
+					  puts "#{item}: $#{price}"
+					end
+				
+
+			
+
+	
+
+
+		
+
+		
+		
+		
