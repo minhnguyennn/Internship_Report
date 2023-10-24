@@ -1,0 +1,6 @@
+module Enumerable
+	Methods for Querying
+		include
+			Returns whether for any element object == element
+			
+		
