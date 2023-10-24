@@ -1,0 +1,64 @@
+Câu 1: phân biệt sự khác nhau giữa string và symbol.
+	String:
+		Là một chuỗi ký tự, được bao quanh bởi dấu ngoặc kép ("") hoặc dấu nháy đơn ('').
+		Chuỗi là dạng dữ liệu linh hoạt và có thể thay đổi nội dung của nó.
+		Mỗi chuỗi mới với nội dung giống nhau sẽ tạo ra một đối tượng mới trong bộ nhớ.
+	Symbol:
+		Là một kiểu dữ liệu đặc biệt, được đặt trong hai dấu hai chấm (ví dụ: :symbol_name).
+		Symbol là bất biến, có nghĩa là một symbol với cùng tên sẽ luôn trỏ đến cùng một đối tượng trên toàn chương trình.
+		Symbol thường được sử dụng để đại diện cho các tên, các khóa trong bảng băm (hashes), hoặc các yếu tố không thay đổi trong chương trình.
+	Ví dụ 1 :
+		Đối với String, mọi thứ sẽ vẫn bình thường nếu như chúng ta thay đổi một giá trị
+			str = "quang phu"
+			=> "quang phu"
+			 
+			str[0] = "Q"
+			=> "Q"
+			 
+			puts str
+			=> "Quang phu"
+		Thế nhưng nếu bạn làm điều tượng tự với Symbol thì sẽ lỗi ngay
+			str = :quangphu
+			=> :quangphu
+ 
+			str[0] = "Q"
+ 
+			=> Traceback (most recent call last):
+			        4: from /home/quangphu/.rbenv/versions/2.6.5/bin/irb:23:in `<main>'
+			        3: from /home/quangphu/.rbenv/versions/2.6.5/bin/irb:23:in `load'
+			        2: from /home/quangphu/.rbenv/versions/2.6.5/lib/ruby/gems/2.6.0/gems/irb-1.2.7/exe/irb:11:in `<top (required)>'
+			        1: from (irb):22
+			NoMethodError (undefined method `[]=' for :quangphu:Symbol)
+	Ví dụ 2 :
+		Với String
+			"quang phu".object_id
+			=> 47357664248440
+			 
+			"quang phu".object_id
+			=> 47357662248800
+			 
+			"quang phu".object_id
+			=> 47357663872780
+
+		Với Symbol
+			:quangphu.object_id
+			=> 2014748
+			 
+			:quangphu.object_id
+			=> 2014748
+			 
+			:quangphu.object_id
+			=> 2014748
+
+Câu 2 : Nội suy chuỗi (String interpolation).
+	Khái niệm: nội suy chuỗi, hay còn gọi là String Interpolation. Cho phép bạn kết hợp biến và giá trị vào một chuỗi
+	Cách dùng: bằng cách sử dụng ký tự # và dấu ngoặc {}
+	Ví dụ:
+		name = "Minh"
+		age = 24
+
+		# Sử dụng nội suy chuỗi để kết hợp biến và chuỗi
+		greeting = "Xin chào, tôi là #{name} và tôi #{age} tuổi."
+
+		puts greeting
+		# => Xin chào, tôi là Minh và tôi 24 tuổi.

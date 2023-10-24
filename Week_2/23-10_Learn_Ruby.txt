@@ -130,6 +130,10 @@ Ruby primer
 					restaurant_menu.each do | item, price |
 					  puts "#{item}: $#{price}"
 					end
+			Extracting the keys and values from a Hash
+				restaurant_menu.keys	: key of hash
+				restaurant_menu.values	: value of hash
+			
 				
 
 			
