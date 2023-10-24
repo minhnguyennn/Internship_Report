@@ -1,6 +1,354 @@
 module Enumerable
 	Methods for Querying
-		include
-			Returns whether for any element object == element
-			
+		include?
+			Declare: Returns whether for any element object == element
+			Example: (1..4).include?(2)  # => true
+		member?
+			Declare: Returns whether for any element object == element
+			Example: (1..4).member?(2)  # => true
+		all?
+			all? → true or false
+				Declare: With no argument and no block, returns whether every element is truthy
+				Example: [1, 2, nil].all?      # => false
+			all?(pattern) → true or false
+				Declare: With argument pattern and no block, returns whether for each element element, pattern === element
+				Example: (1..4).all?(Float)    # => false
+			all? {|element| ... } → true or false
+				Declare: With a block given, returns whether the block returns a truthy value for every element
+				Example: (1..4).all? {|element| element < 5 }    # => true
+		any?
+			any? → true or false
+				Declare: With no argument and no block, returns whether any element is truthy
+				Example: [].any?    # => false
+			any?(pattern) → true or false
+				Declare: With argument pattern and no block, returns whether for any element element, pattern === element
+				Example: [nil, false, 0].any?(Integer)        # => true
+			any? {|element| ... } → true or false
+				Declare: With a block given, returns whether the block returns a truthy value for any element
+				Example: (1..4).any? {|element| element < 2 }     # => true
+		none?
+			none? → true or false
+				Declare: With no argument and no block, returns whether no element is truthy
+				Example: [nil, false].none?     # => true
+			none?(pattern) → true or false
+				Declare: With argument pattern and no block, returns whether for no element element, pattern === element
+				Example: [[nil, false, 1.1].none?(Integer)      # => true
+			none? {|element| ... } → true or false
+				Declare: With a block given, returns whether the block returns a truthy value for no element
+				Example: (1..4).none? {|element| element < 1 }  # => true
+		one?
+			one? → true or false
+				Declare: With no argument and no block, returns whether one element is truthy
+				Example: (1..4).one?     # => false
+			one?(pattern) → true or false
+				Declare: With argument pattern and no block, returns whether for one element element, pattern === element
+				Example: [nil, false, 0].one?(Integer)        # => true
+			one? {|element| ... } → true or false
+				Declare: With a block given, returns whether the block returns a truthy value for one element
+				Example: (1..4).one? {|element| element < 2 }   # => true
+		count
+			count → true or false
+				Declare: With no argument and no block, returns the number of elements
+				Example: [0, 1, 2].count   # => 3
+			count (pattern) → true or false
+				Declare: With argument object given, returns the number of elements that are == to object.
+				Example: [0, 1, 2, 1].count(1)     # => 2
+			count {|element| ... } → true or false
+				Declare: With a block given, calls the block with each element and returns the number of elements for which the
+				    	 block returns a truthy value.
+				Example: [-2, -1, -3, 0, 1, 2, 3].count {|element| element < 2}              # => 5
+		tally
+			tally → new_hash
+				Declare: Returns a hash containing the counts of equal elements. Each key is an element of self. Each value is the
+				 	 number elements equal to that key.
+				Example: %w[a b c b c a c b c a].tally # => {"a"=>3, "b"=>3, "c"=>4}
+			tally(hash) → hash
+				Declare: With a hash argument, that hash is used for the tally (instead of a new hash), and is returned; this may be
+				 	 useful for accumulating tallies across multiple enumerables.
+				Example: hash = {}
+					 hash = %w[a c d b c a].tally(hash)
+					 hash # => {"a"=>2, "c"=>2, "d"=>1, "b"=>1}
+					 hash = %w[b a z].tally(hash)
+					 hash # => {"a"=>3, "c"=>2, "d"=>1, "b"=>2, "z"=>1}
+					 hash = %w[b a m].tally(hash)
+					 hash # => {"a"=>4, "c"=>2, "d"=>1, "b"=>3, "z"=>1, "m"=> 1}
+	Methods for Fetching
+		to_a → array
+			Declare: Returns an array containing the items in self
+			Example: hash = {
+							  "name" => "John Doe",
+							  "age" => 30,
+							  "city" => "San Francisco"
+							}
+							hash.to_a 
+							# => [["name", "John Doe"], ["age", 30], ["city", "San Francisco"]]
+		first
+			first → element or nil
+				Declare: With no argument, returns the first element, or nil if there is none
+				Example: {foo: 1, bar: 1, baz: 2}.first # => [:foo, 1]
+			first(n) → array
+				Declare: With integer argument n, returns an array containing the first n elements that exist
+				Example: {foo: 1, bar: 1, baz: 2}.first(2) # => [[:foo, 1], [:bar, 1]]
+		take(n) → array
+			Declare: For non-negative integer n, returns the first n elements
+			Example: hash = {
+							  "name" => "John Doe",
+							  "age" => 30,
+							  "city" => "San Francisco"
+							}
+							hash.take(2) 
+							# => [[["name", "John Doe"], ["age", 30]]
+		drop(n) → array
+			Declare: For positive integer n, returns an array containing all but the first n elements
+			Example: r = (1..4)
+					 r.drop(3) # => [4]
+					 r.drop(2)  # => [3, 4]
+
+					 h = {foo: 0, bar: 1, baz: 2, bat: 3}
+					 h.drop(2) # => [[:baz, 2], [:bat, 3]]
+		take_while
+			take_while {|element| ... } → array
+					Declare: Calls the block with successive elements as long as the block returns a truthy value; 
+							 returns an array of all elements up to that point
+					Example: h = {foo: 0, bar: 1, baz: 2}
+							 h.take_while{|element| key, value = *element; value < 2 }
+							 # => [[:foo, 0], [:bar, 1]]
+module:Test::Unit
+	Test::Unit::Assertions
+		assert_equal(expected, actual)
+			Declare: Passes if `expected` == `actual`.
+			Example: def add_numbers(a, b)
+					   a + b
+					 end
+					 assert_equal(add_numbers(1, 2), 3)
+		assert_not_equal(expected, actual)
+			Declare: Kiểm tra xem hai giá trị không bằng nhau hay không.
+			Example: require 'test/unit'
+					 include Test::Unit::Assertions
+					 def add_numbers(a, b)
+					   a + b
+					 end
+					 assert_not_equal(add_numbers(1, 2), 4)
+		assert_in_delta(expected, actual, delta)
+			Declare: Kiểm tra xem hai giá trị có gần bằng nhau hay không.
+			Example: assert_in_delta(1.1, 1.2, 0.1)
+		assert_raise(exception, message)
+			Declare: Kiểm tra xem phương thức được gọi có ném lỗi hay không.
+			Example: assert_raise(ZeroDivisionError, "Division by zero") do
+  						1 / 0
+					 end
+		assert_match(pattern, string)
+			Declare: Kiểm tra xem chuỗi có khớp với mẫu hay không.
+			Example: assert_match(/[a-z]+/, "hello")
+		assert_not_match(pattern, string)
+			Declare: Kiểm tra xem chuỗi không khớp với mẫu hay không.
+			Example: assert_not_match(/[0-9]+/, "hello")
+		assert_includes(array, item)
+			Declare: Kiểm tra xem mảng có chứa phần tử hay không.
+			Example: assert_includes([1, 2, 3], 2)
+		assert_not_includes(array, item)
+			Declare: Kiểm tra xem mảng không chứa phần tử hay không.
+			Example: assert_not_includes([1, 2, 3], 4)
+		assert_empty(object)
+			Declare: Kiểm tra xem đối tượng có rỗng hay không.
+			Example: assert_empty("")   # -> pass
+					 assert_empty([nil])     # -> fail
+		assert_not_empty(object)
+			Declare: Kiểm tra xem đối tượng không rỗng hay không.
+			Example: assert_not_empty("MINH")   # -> TRUE				
+		assert_instance_of(class, object)
+			Declare: Kiểm tra xem đối tượng có phải là một thể hiện của lớp hay không.
+			Example: assert_instance_of([Numeric, NilClass], 100) # -> fail
+		assert_kind_of(class, object)
+			Declare: Kiểm tra xem đối tượng có phải là một thể hiện của lớp hay là một thể hiện của một lớp con của lớp đó hay không.
+			Example: assert_kind_of([Fixnum, NilClass], "string") # -> fail
+		assert_respond_to(object, method)
+			Declare: Kiểm tra xem đối tượng có phản hồi với phương thức hay không.
+			Example: assert_respond_to(String.new, :length) # -> true
+Các hàm của array và string
+	Function string
+		length
+			Declare: Trả về độ dài của chuỗi.
+			Example: string = "Hello, world!"
+					 puts string.length # => 13
+		size
+			Declare: Trả về độ dài của chuỗi.
+			Example: string = "Hello, world!"
+					 puts string.size # => 13
+		upcase
+			Declare: Chuyển đổi chuỗi thành chữ hoa.
+			Example: string = "hello, world!"
+					 puts string.upcase # => HELLO, WORLD!
+		downcase
+			Declare: Chuyển đổi chuỗi thành chữ thường.
+			Example: string = "HELLO, WORLD!"
+					 puts string.downcase # => hello, world!
+		capitalize
+			Declare: Chuyển đổi ký tự đầu tiên của chuỗi thành chữ hoa.
+			Example: string = "hello, world!"
+					 puts string.capitalize # => Hello, world!
+		reverse
+			Declare: Đảo ngược thứ tự của các ký tự trong chuỗi.
+			Example: string = "Hello, world!"
+					 puts string.reverse # => !dlrow ,olleH
+		include?(string)
+			Declare: Kiểm tra xem chuỗi có chứa chuỗi con hay không.
+			Example: string = "Hello, world!"
+					 puts string.include?("world") # => true
+		rindex(string)
+			Declare: Trả về vị trí của chuỗi con trong chuỗi, bắt đầu từ cuối chuỗi.
+			Example: string = "Hello, world!"
+					 puts string.rindex("world") # => 7
+		gsub(pattern, replacement)
+			Declare: Thay thế tất cả các pattern bằng chuỗi thay thế.
+			Example: string = "Hello, world!"
+					 puts string.gsub("o", "0") # => He01lo, w0r1d!
+		sub(pattern, replacement)
+			Declare: Thay thế tất pattern đàu tiên bằng chuỗi thay thế.
+			Example: string = "Hello, world!"
+					 puts string.sub("o", "0") # => He1l0, world!
+		split(pattern)
+			Declare: Tách chuỗi thành các chuỗi con dựa trên pattern.
+			Example: string = "Hello, world!"
+					 puts string.split(",") # => ["Hello", "world!"]
+		array.join()
+			Declare: Tạo một chuỗi mới bằng cách nối các phần tử của mảng.
+			Example: array = ["Hello", "world!"]
+					 puts array.join(" ") # => "Hello world!"
+	Function array
+		length,size
+			Declare: Trả về độ dài của mảng.
+			Example: array = [1, 2, 3]
+					 puts array.length # => 3
+		empty?
+			Declare: Kiểm tra xem mảng có rỗng hay không.
+			Example: array = []
+					 puts array.empty? # => true
+		include?(item)
+			Declare: Kiểm tra xem mảng có chứa phần tử hay không.
+			Example: array = [1, 2, 3]
+					 puts array.include?(2) # => true
+		at(index)
+			Declare: Trả về phần tử tại vị trí chỉ định.
+			Example: array = [1, 2, 3, 4, 5]
+					 puts array.at(0) # => 1
+		[]
+			Declare: Trả về phần tử tại vị trí chỉ định.
+			Example: array = [1, 2, 3]
+					 puts array[1] # => 2
+		[]=(index, value)
+			Declare: Đặt giá trị cho phần tử tại vị trí chỉ định.
+			Example: array = [1, 2, 3]
+					 array[1] = 4
+					 puts array # => [1, 4, 3]
+		push(item)
+			Declare: Thêm một phần tử vào cuối mảng.
+			Example: array = [1, 2, 3]
+					 array.push(4)
+					 puts array # => [1, 2, 3, 4]
+		pop
+			Declare: Loại bỏ phần tử cuối cùng của mảng và trả về nó.
+			Example: array = [1, 2, 3, 4]
+					 puts array.pop # => 4
+		unshift(item)
+			Declare: Thêm một phần tử vào đầu mảng.
+			Example: array = [1, 2, 3]
+					 array.unshift(0)
+					 puts array # => [0, 1, 2, 3]
+		shift
+			Declare: Loại bỏ phần tử đầu tiên của mảng và trả về nó.
+			Example: array = [1, 2, 3]
+					 puts array.shift
+					 # => 1
+		concat(array)
+			Declare: Nối hai mảng.
+			Example: array1 = [1, 2, 3]
+					 array2 = [4, 5, 6]
+					 puts array1.concat(array2)
+					 # => [1, 2, 3, 4, 5, 6]
+		sort
+			Declare: Sắp xếp các phần tử của mảng theo thứ tự tăng dần.
+			Example: array = [4, 2, 3, 1]
+					 puts array.sort
+					 # => [1, 2, 3, 4]
+		reverse
+			Declare: Đảo ngược thứ tự của các phần tử trong mảng.
+			Example: array = [1, 2, 3]
+					 puts array.reverse
+					 # => [3, 2, 1]
+		each
+			Declare: Lặp qua các phần tử của mảng.
+			Example: array = [1, 2, 3]
+					 array.each do |number|
+					   puts number
+					 end
+					 # Output:
+					 # 1
+					 # 2
+					 # 3
+		map
+			Declare: Trả về một mảng mới với các giá trị được tính toán từ các phần tử của mảng.
+			Example: array = [1, 2, 3]
+					 new_array = array.map do |number|
+					   number * 2
+					 end
+					 puts new_array
+					 # Output:
+					 # [2, 4, 6]
+		select
+			Declare: Trả về một mảng mới với các phần tử thỏa mãn một điều kiện.
+			Example: array = [1, 2, 3, 4, 5]
+					new_array = array.select do |number|
+					  number % 2 == 0
+					end
+					puts new_array
+					# Output:
+					# [2, 4]
+		reject
+			Declare: Trả về một mảng mới với các phần tử không thỏa mãn một điều kiện.
+			Example: array = [1, 2, 3, 4, 5]
+
+					new_array = array.reject do |number|
+					  number % 2 == 0
+					end
+
+					puts new_array
+
+					# Output:
+					# [1, 3, 5]
+		find
+			Declare: Trả về phần tử đầu tiên thỏa mãn một điều kiện.
+			Example: array = [1, 2, 3, 4, 5]
+
+					number = array.find do |number|
+					  number % 2 == 0
+					end
+
+					puts number
+
+					# Output:
+					# 2
+		find_index
+			Declare: Trả về chỉ mục của phần tử đầu tiên thỏa mãn một điều kiện.
+			Example: array = [1, 2, 3, 4, 5]
+
+					index = array.find_index do |number|
+					  number % 2 == 0
+					end
+
+					puts index
+
+					# Output:
+					# 1
+
+
+
+
+					
+
+
+							
+		
+				
+		
 		
