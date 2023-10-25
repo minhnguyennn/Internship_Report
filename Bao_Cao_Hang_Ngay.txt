@@ -9,3 +9,18 @@ Issue: no
 
 Low Disk Space on "Filesystem root"
 The volume "Filesystem root" has only 451,6 MB disk space remaining.
+
+Các task đã làm :
+	- Phân biệt sự khác nhau giữa string và symbol, cho ví dụ
+	- Nội suy chuỗi là gì (String interpolation)? cho ví dụ
+	- config sublime text : https://itecnote.com/tecnote/how-to-setup-tab-size-in-sublime-text-2-for-each-file-type/
+	- cố gắng luyện tập kỹ năng tìm kiếm, vì nó cũng là một kỹ năng mà dev cần có (phân tích keywords và tìm kiếm), mn có thể thêm keyword viblo vào tìm kiếm (viblo là diễn đàn chia sẽ kn cho dev) để dễ tìm được tài liệu tiếng việt. Ví dụ: (enumerable + ruby + viblo)
+	https://viblo.asia/p/enumerable-trong-ruby-la-gi-va-tai-sao-ban-nen-su-dung-no-Ljy5VXGMZra
+https://docs.ruby-lang.org/en/2.1.0/Test/Unit/Assertions.html
+	- clear ubuntu : https://itsfoss.com/free-up-space-ubuntu-linux/
+	- Viết 1 method như yêu cầu như sau
+		- Truyền vào 1 array gồm 2 chuỗi
+		- Trả về false nếu input vào không phải là array gồm 2 chuỗi (chuỗi khác rỗng)
+		- Kiểm tra tất cả chữ cái trong chuỗi thứ 2 xem có nằm ít nhất trong chuỗi thứ nhất hay không
+		- Trả về true, false
+	- 

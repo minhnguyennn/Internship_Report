@@ -80,8 +80,8 @@ module Enumerable
 							  "age" => 30,
 							  "city" => "San Francisco"
 							}
-							hash.to_a 
-							# => [["name", "John Doe"], ["age", 30], ["city", "San Francisco"]]
+					hash.to_a 
+					# => [["name", "John Doe"], ["age", 30], ["city", "San Francisco"]]
 		first
 			first → element or nil
 				Declare: With no argument, returns the first element, or nil if there is none
