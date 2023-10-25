@@ -1,0 +1,223 @@
+Classes and Object Oriented Programming in Ruby
+    00. Classes
+        Grouping Objects
+            Declare: 1 là lớp Fixnum, "" là lớp String, [] là lớp Array
+            Example :   puts 1.class
+                        puts "".class
+                        puts [].class
+      		Example 2: 	puts 1.is_a?(Integer)
+						puts 1.is_a?(String)
+		Classes are people too
+			Declare: Trong Ruby, mọi thứ đều là một đối tượng, kể cả lớp. Lớp là một đối tượng 
+					 đặc biệt đại diện cho một loại đối tượng cụ thể
+            Example :   1.class.class  # => Class
+        What do classes do?
+        	Declare: Các lớp hoạt động như các nhà máy xây dựng các đối tượng. Một đối tượng được 
+        			 xây dựng bởi một lớp nhất định được gọi là 'một thể hiện của lớp đó.
+            Example :   Object.new
+     01. Building your own class
+     	Getting classy
+     		Declare: 	các lớp trong Ruby có tên bắt đầu bằng chữ in hoa.
+            Example :	class Rectangle end
+        State and behaviour
+        	Declare: 	các lớp trong Ruby cần có các phương thức.
+            Example :	class Rectangle
+						  def perimeter
+						  	2 * (@length + @breadth)
+						  end
+						end
+Introduction to Ruby Methods
+	01. Being Methodical
+		What are methods, really?
+			 	Declare: 	Dữ liệu mà một đối tượng chứa là những gì nó là và các phương thức của nó là những gì nó có thể làm. 
+		        Example :   puts 1.next
+		Objectifying methods
+				Declare: 	Sử dụng method để biết đối tượng của phương thức
+		        Example :   puts 1.method("next")
+		        			
+		        			next_method_object = 1.method("next")
+							puts next_method_object.call
+		Make it so
+				Declare: 	tạo 1 phương thức đảo ngược dấu của số nguyên
+		        Example :   def reverse_sign(an_integer)
+							  return 0 - an_integer
+							end
+
+							puts reverse_sign(100)
+							puts reverse_sign(-5)
+		Beam me up, Scotty
+				Declare: 	tạo 1 phương thức add_two dùng next
+		        Example :   def add_two (an_integer)
+								an_integer.next
+							end
+
+							p add_two (1)
+							p add_two (2)
+	02. Calling a method
+		Cooperative objects
+				Declare: 	có thểm thêm 1, nhiều hoặc mặc định làm tham số cho method
+		        Example :   def say_hello(name = "Qui-Gon Jinn")
+							  "Hello, #{name}."
+							end
+		Arraying your arguments
+				Declare: 	dùng dấu * để làm danh sách các tham số
+		        Example :   def add(*numbers)
+							  numbers.inject(0) { |sum, number| sum + number }
+							end
+
+							puts add(1)
+							puts add(1, 2)
+							puts add(1, 2, 3)
+							puts add(1, 2, 3, 4)
+				
+				Declare: 	chuyển mảng thành danh sách tham số
+		        Example :   def add(a_number, another_number, yet_another_number)
+							  a_number + another_number + yet_another_number
+							end
+
+							numbers_to_add = [1, 2, 3]
+							puts add(*numbers_to_add)
+				Lưu ý : *names là 1 mảng
+		Naming parameters
+				Declare: 	có thể dùng hash để làm danh sách tham số
+		        Example :   def add(a_number, another_number, option = {})
+							  sum = a_number + another_number
+							  sum = sum.abs() if option[:absolute]
+							  sum = sum.round(option[:precision]) if option[:round]
+							  sum
+							end
+
+							puts add(1.0134, -5.568)
+							puts add(1.0134, -5.568, absolute: true)
+							puts add(1.0134, -5.568, absolute: true, round: true, precision: 2)
+		A not-so-gentle workout
+				Declare: 	hàm trừ nhiều số
+		        Example :   def subtract(*numbers)
+							  current_number = numbers.shift
+							  numbers.inject(current_number) do  |current_number, number| current_number - number end
+							end
+
+							subtract(10, 5)
+					
+				Declare: 	hàm tính toán phép cộng hoặc trừ
+		        Example :   def add(*numbers)
+							  numbers.inject(0) { |sum, number| sum + number }  
+							end
+
+							def subtract(*numbers)
+							  current_result = numbers.shift
+							  numbers.inject(current_result) { |current_result, number| current_result - number }  
+							end
+
+							def calculate(*arguments)
+							  options = arguments[-1].is_a?(Hash) ? arguments.pop : {}
+							  options[:add] = true if options.empty?
+							  return add(*arguments) if options[:add]
+							  return subtract(*arguments) if options[:subtract]
+							end
+
+							calculate(1, 2)
+							calculate(1, 2, add: true)
+							calculate(1, 2, subtract: true)
+							calculate(1, 2, add: true, subtract: true)
+Introduction to Lambdas and Blocks
+	01. Lambdas In Ruby
+		Lambdas
+				Declare: 	một hàm dấu tên
+		        Example :   Increment = lambda { |number|  number + 1 }
+							result = Increment.call(5)
+							puts result # Kết quả: 6
+	02. Blocks in Ruby
+		Lambdas vs. Blocks
+			Lambdas : 
+					Lambda là một hàm vô danh (anonymous function) có thể được lưu trữ trong một biến.
+					Được định nghĩa bằng lambda hoặc -> (stabby lambda) trong Ruby.
+					Lambda có thể nhận tham số và trả về giá trị.
+					Lambda được gọi bằng .call hoặc cú pháp [ ].
+			Blok :
+					Block là một khối mã được truyền vào một phương thức và thường được sử dụng để 
+					thực hiện một số tác vụ cụ thể bên trong phương thức đó.
+					Được định nghĩa bằng { } hoặc do ... end.
+					Block không thể tồn tại độc lập; chúng phụ thuộc vào phương thức chứa chúng.
+					Block thường được truyền vào các phương thức như .each, .map, hoặc .times.
+Introduction to Modules
+	01. Getting Modular
+		Mixing it up
+					Declare: 	Module cho phép bạn nhóm các phần mã lại với nhau để tạo ra các tính năng, 
+								phương thức, và biến riêng lẻ có thể được sử dụng lại trong nhiều lớp và đối tượng khác nhau. 
+		        	Example :   module WarmUp
+								  def push_ups
+									"Phew, I need a break!"
+								  end
+								end
+
+								class Gym
+								  include WarmUp
+								  
+								  def preacher_curls
+									"I'm building my biceps."
+								  end
+								end
+
+								class Dojo
+								  include WarmUp
+								  
+								  def tai_kyo_kyu
+									"Look at my stance!"
+								  end
+								end
+
+								puts Gym.new.push_ups
+								puts Dojo.new.push_ups
+	02. Modules as Namespaces
+			Collision course
+						Declare: 	Lớp có thể được sử dụng trong module
+				    	Example :   module Perimeter
+								  class Array
+									def initialize
+									  @size = 400
+									end
+								  end
+								end
+
+								our_array = Perimeter::Array.new
+								ruby_array = Array.new
+
+								p our_array.class
+								p ruby_array.class
+Introduction to I/O
+	01. Streams
+			I/O streams and the IO class
+						Declare: 	Lớp có thể được sử dụng trong module
+				    	Example :   module Perimeter
+								  class Array
+									def initialize
+									  @size = 400
+									end
+								  end
+								end
+
+								our_array = Perimeter::Array.new
+								ruby_array = Array.new
+
+								p our_array.class
+								p ruby_array.class
+								
+						Exmaple 2:
+								# open the file "new-fd" and create a file descriptor:
+								fd = IO.sysopen("new-fd", "w")
+
+								# create a new I/O stream using the file descriptor for "new-fd":
+								p IO.new(fd)
+								
+								IO.sysopen("new-fd", "w")
+								Dòng này sử dụng phương thức IO.sysopen để mở tệp tin có tên "new-fd" với chế độ "w" (ghi).
+								
+												
+							
+				
+				
+									
+            
+                     
+        
