@@ -1,11 +1,9 @@
 Report (23/10/2023)
 Today:
-- Introduction To Ruby Objects (done)
-- Introduction to Strings (done)
-- Conditions and Loops: Control Structures in Ruby (done)
-- Arrays in Ruby (done)
-- Hashes in Ruby (done)
+	- Solve problem (done)
+	- Luyện tập thêm bài: Classes and Object Oriented Programming in Ruby
 Issue: no
+Link : 
 
 Low Disk Space on "Filesystem root"
 The volume "Filesystem root" has only 451,6 MB disk space remaining.

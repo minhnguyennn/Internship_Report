@@ -1,0 +1,355 @@
+Solve problem on Ruby Monk
+	Time to run code
+		Solve:
+			def exec_time(proc)
+			  time_begin = Time.now();
+			  proc.call
+			  time_end = Time.now() - time_begin;
+			end
+			
+	Number shuffle
+		Solve:
+			class MyArray
+			  attr_reader :array
+
+			  def initialize(array)
+			    @array = array
+			  end
+
+			  def sum(initial_value = 0)
+			    if block_given?
+			      result = initial_value
+			      @array.each do |element|
+				result += yield(element)
+				puts "result: #{result}, element: #{element}"
+			      end
+			      result
+			    else
+			      @array.inject(initial_value) { |sum, element| sum + element }
+			    end
+			  end
+			end
+			
+	Your Sum
+		Solve:
+			class Restaurant
+			  def initialize(menu)
+			    @menu = menu
+			  end
+
+			  def cost(*orders)
+			      total = 0 
+			    orders.each do |order|
+			      order.each do |item,quantity|
+				if @menu.key?(item) 
+				  total += (@menu[item] * quantity)
+				end
+			      end
+			    end
+			    total
+			  end
+			end
+
+
+Classes and Object Oriented Programming in Ruby
+	States and Behaviors
+		States (Trạng thái): 
+				Trạng thái của một đối tượng đề cập đến các dữ liệu hoặc thuộc tính mà đối tượng đó lưu trữ tại một thời
+		 		điểm cụ thể. Điều này thường được thể hiện thông qua các biến thành viên (instance variables) của đối tượng.
+		 		Trạng thái xác định các đặc điểm, thông tin hoặc thuộc tính của đối tượng.
+
+				Ví dụ: Trong một class "Car," trạng thái có thể bao gồm các thuộc tính như màu sắc, tốc độ, dung tích bình 
+				xăng, vị trí, v.v.
+
+		Behaviors (Hành vi): 
+				Hành vi của một đối tượng đề cập đến các phương thức (methods) mà đối tượng đó có thể thực hiện. Hành vi 
+				xác định cách một đối tượng tương tác với trạng thái của nó và với các đối tượng khác. Phương thức của một 
+				class xác định hành vi của đối tượng của class đó.
+
+				Ví dụ: Trong class "Car," hành vi có thể bao gồm các phương thức như "khởi động xe," "tăng tốc," "giảm tốc," 
+				"đổi màu sắc," v.v.
+	
+	Initializing a New Object
+		Declare:
+			Quá trình khởi tạo một đối tượng mới từ một class trong lập trình hướng đối tượng. Việc khởi tạo một đối tượng thường
+			được thực hiện thông qua một phương thức đặc biệt được gọi là hàm khởi tạo (constructor). Hàm khởi tạo định nghĩa cách 
+			mà đối tượng sẽ được tạo và cấu hình ban đầu.
+		
+		Example:
+			class Person
+			  def initialize(name, age)
+			    @name = name
+			    @age = age
+			  end
+			end
+			
+	Instance Variables
+		Declare:
+			Các biến dữ liệu được liên kết với một đối tượng cụ thể (instance) của một class. Mỗi đối tượng có thể có riêng một 
+			bản sao của các instance variables của class và chúng thường chứa thông tin hoặc trạng thái cụ thể của đối tượng đó.
+			Instance variables được sử dụng để duy trì trạng thái của đối tượng trong suốt thời gian tồn tại của nó. Các instance
+			variables bắt đầu bằng ký tự @ và có thể được truy cập và sử dụng trong toàn bộ class mà chúng được định nghĩa, cũng 
+			như từ bên ngoài class thông qua các phương thức công khai (public methods) của class đó.
+		
+		Example:
+			def initialize(name, age)
+		           @name = name   # Instance variable
+		           @age = age     # Instance variable
+		        end
+		    
+	Instance Methods
+		Declare:
+			Instance Methods (phương thức thể hiện) là các phương thức của một class trong lập trình hướng đối tượng, được gắn liền
+			với các đối tượng cụ thể (instance) của class đó. Điều này có nghĩa rằng mỗi đối tượng có thể gọi các instance methods
+			của class để thực hiện các hành vi cụ thể. Instance methods hoạt động trên dữ liệu hoặc trạng thái của đối tượng và
+			thường dùng để thực hiện các hoạt động hoặc tính toán liên quan đến đối tượng đó.
+		
+		Example:
+			# Instance Methods
+			def introduce
+			    puts "Hi, I'm #{@name} and I'm #{@age} years old."
+			end
+
+		        def have_birthday
+		            @age += 1
+		        end
+		        
+	Accessor Methods
+		Declare:
+			Accessor Methods là các phương thức trong lập trình hướng đối tượng được sử dụng để truy cập (getter) hoặc cập nhật
+			(setter) giá trị của thuộc tính của một đối tượng. Getter methods đọc giá trị, còn setter methods cập nhật giá trị. Chúng
+			giúp kiểm soát và ẩn trạng thái của đối tượng.
+			
+		Getter Methods (Phương thức đọc): 
+						Declare: 
+							Được sử dụng để đọc (truy cập) giá trị của một thuộc tính mà không thay đổi nó. Getter
+							methods thường bắt đầu bằng từ "get" hoặc không bắt đầu bằng từ "get" mà chỉ sử dụng tên
+							thuộc tính.
+		
+						Example:
+							def get_name
+						    	    @name
+						        end
+						        
+		Setter Methods (Phương thức ghi):
+						Declare: 
+							Được sử dụng để ghi (thay đổi) giá trị của một thuộc tính. Setter methods thường bắt đầu
+							bằng từ "set" hoặc không bắt đầu bằng từ "set" mà chỉ sử dụng tên thuộc tính.
+		
+						Example:
+							def set_name(new_name)
+						           @name = new_name
+						        end
+						        
+		attr_accessor:
+						Declare:
+							attr_accessor là một phương thức trong Ruby được sử dụng để tự động tạo cả getter 
+							methods và setter methods cho các thuộc tính của một class. Nó giúp rút ngắn mã và 
+							làm cho việc định nghĩa các accessor methods trở nên dễ
+							dàng.
+							
+						Example:
+							attr_accessor :name, :age
+							
+							person.name = "John"
+							person.age = 30
+							
+		attr_reader:
+					Declare:
+						attr_reader là một phương thức trong Ruby được sử dụng để tự động tạo getter methods cho các
+						thuộc tính của một class. Nó cho phép bạn chỉ đọc (truy cập) giá trị của thuộc tính mà không 
+						thể thay đổi giá trị đó. attr_reader giúp rút ngắn mã và làm cho việc định nghĩa các getter 
+						methods trở nên dễ dàng.
+						
+						Khi bạn sử dụng attr_reader, bạn chỉ cần liệt kê tên các thuộc tính mà bạn muốn có getter
+						methods, và Ruby sẽ tự động tạo chúng cho bạn.
+			
+					Example:
+						attr_reader :name, :age
+						
+						puts person.name  # Gọi getter method tự động
+						puts person.age
+						  		        
+		attr_writer
+					Declare:
+						attr_writer là một phương thức trong Ruby được sử dụng để tự động tạo setter methods cho các
+						thuộc tính của một class. Setter methods cho phép bạn cập nhật (ghi) giá trị của thuộc tính 
+						mà không thể đọc giá trị đó. attr_writer giúp rút ngắn mã và làm cho việc định nghĩa các 
+						setter methods trở nên dễ dàng.
+
+						Khi bạn sử dụng attr_writer, bạn chỉ cần liệt kê tên các thuộc tính mà bạn muốn có setter 
+						methods, và Ruby sẽ tự động tạo chúng cho bạn.
+			
+					Example:
+						attr_writer :name, :age
+						
+						person.name = "John"  # Gọi setter method tự động
+						person.age = 30
+				
+	Self
+		Declare:
+			Được hiểu là đối tượng hiện tại mà một phương thức đang hoạt động. Nó là một cách tham chiếu đến đối tượng đó. 
+			self có thể được sử dụng để truy cập và thực hiện các phương thức và thuộc tính của đối tượng hiện tại.
+			
+		Example:
+			def change_info(n, h, w)
+			  self.name = n
+			  self.height = h
+			  self.weight = w
+			end
+			=> Điều này cho Ruby biết rằng chúng ta đang gọi một phương thức setter, không tạo ra một biến cục bộ.
+			
+			def info
+			  "#{self.name} weighs #{self.weight} and is #{self.height} tall."
+			end
+			=> Điều này cho Ruby biết rằng chúng ta đang gọi một phương thức getter, không tạo ra một biến cục bộ.
+			
+			def some_method
+			    self.info
+			end
+			=>Phương thức info không phải là phương thức do attr_accessor cung cấp cho chúng tôi, nhưng chúng tôi 
+			   vẫn có thể gọi nó bằng cách sử dụng self.info
+			   
+	Class Methods
+		Declare:
+			Một "class method" (phương thức lớp) là một phương thức của một lớp (class) trong lập trình hướng đối tượng (OOP) được
+			gọi trên lớp chứ không phải trên một đối tượng cụ thể của lớp đó. Class methods thường được sử dụng để thực hiện các
+			hoạt động liên quan đến lớp chứ không phải đối tượng. Chúng giúp bạn tương tác với lớp và dữ liệu lớp mà không cần 
+			tạo một đối tượng của lớp đó.
+		Example:
+			class MathUtils
+			  def self.square(x)
+			    x * x
+			  end
+
+			  def self.cube(x)
+			    x * x * x
+			  end
+			end
+
+			# Gọi class methods bằng cách sử dụng tên lớp
+			result1 = MathUtils.square(3)
+			result2 = MathUtils.cube(2)
+
+			puts result1  # Output: 9
+			puts result2  # Output: 8
+			
+	Class Variables
+		Declare:
+			Class Variables (biến lớp) trong lập trình hướng đối tượng (OOP) là các biến dữ liệu mà được chia sẻ bởi tất cả các 
+			đối tượng của một lớp cụ thể. Chúng tồn tại trên một cấp lớp (class-level) và không phải là một phần của một đối 
+			tượng cụ thể. Điều này có nghĩa rằng khi bạn thay đổi một Class Variable, thay đổi đó sẽ áp dụng cho tất cả các 
+			đối tượng của lớp đó.
+
+			Class Variables được đặt bên trong lớp và thường bắt đầu bằng ký tự @@. Để tạo và sử dụng Class Variables, bạn cần 
+			truy cập chúng thông qua lớp chứ không phải thông qua đối tượng.
+		
+		Example:
+		   	class Student
+			  @@total_students = 0  # Đây là một Class Variable
+
+			  def initialize(name)
+			    @name = name
+			    @@total_students += 1  # Tăng giá trị Class Variable khi tạo một đối tượng
+			  end
+
+			  def self.total_students
+			    @@total_students  # Class Method để truy cập Class Variable
+			  end
+			end
+
+			student1 = Student.new("Alice")
+			student2 = Student.new("Bob")
+
+			puts Student.total_students  # Output: 2
+			
+	Constants
+		Declare:
+			Trong Ruby, Constants (hằng số) là các biến không thay đổi (immutable) mà bạn gán giá trị một lần và sau đó không thay 
+			đổi nó. Constants thường được sử dụng để đại diện cho các giá trị không thay đổi hoặc cài đặt cố định trong ứng dụng 
+			và thường được viết bằng chữ cái in hoa.
+			
+			Một số quy tắc và thông tin về Constants trong Ruby:
+
+			1. Constants có thể được truy cập từ bất kỳ nơi nào trong chương trình.
+
+			2. Constants có phạm vi toàn cục (global scope), có nghĩa là chúng có thể được truy cập từ bất kỳ nơi nào 
+			    trong chương trình Ruby.
+
+			3. Nếu bạn cố gắng thay đổi giá trị của một hằng số sau khi đã được gán, Ruby sẽ tạo một cảnh báo (warning), 
+			   nhưng giá trị của hằng số sẽ không thay đổi.
+		
+		Example:
+			class GoodDog
+			  DOG_YEARS = 7
+
+			  attr_accessor :name, :age
+
+			  def initialize(n, a)
+			    self.name = n
+			    self.age  = a * DOG_YEARS
+			  end
+			end
+
+			sparky = GoodDog.new("Sparky", 4)
+			puts sparky.age             # => 28
+			
+	The to_s Method
+		Declare:
+			Mỗi đối tượng trong Ruby có một phương thức to_s mặc định, nhưng bạn có thể định nghĩa lại phương thức to_s 
+			cho các lớp tùy chỉnh để tùy chỉnh cách một đối tượng được biểu diễn dưới dạng chuỗi.
+		
+		Example:
+			class GoodDog
+			  DOG_YEARS = 7
+
+			  attr_accessor :name, :age
+
+			  def initialize(n, a)
+			    self.name = n
+			    self.age = a * DOG_YEARS
+			  end
+
+			  def to_s
+			    "This dog's name is #{name} and it is #{age} in dog years."
+			end
+
+			sparky = GoodDog.new( "Sparky", 4)
+			puts sparky
+			
+			
+		Example 2:	
+			class Foo
+			  def to_s
+			    42
+			  end
+			end
+
+			foo = Foo.new
+			puts foo
+			=> Kết quả sẽ lỗi vì to_s chỉ dùng với chuỗi
+		
+			
+
+
+		
+						
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
