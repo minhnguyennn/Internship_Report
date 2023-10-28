@@ -328,6 +328,81 @@ Classes and Object Oriented Programming in Ruby
 			foo = Foo.new
 			puts foo
 			=> Kết quả sẽ lỗi vì to_s chỉ dùng với chuỗi
+	
+	Inheritance
+		Declare:
+			Inheritance (kế thừa) là một khái niệm quan trọng trong lập trình hướng đối tượng (OOP) cho phép bạn tạo mới lớp dựa
+			trên các đặc điểm và hành vi của lớp đã tồn tại. Lớp cha (hoặc lớp cơ sở) chứa các thuộc tính và phương thức chung, 
+			và lớp con (hoặc lớp dẫn xuất) được tạo dựa trên lớp cha để tái sử dụng và mở rộng các đặc điểm đó.
+			
+			Lợi ích chính của kế thừa trong lập trình hướng đối tượng bao gồm:
+
+			Tái sử dụng mã nguồn: Kế thừa cho phép bạn tái sử dụng mã nguồn của lớp cha trong lớp con, giúp giảm việc lặp lại 
+					       mã nguồn và tạo mã nguồn dễ bảo trì.
+
+			Mở rộng và tùy chỉnh: Bằng cách kế thừa từ lớp cha, bạn có thể mở rộng hoặc tùy chỉnh hành vi và thuộc tính của lớp 
+					      con mà không cần thay đổi lớp cha. Điều này giúp bạn mở rộng ứng dụng một cách linh hoạt.
+
+			Tạo hệ thống lớp có cấu trúc: Kế thừa cho phép bạn tạo các hệ thống lớp có cấu trúc với các lớp cha chứa các đặc 
+					 	       điểm và hành vi chung, giúp quản lý mã nguồn dễ dàng hơn.
+					 	   
+		Example:
+			class Animal
+			  def speak
+			    "Hello!"
+			  end
+			end
+
+			class GoodDog < Animal
+			end
+
+			class Cat < Animal
+			end
+
+			sparky = GoodDog.new
+			paws = Cat.new
+			puts sparky.speak           # => Hello!
+			puts paws.speak             # => Hello!
+		
+		Example 2:
+			class Animal
+			  def speak
+			    "Hello!"
+			  end
+			end
+
+			class GoodDog < Animal
+			  attr_accessor :name
+
+			  def initialize(n)
+			    self.name = n
+			  end
+
+			  def speak
+			    "#{self.name} says arf!"
+			  end
+			end
+
+			class Cat < Animal
+			end
+
+			sparky = GoodDog.new("Sparky")
+			paws = Cat.new
+
+			puts sparky.speak           # => Sparky says arf!
+			puts paws.speak             # => Hello!
+			
+	super
+		Declare:
+			Trong lập trình hướng đối tượng, super là một từ khóa trong Ruby được sử dụng để gọi phương thức của lớp cha từ 
+			một phương thức của lớp con có cùng tên. Điều này cho phép lớp con mở rộng hoặc tùy chỉnh hành vi của lớp cha mà 
+			không cần viết lại toàn bộ phương thức.
+
+			Khi super được gọi bên trong một phương thức của lớp con, nó tìm phương thức cùng tên trong lớp cha và thực thi nó. 
+			Có thể chuyển thêm tham số cho phương thức của lớp cha nếu cần.
+	
+		Example:
+			 	   
 		
 			
 

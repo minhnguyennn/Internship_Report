@@ -1,9 +1,9 @@
-Report (23/10/2023)
+Report (27s/10/2023)
 Today:
 	- Solve problem (done)
 	- Luyện tập thêm bài: Classes and Object Oriented Programming in Ruby
 Issue: no
-Link : 
+Link : https://github.com/minhnguyennn/Internship_Report/blob/main/Week_2/27-10_Practice_RubyMonk.txt
 
 Low Disk Space on "Filesystem root"
 The volume "Filesystem root" has only 451,6 MB disk space remaining.
