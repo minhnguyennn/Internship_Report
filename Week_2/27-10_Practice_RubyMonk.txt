@@ -402,6 +402,7 @@ Classes and Object Oriented Programming in Ruby
 			Có thể chuyển thêm tham số cho phương thức của lớp cha nếu cần.
 	
 		Example:
+			
 			 	   
 		
 			

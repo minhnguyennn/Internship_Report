@@ -1,7 +1,26 @@
-Report (27s/10/2023)
+Report (30/10/2023)
 Today:
-	- Solve problem (done)
-	- Luyện tập thêm bài: Classes and Object Oriented Programming in Ruby
+	- Practice codewars
+		+ 8 kyu: Even or Odd -> (done)
+		+ 7 kyu: Square Every Digit -> (done)
+		+ 8 kyu: Plural -> (done)
+		+ 8 kyu: Convert number to reversed array of digits -> (done)
+		+ 8 kyu: Geometry Basics: Distance between points in 2D -> (done)
+		+ 8 kyu: Is the string uppercase? -> (done)
+		+ 8 kyu: Is he gonna survive? -> (done)
+		+ 8 kyu: To square(root) or not to square(root) -> (done)
+		+ 8 kyu: Return Negative -> (done)
+		+ 8 kyu: Returning Strings -> (done)
+		+ 8 kyu: Collatz Conjecture (3n+1) -> (done)
+		+ 8 kyu: Get Planet Name By ID -> (done)
+		+ 8 kyu: Simple Fun #261: Whose Move -> (done)
+		+ 8 kyu: Classy Classes -> (done)
+	=> So luong cau da lam 14 cau
+Link:
+
+
+
+
 Issue: no
 Link : https://github.com/minhnguyennn/Internship_Report/blob/main/Week_2/27-10_Practice_RubyMonk.txt
 
