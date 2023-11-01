@@ -64,10 +64,22 @@ def solution_two(string)
 end
 
 #Two Sum
-def twoSum(numbers, target)
+def two_sum(numbers, target)
   numbers.each_with_index do |n1, i1|
     numbers.each_with_index do |n2, i2|
       return [i1, i2] if (n1 + n2) == target && i1 != i2
     end
   end
 end
+
+def persistence(arr_a, arr_b)
+  # your code
+  arr_a.each_with_index do |number1, index1|
+    arr_b.each_with_index do |number2, index2|
+      if number1 == number2 && index1 != index2
+        p arr_a.delete(number1)
+      end
+    end
+  end
+end
+p persistence([1,2],[1])
