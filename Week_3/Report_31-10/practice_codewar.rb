@@ -71,15 +71,3 @@ def two_sum(numbers, target)
     end
   end
 end
-
-def persistence(arr_a, arr_b)
-  # your code
-  arr_a.each_with_index do |number1, index1|
-    arr_b.each_with_index do |number2, index2|
-      if number1 == number2 && index1 != index2
-        p arr_a.delete(number1)
-      end
-    end
-  end
-end
-p persistence([1,2],[1])
