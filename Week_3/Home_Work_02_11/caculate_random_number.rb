@@ -19,19 +19,3 @@ def caculate(length, amount)
   end
   array_caculate
 end
-
-require 'test/unit'
-# class Test::Unit
-class TestMethodExample < Test::Unit::TestCase
-  include Test::Unit::Assertions
-  def test_non_empty_strings
-    assert_equal(3, caculate(3, 3).size)
-    assert_equal(0, caculate(0, 2).size)
-    assert_equal(0, caculate(0, 3).size)
-    assert_equal(1, caculate(1, 2).size)
-    assert_equal(1, caculate(1, 3).size)
-    assert_equal(2, caculate(2, 2).size)
-    assert_equal(3, caculate(3, 2).size)
-    assert_equal(3, caculate(3, 3).size)
-  end
-end
