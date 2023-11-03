@@ -1,31 +1,16 @@
-Report (30/10/2023)
-Today:
-	- Practice codewars
-		+ 8 kyu: Even or Odd -> (done)
-		+ 7 kyu: Square Every Digit -> (done)
-		+ 8 kyu: Plural -> (done)
-		+ 8 kyu: Convert number to reversed array of digits -> (done)
-		+ 8 kyu: Geometry Basics: Distance between points in 2D -> (done)
-		+ 8 kyu: Is the string uppercase? -> (done)
-		+ 8 kyu: Is he gonna survive? -> (done)
-		+ 8 kyu: To square(root) or not to square(root) -> (done)
-		+ 8 kyu: Return Negative -> (done)
-		+ 8 kyu: Returning Strings -> (done)
-		+ 8 kyu: Collatz Conjecture (3n+1) -> (done)
-		+ 8 kyu: Get Planet Name By ID -> (done)
-		+ 8 kyu: Simple Fun #261: Whose Move -> (done)
-		+ 8 kyu: Classy Classes -> (done)
-	=> So luong cau da lam 14 cau
-Link:
-
-
-
-
+Report (01/11/2023)
+	-Practice codewars
+		+ 5 kyu: Simple Pig Latin -> (done)
+		+ 5 kyu: RGB To Hex Conversion -> (done)
+		+ 5 kyu: Directions Reduction -> (done)
+		+ 5 kyu: Rot13-> (done)
+		+ 4 kyu: Human readable duration format -> (done)
+		+ 5 kyu: Maximum subarray sum -> (done)
+		+ 5 kyu: Pete, the baker -> (done)
+		
+	- Số lượng câu làm được: 7 câu
 Issue: no
-Link : https://github.com/minhnguyennn/Internship_Report/blob/main/Week_2/27-10_Practice_RubyMonk.txt
-
-Low Disk Space on "Filesystem root"
-The volume "Filesystem root" has only 451,6 MB disk space remaining.
+Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_3/Report_02_11
 
 Các task đã làm :
 	- Phân biệt sự khác nhau giữa string và symbol, cho ví dụ

@@ -1,0 +1,2 @@
+Frozen string literals
+	Định nghĩa : Frozen string literals trong Ruby là một tính năng cho phép đánh dấu các chuỗi ký tự là không thể thay đổi, giúp tối ưu hóa bộ nhớ và tránh thay đổi không mong muốn của chuỗi. Điều này được thực hiện bằng cách thêm dòng sau vào đầu tệp Ruby: # frozen_string_literal: true

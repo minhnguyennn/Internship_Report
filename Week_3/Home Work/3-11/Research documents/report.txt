@@ -1,0 +1,16 @@
+Http là gì ?
+	- Hypertext Transfer Protocol (Giao thức Truyền tải Siêu văn bản)
+	- Máy tính giao tiếp với nhau qua internet.
+	- Khi truy cập trang web => trình duyệt gửi yêu cầu HTTP đến máy chủ để lấy thông tin trang đó.
+	- Máy chủ gửi lại thông tin và hình ảnh bằng cách sử dụng HTTP.
+	- HTTP giúp xem trang web và tương tác với nó.
+
+Http reqest là gì ?
+	- Một thông điệp từ trình duyệt web gửi đến máy chủ.
+	- Thông điệp gồm thông tin về các hành động mà máy khách muốn thực hiện trên máy chủ.
+
+Http method bao gồm:
+	Get:  + Yêu cầu thông tin từ máy chủ
+		  + Lấy dữ liệu và hiển thị trang web.
+
+	Post: + Gửi dữ liệu lên máy chủ để thực hiện một hành động cụ thể
