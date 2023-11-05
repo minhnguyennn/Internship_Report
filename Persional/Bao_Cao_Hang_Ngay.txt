@@ -1,4 +1,4 @@
-Report (01/11/2023)
+Report (03/11/2023)
 	-Practice codewars
 		+ 5 kyu: Simple Pig Latin -> (done)
 		+ 5 kyu: RGB To Hex Conversion -> (done)
@@ -10,7 +10,7 @@ Report (01/11/2023)
 		
 	- Số lượng câu làm được: 7 câu
 Issue: no
-Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_3/Report_02_11
+Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_3/Report/3_11
 
 Các task đã làm :
 	- Phân biệt sự khác nhau giữa string và symbol, cho ví dụ

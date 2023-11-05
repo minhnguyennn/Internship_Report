@@ -21,24 +21,20 @@ def rgb(red, green, blue)
 end
 
 # Directions Reduction
-def dirReduc(arr)
-  return arr if arr.nil? || arr.length <= 1
+def dir_reduc(arr)
+  opposites = { 'NORTH' => 'SOUTH', 'SOUTH' => 'NORTH', 'EAST' => 'WEST', 'WEST' => 'EAST' }
 
-  (0...arr.length - 1).each do |i|
-    next unless (arr[i] == 'NORTH' && arr[i + 1] == 'SOUTH') ||
-                (arr[i] == 'SOUTH' && arr[i + 1] == 'NORTH') ||
-                (arr[i] == 'EAST' && arr[i + 1] == 'WEST') ||
-                (arr[i] == 'WEST' && arr[i + 1] == 'EAST')
+  result = []
 
-    arr[i] = nil
-    arr[i + 1] = nil
+  arr.each do |direction|
+    if result.last == opposites[direction]
+      result.pop
+    else
+      result.push(direction)
+    end
   end
 
-  newArr = arr.compact
-
-  return arr if newArr.length == arr.length
-
-  dirReduc(newArr)
+  result
 end
 
 # Rot13
@@ -47,30 +43,44 @@ def rot13(string)
 end
 
 # Human readable duration format
+def seconds_in_minute
+  60
+end
+
+def seconds_in_hour
+  60 * seconds_in_minute
+end
+
+def seconds_in_day
+  24 * seconds_in_hour
+end
+
+def seconds_in_year
+  365 * seconds_in_day
+end
+
+def duration_hash(total)
+  {
+    year: total / seconds_in_year,
+    day: (total % seconds_in_year) / seconds_in_day,
+    hour: (total % seconds_in_day) / seconds_in_hour,
+    minute: (total % seconds_in_hour) / seconds_in_minute,
+    second: total % seconds_in_minute
+  }
+end
 
 def format_duration(total)
-  if total.zero?
-    'now'
-  else
-    duration = {
-      year: total / (60 * 60 * 24 * 365),
-      day: total / (60 * 60 * 24) % 365,
-      hour: total / (60 * 60) % 24,
-      minute: total / 60 % 60,
-      second: total % 60
-    }
+  return 'now' if total.zero?
 
-    @output = []
+  output = duration_hash(total).map do |key, value|
+    next if value.zero?
 
-    duration.each do |key, value|
-      if value.positive?
-        @output << "#{value} #{key}"
-        @output.last << 's' if value != 1
-      end
-    end
-
-    @output.join(', ').gsub(/,\s(?=\d+\s\w+$)/, ' and ')
+    str = "#{value} #{key}"
+    str << 's' if value != 1
+    str
   end
+
+  output.compact.join(', ').gsub(/, (?=\d+ \w+$)/, ' and ')
 end
 
 # Maximum subarray sum
@@ -83,6 +93,3 @@ def cakes(recipe, available)
   available.default = 0
   recipe.map { |k, v| available[k] / v }.min
 end
-
-cakes({flour: 500, sugar: 200, eggs: 1}, {flour: 1200, sugar: 1200, eggs: 5, milk: 200}); 
-#cakes({apples: 3, flour: 300, sugar: 150, milk: 100, oil: 100}, {sugar: 500, flour: 2000, milk: 2000}); 
