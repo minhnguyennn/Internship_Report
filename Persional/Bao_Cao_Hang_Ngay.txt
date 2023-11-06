@@ -1,14 +1,7 @@
-Report (03/11/2023)
-	-Practice codewars
-		+ 5 kyu: Simple Pig Latin -> (done)
-		+ 5 kyu: RGB To Hex Conversion -> (done)
-		+ 5 kyu: Directions Reduction -> (done)
-		+ 5 kyu: Rot13-> (done)
-		+ 4 kyu: Human readable duration format -> (done)
-		+ 5 kyu: Maximum subarray sum -> (done)
-		+ 5 kyu: Pete, the baker -> (done)
-		
-	- Số lượng câu làm được: 7 câu
+Report (06/11/2023)
+	- Research: Ruby Primer: Ascent
+		+ Blocks -> Implicit and Explicit Blocks(50%)
+	- Covert API Class -> Done
 Issue: no
 Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_3/Report/3_11
 

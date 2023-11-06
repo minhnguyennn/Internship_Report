@@ -1,0 +1,22 @@
+Blocks
+	Introducing Blocks
+		- Một cách để định nghĩa và thực thi một đoạn mã (code) có thể được truyền vào một phương thức hoặc hàm.
+		- Đặt trong cặp dấu ngoặc nhọn {} hoặc từ khoá do...end.
+		- Exmaple:
+			addition = lambda { |a, b| return a + b }
+			puts addition.call(5, 6)
+	Yield
+		- Được sử dụng trong phạm vi một phương thức để gọi một khối mã (block) mà bạn truyền vào phương thức đó.
+		- Example:
+			def caculation (a, b)
+			  yield(a , b)
+			end
+			puts caculation(5, 6) { |a, b| a + b }
+			puts caculation(5, 6) { |a, b| a - b }
+	Implicit and Explicit Blocks
+		- Chuyển đổi đối số ẩn thành đối số rõ ràng hơn trong một số trường hợp.
+		- Example:
+			def caculation(a, b, &block)
+			    block.call(a, b)
+			end
+			puts caculation(5, 6) {|a, b| a + b}
