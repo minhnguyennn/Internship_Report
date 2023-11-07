@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-create_chart.rb
-
 require 'faraday'
 require 'json'
 require 'caracal'
 require 'gruff'
+require './Module/gruff'
+require './Module/export_word'
 
-# Class USER
+# Class User
 class User
   API_URL = 'https://6418014ee038c43f38c45529.mockapi.io/api/v1/users'
 
@@ -44,41 +44,18 @@ class User
   def setting_table(docx); end
 
   def self.create_chart
-    puts '******************************'
     count_male = 0
     @@user_data.each do |element|
       element.each { |_key, value| count_male += 1 if value == 'male' }
     end
-    puts count_male
-    puts '******************************'
+
     count_female = 0
     @@user_data.each do |element|
       element.each { |_key, value| count_female += 1 if value == 'female' }
     end
-    puts count_female
-    puts '******************************'
-    g = Gruff::Mini::Pie.new
-    g.title = 'Good job !'
-    g.data 'Male', count_male
-    g.data 'Fimale', count_female
-    g.write('mini_pie_keynote.png')
 
-    # Lấy đường dẫn của thư mục hiện tại (thư mục gốc của ứng dụng Ruby)
-    current_directory = Dir.pwd
-
-    # Tên tệp hình ảnh (ví dụ: logo.png)
-    image_filename = 'mini_pie_keynote.png'
-
-    # Kết hợp đường dẫn thư mục hiện tại và tên tệp hình ảnh
-    image_path = File.join(current_directory, image_filename)
-
-    Caracal::Document.save 'example.docx' do |docx|
-      docx.img image_path do
-        width   250
-        height  200
-        align   :left
-      end
-    end
+    Gruff.draw_chart_pipe(count_male, count_female)
+    Export.export_word
   end
 
   def self.create_table
