@@ -1,0 +1,100 @@
+1. So sánh instance variable và class variable
+	- Instance Variable:
+		+ Mỗi instance của một lớp đều có riêng một bản sao của instance variable.
+		+ Instance variables được khai báo bằng dấu @ đứng trước tên biến. Ví dụ: @age.
+		+ Được sử dụng để lưu trữ dữ liệu liên quan đến trạng thái của một instance.
+		+ Các instance variables không được chia sẻ giữa các đối tượng khác nhau của cùng một lớp.
+		+ Example:
+			def initialize(name, age)
+		       @name = name
+		       @age = age
+		    end
+	- Class Variable:
+		+ Một class variable là một biến được chia sẻ giữa tất cả các đối tượng của cùng một lớp.
+		+ Class variables được khai báo bằng dấu @@ đứng trước tên biến. Ví dụ: @@email.
+		+ Chúng thường được sử dụng để lưu trữ thông tin chung cho toàn bộ lớp.
+		+ Nếu bạn thay đổi giá trị của class variable ở một đối tượng, thì giá trị đó thay đổi đối với tất cả 
+		  các đối tượng thuộc lớp đó.
+		+ Example:
+				@@total_accounts = 0
+
+			  def initialize(account_holder, balance)
+			    @account_holder = account_holder
+			    @balance = balance
+			    @@total_accounts += 1
+			  end
+2. ||= toán tử này có ý nghĩa là gì ?
+	- Định nghĩa:
+		+ Được sử dụng để gán một giá trị cho một biến nếu biến đó chưa được gán giá trị (nil hoặc false).
+		+ Nếu biến đã có giá trị (không phải nil hoặc false), thì giá trị của biến không thay đổi.
+		+ Nếu biến chưa có giá trị (nil hoặc false), thì toán tử ||= gán giá trị mới cho biến.
+	- Example:
+		x = nil
+		y = 5
+
+		x ||= 10  # Gán giá trị 10 cho x vì x là nil
+		y ||= 10  # Giữ nguyên giá trị của y vì y không phải là nil
+
+		puts x  # Kết quả: 10
+		puts y  # Kết quả: 5
+3. Phương thức freeze
+	- Định nghĩa:
+		+ Được sử dụng để đóng băng (freeze) một đối tượng, làm cho nó trở thành bất biến (immutable).
+		+ Không thể thay đổi giá trị hoặc cấu trúc của đối tượng đó sau khi nó đã được đóng băng.
+	- Example:
+		str = "This is a mutable string"
+		str.freeze  # Đóng băng đối tượng str
+
+		# Cố gắng thay đổi đối tượng sau khi đã được đóng băng sẽ gây ra lỗi
+		# str << " (attempt to modify frozen string)"  # RuntimeError: can't modify frozen String
+4. So sánh protected và private ?
+	- private:
+		+ Các phương thức được đặt ở chế độ private không thể được gọi từ bên ngoài lớp trừ khi chúng gọi thông 
+		  qua self (self.method_name) hoặc thông qua một phương thức khác trong cùng lớp.
+       	+ Phương thức ở chế độ private không thể được kế thừa bởi các lớp con.
+    	+ Example:
+	    	class MyClass
+			  def public_method
+			    puts "This is a public method"
+			  end
+
+			  private
+
+			  def private_method
+			    puts "This is a private method"
+			  end
+			end
+
+			obj = MyClass.new
+			obj.public_method # Hợp lệ
+			obj.private_method # Lỗi: private method `private_method' called for #<MyClass:0x00007fa6a19be720> (NoMethodError)
+	- protected:
+		+ Các phương thức được đặt ở chế độ protected có thể được gọi từ bên trong lớp và từ các đối tượng 
+		  thuộc cùng một lớp hoặc các lớp con.
+		+ Phương thức ở chế độ protected có thể được kế thừa bởi các lớp con và có thể được gọi từ các đối 
+		  tượng của các lớp con.
+		+ Example :
+			class MyClass
+			  def public_method
+			    puts "This is a public method"
+			  end
+
+			  protected
+
+			  def protected_method
+			    puts "This is a protected method"
+			  end
+			end
+
+			class SubClass < MyClass
+			  def call_protected_method
+			    protected_method
+			  end
+			end
+
+			obj = MyClass.new
+			obj.protected_method # Hợp lệ
+			obj.public_method     # Hợp lệ
+
+			sub_obj = SubClass.new
+			sub_obj.call_protected_method # Hợp lệ

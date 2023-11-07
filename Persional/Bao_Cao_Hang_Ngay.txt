@@ -3,7 +3,7 @@ Report (06/11/2023)
 		+ Blocks -> Implicit and Explicit Blocks(50%)
 	- Covert API Class -> Done
 Issue: no
-Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_3/Report/3_11
+Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_4/Report/6_11
 
 Các task đã làm :
 	- Phân biệt sự khác nhau giữa string và symbol, cho ví dụ
