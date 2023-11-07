@@ -6,6 +6,7 @@ require 'faraday'
 require 'json'
 require 'caracal'
 
+# Class USER
 class User
   API_URL = 'https://6418014ee038c43f38c45529.mockapi.io/api/v1/users'
 
@@ -39,19 +40,22 @@ class User
     response.success?
   end
 
+  def setting_table(docx)
+    docx.table data, border_size: 4 do
+      border_top do
+        color   '000000'
+        line    :double
+        size    8
+        spacing 2
+      end
+    end
+  end
+
   def self.create_table
-    data = @user_data.map(&:values)
+    @user_data.map(&:values)
 
     Caracal::Document.save 'example.docx' do |docx|
-      docx.table data, border_size: 4 do
-        
-        border_top do
-          color   '000000'
-          line    :double
-          size    8
-          spacing 2
-        end
-      end
+      setting_table(docx)
     end
   end
 
