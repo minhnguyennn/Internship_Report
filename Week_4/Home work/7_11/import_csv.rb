@@ -2,10 +2,7 @@
 
 require 'faraday'
 require 'json'
-require 'caracal'
-require 'gruff'
-require './Module/gruff'
-require './Module/export_word'
+require 'csv'
 
 # Class User
 class User
@@ -13,7 +10,7 @@ class User
 
   attr_accessor :id, :name, :sex, :active, :avatar, :created_at
 
-  @@user_data = nil
+  @@connection ||= Faraday.new(url: API_URL)
 
   def initialize(attribute)
     @id = attribute[:id]
@@ -34,58 +31,27 @@ class User
     []
   end
 
-  def self.info_users
-    response = Faraday.new(url: API_URL).get
-    @@user_data = JSON.parse(response.body)
-
-    response.success?
-  end
-
-  def setting_table(docx); end
-
-  def self.create_chart
-    count_male = 0
-    @@user_data.each do |element|
-      element.each { |_key, value| count_male += 1 if value == 'male' }
+  def self.import_csv
+    user_data = []
+    CSV.foreach('users.csv', headers: true) do |row|
+      user_data << {
+        name: row['name'],
+        avater: row['avatar'],
+        sex: row['sex']
+      }
     end
-
-    count_female = 0
-    @@user_data.each do |element|
-      element.each { |_key, value| count_female += 1 if value == 'female' }
-    end
-
-    Gruff.draw_chart_pipe(count_male, count_female)
-    
-    Export.export_word
-  end
-
-  def self.create_table
-    headers = %w[Id Name Sex Active Avatar Created_at]
-    data = [headers] + @user_data.map do |value|
-      [
-        value['id'],
-        value['name'],
-        value['sex'],
-        value['active'],
-        value['avatar'],
-        value['created_at']
-      ]
-    end
-
-    Caracal::Document.save 'example.docx' do |docx|
-      docx.table data, border_size: 4 do
-        border_top do
-          color   '000000'
-          line    :double
-          size    8
-          spacing 2
-        end
+    user_data.each do |user|
+      response = @@connection.post do |request|
+        request.headers['Content-Type'] = 'application/json'
+        request.body = user.to_json
       end
+
+      response.success?
     end
   end
 
   def create
-    response = @connection.post do |request|
+    response = @@connection.post do |request|
       request.headers['Content-Type'] = 'application/json'
       request.body = data
     end
@@ -94,7 +60,7 @@ class User
   end
 
   def update
-    response = @connection.put do |request|
+    response = @@connection.put do |request|
       request.headers['Content-Type'] = 'application/json'
       request.url @id
       request.body = data
@@ -104,17 +70,11 @@ class User
   end
 
   def delete
-    response = @connection.delete do |request|
+    response = @@connection.delete do |request|
       request.url @id
     end
 
     response.success?
-  end
-
-  private
-
-  def connection
-    @connection ||= Faraday.new(url: API_URL)
   end
 
   def data
@@ -128,6 +88,6 @@ class User
     end.to_json
   end
 end
-
-User.info_users
-User.create_chart
+# user = User.new({id: '95'})
+# user.delete
+User.import_csv
