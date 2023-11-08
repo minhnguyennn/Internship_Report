@@ -32,27 +32,25 @@ class User
   end
 
   def self.read_csv
-    user_data = []
     CSV.foreach('users.csv', headers: true) do |row|
-      user_data << {
+      user_data = {
         name: row['name'],
         avater: row['avatar'],
         sex: row['sex']
       }
+      User.import_csv(user_data)
     end
-    user_data
   end
 
-  def self.import_csv
-    user_data = User.read_csv
-    user_data.each do |user|
-      response = @@connection.post do |request|
-        request.headers['Content-Type'] = 'application/json'
-        request.body = user.to_json
-      end
+  def self.import_csv(user_data)
+    p user_data
 
-      response.success?
+    response = @@connection.post do |request|
+      request.headers['Content-Type'] = 'application/json'
+      request.body = user_data.to_json
     end
+
+    response.success?
   end
 
   def create
@@ -93,6 +91,6 @@ class User
     end.to_json
   end
 end
-# user = User.new({id: '95'})
+# user = User.new({id: '276'})
 # user.delete
-User.import_csv
+User.read_csv
