@@ -31,7 +31,7 @@ class User
     []
   end
 
-  def self.import_csv
+  def self.read_csv
     user_data = []
     CSV.foreach('users.csv', headers: true) do |row|
       user_data << {
@@ -40,6 +40,11 @@ class User
         sex: row['sex']
       }
     end
+    user_data
+  end
+
+  def self.import_csv
+    user_data = User.read_csv
     user_data.each do |user|
       response = @@connection.post do |request|
         request.headers['Content-Type'] = 'application/json'
