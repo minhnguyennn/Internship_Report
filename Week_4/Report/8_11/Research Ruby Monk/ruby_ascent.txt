@@ -1,0 +1,125 @@
+Classes: Inheritance
+	+ Classification
+		- Classes as Templates: Các lớp trong Ruby đóng vai trò như các mẫu hoặc bản 
+								thiết kế để tạo ra các đối tượng.
+								Chúng xác định cấu trúc và hành vi mà các đối tượng được tạo từ lớp đó sẽ có.
+		- Objects and Instances: Khi bạn tạo ra một đối tượng bằng cách sử dụng một lớp,
+		 						 đối tượng đó được gọi là một thể hiện của lớp.
+		 						 Hãy nghĩ về lớp như là một khuôn mẫu và các đối tượng được tạo ra từ nó như các thể hiện, tương tự như cách khuôn bánh quy tạo ra bánh quy.
+		- Class as an Object: Một lớp cũng là một đối tượng.
+							  Lớp Class được sử dụng để tạo ra các lớp khác. Vì vậy, khi chúng ta nói một lớp là một đối tượng, điều đó có nghĩa là nó là một thể hiện của lớp Class.
+	+ Understanding Inheritance
+		- Dùng hàm superclass để kiểm tra giúp xác định lớp cha của một lớp cụ thể.
+		- Example: puts Float.superclass
+		- Liệt kê các phương thức của thể hiện:
+		- Example: puts (
+					  Float.instance_methods - 
+					  Object.instance_methods - 
+					  Numeric.instance_methods
+					).count
+	+ Inheriting Class
+		- Cú pháp kế thừa là : class MyArray < Array
+		- Lớp MyArray kế thừa lớp Array
+		- Example: 	class MyArray < Array
+					end
+		- Example 2:
+					class Rectangle
+					  def initialize(length, breadth)
+					    @length = length
+					    @breadth = breadth
+					  end
+
+					  def perimeter
+					    2 * (@length + @breadth)
+					  end
+					end
+
+					# Create a class Square here
+					class Square < Rectangle
+					  def initialize(side)
+					    @length = @breadth = side
+					  end
+					end
+
+					# Create a rectangle
+					rectangle = Rectangle.new(4, 6)
+					puts "Rectangle Perimeter: #{rectangle.perimeter}"
+
+					# Create a square
+					square = Square.new(2)
+					puts "Square Perimeter: #{square.perimeter}"
+	+ Redefining, overriding, and super
+		- Redefining methods
+			Định nghĩa lại một phương thức đã tồn tại trong một lớp. 
+			Điều này có thể thực hiện để thay đổi hoặc mở rộng hành vi của phương thức đó.
+		- Example:
+				class MyClass
+				  def foo
+				    puts "Original foo method"
+				  end
+				end
+				class MyDerivedClass < MyClass
+				  def foo
+				    puts "Redefining foo method in the derived class"
+				  end
+				end
+				obj = MyDerivedClass.new
+				obj.foo
+		- overriding methods:
+			Quá trình định nghĩa lại một phương thức trong lớp con mà đã được định nghĩa trong lớp cha. Việc này cho phép bạn thay đổi hoặc mở rộng hành vi của phương thức mà không làm ảnh hưởng đến phương thức gốc trong lớp cha.
+		- Example:
+			class Animal
+			  def speak
+			    puts "Animal speaks"
+			  end
+			end
+
+			class Dog < Animal
+			  def speak
+			    puts "Dog barks"
+			  end
+			end
+
+			dog = Dog.new
+			dog.speak
+			# Output: Dog barks
+		- Super Powered:
+			"Super Powered" được sử dụng để chỉ việc sử dụng từ khóa super. Từ khóa super được sử dụng trong phương thức của lớp con để gọi đến phương thức tương ứng của lớp cha.
+			Khi một phương thức trong lớp con gọi super, nó kích hoạt phương thức tương ứng trong lớp cha, giúp bạn tái sử dụng hành vi của lớp cha trong lớp con và thậm chí mở rộng hoặc thay đổi nó.
+		- Example:
+			class Animal
+			  def move
+			    puts "Animal moves"
+			  end
+			end
+
+			class Dolphin < Animal
+			  def move
+			    puts "Dolphin swims"
+			    super
+			  end
+			end
+
+			dolphin = Dolphin.new
+			dolphin.move
+	+  Instance Variables and Accessors
+		- Instance Variables
+			Các biến được liên kết với một thể hiện (instance) cụ thể của một lớp trong ngôn ngữ lập trình. Các biến này có thể được sử dụng để lưu trữ thông tin và trạng thái của đối tượng đó.
+		- Exmaple:
+			class Person
+			  def initialize(name, age, address)
+			    @name = name
+			    @age = age
+			    @address = address
+			  end
+
+			  def display_info
+			    puts "Name: #{@name}, Age: #{@age}, Address: #{@address}"
+			  end
+			end
+
+			person1 = Person.new("John", 25, "123 Main St")
+			person1.display_info
+
+
+
