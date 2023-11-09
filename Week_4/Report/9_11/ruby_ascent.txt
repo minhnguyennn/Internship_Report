@@ -1,0 +1,55 @@
+More Classes
+	Class Variables and Methods
+		Cách định nghĩa khác của phương thức lớp
+			Example:
+				class Item
+				  class << self
+				    def show
+				      puts "Class method show invoked"
+				    end
+				  end
+				end
+				Item.show
+		Sử dụng biến lớp để lưu cấu hình ứng dụng
+			+ Việc sử dụng biến lớp để lưu cấu hình ứng dụng có một số ưu điểm sau:
+				- Tiện lợi: Biến lớp có thể được truy cập từ bất kỳ nơi nào trong ứng dụng, do đó, bạn không cần 
+					     phải truyền cấu hình ứng dụng cho từng đối tượng.
+				- Thân thiện với lập trình viên: Biến lớp là một khái niệm quen thuộc trong lập trình, do đó, 
+					                          việc sử dụng biến lớp để lưu cấu hình ứng dụng sẽ giúp lập 
+					                          trình viên dễ dàng hiểu và sử dụng.
+			+ Ví dụ:
+				class MyApp
+				  @@config = {
+				    "database_host": "localhost",
+				    "database_port": 3306,
+				    "database_name": "my_app",
+				    "database_user": "root",
+				    "database_password": "password"
+				  }
+				end
+				
+				#Cách truy cập 1:
+				MyApp.config
+				
+				#Cách truy cập 2:
+				app = MyApp.new
+				app.config
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+
+		

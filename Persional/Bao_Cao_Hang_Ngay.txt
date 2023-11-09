@@ -1,7 +1,10 @@
-Report (07/11/2023)
-	- Export chart in word -> Done
+Report (08/11/2023)
+	Research Ruby monk
+		- Classes: Inheritance -> Redefining, overriding, and super (50%)
+	Exercise:
+		- Refactor class -> done
 Issue: no
-Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_4/Report/7_11/Chart
+Link: https://github.com/minhnguyennn/Internship_Report/tree/main/Week_4/Report/8_11
 
 Các task đã làm :
 	- Phân biệt sự khác nhau giữa string và symbol, cho ví dụ
