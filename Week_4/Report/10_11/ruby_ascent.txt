@@ -144,6 +144,8 @@ Advanced Arrays
 			
 			couples = array1.product(array2)
 			puts couples
+			
+Advanced Modules
 	Phương thức include
 		Ví dụ:
 			module Foo
@@ -167,8 +169,125 @@ Advanced Arrays
 			end
 
 			Bar.module_level_method
-			=> 
+			=> Kết quả lỗi vì Bar không có phương thức trực tiếp module_level_method
+	
+	Phương thức extend
+		Ví dụ:
+			module MyModule
+			  def my_method
+			    puts "This is a custom method"
+			  end
+			end
+
+			class MyClass
+			end
+
+			obj = MyClass.new
+			obj.extend(MyModule)
+
+			obj.my_method
+			=> sử dụng extend thì thể hiện sẽ sử dụng instance method
+	Wrapping Up Modules
+		Có thể dùng extended giống included
+		Ví dụ:
+			module Foo
+			  def self.extended(base)
+			    puts "Class #{base} has been extended with module #{self} !"
+			  end
+			end
+
+			class Bar
+			  extend Foo
+			end
+	Wrapping Up Modules
+		Namespace
+			Tác dụng: Namespace giúp giải quyết vấn đề xung đột tên bằng cách cung cấp một phạm vi cho các tên. 
+			Các tên trong một namespace chỉ có thể được truy cập từ bên trong namespace đó. 
+
+			Cách dùng: sử dụng các mô-đun để tạo namespace 
+
+			Ví dụ: 
+				module MyNamespace 
+				  class MyClass 
+				    def my_method 
+				      puts "Hello from MyNamespace::MyClass" 
+				    end 
+				  end 				  
+				  module MySubmodule 
+				    def self.submodule_method 
+				      puts "Hello from MyNamespace::MySubmodule" 
+				    end 
+				  end 
+				end 				
+				# Sử dụng class trong namespace 
+				obj = MyNamespace::MyClass.new 
+				obj.my_method 				
+				# Sử dụng module trong namespace 
+				MyNamespace::MySubmodule.submodule_method
+Exceptions
+	Handling and Raising
+		Ví dụ:
+			begin
+			  # Mã có thể phát ngoại lệ
+			  raise ArgumentError, "Invalid argument"
+			rescue ArgumentError => e
+			  # Xử lý ngoại lệ cụ thể (ArgumentError)
+			  puts "Argument Error: #{e.message}"
+			rescue StandardError => e
+			  # Xử lý ngoại lệ chung (StandardError)
+			  puts "Generic Error: #{e.message}"
+			ensure
+			  # Khối ensure sẽ được thực hiện dù có ngoại lệ hay không
+			  puts "This will be executed no matter what"
+			end
+			
+		Ví dụ:
+			EXAMPLE_SECRETS = ["het", "keca", "si", nil, "iel"]
+
+			def decode(jumble)
+			  secret = jumble.split("").rotate(3).join("")
+			  announce(secret)
+			  secret
+			end
+
+			def decode_all(secrets)
+			  secrets.map {|s| decode(s) }
+			rescue
+			  puts "whew! safe."
+			end
+
+			decode_all(EXAMPLE_SECRETS)
+			=> dùng rescue đưa ra ngoại lệ mà ko chỉ định thì sẽ không phát hiện ra ngoại lệ
+	Ensure
+		Định nghĩa: Trong Ruby, ensure là một khối mã được sử dụng để đảm bảo rằng một đoạn mã cụ thể sẽ được thực hiện, 
+		dù có ngoại lệ xảy ra hay không. Khối ensure thường được sử dụng cùng với khối begin...rescue để đảm bảo rằng 
+		các tài nguyên được giải phóng hoặc các hành động cuối cùng sẽ được thực hiện.
+			Ví dụ:
+				def open_and_use_database_connection
+				  database = Database.new
+				  begin
+				    # Sử dụng kết nối cơ sở dữ liệu
+				  ensure
+				    database.close
+				  end
+				end
+				open_and_use_database_connection
 				
+				=> dù có lỗi hay không thì vẫn nên đóng kết nối database lại
+	Raise
+		Định nghĩa: Trong Ruby, raise là một từ khóa được sử dụng để phát ngoại lệ (raise an exception). 
+		Khi một tình huống không mong muốn xảy ra trong chương trình, bạn có thể sử dụng raise để "ném" hoặc 
+		"phát" một ngoại lệ, thông báo rằng một vấn đề đã xảy ra.
+		Ví dụ:
+			def string_slice(*strings)
+			  raise ArgumentError if strings.length > 5
+
+			  strings.map { |string| string[0, 3] }
+			end
+
+			p string_slice('hello', 'goodbye', 'hi', 'bye', 'hello', 'hhee')
+	
+							
 				
 				
 				
