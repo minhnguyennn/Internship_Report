@@ -1,0 +1,188 @@
+Advanced Arrays
+	Ripping the Guts
+		Destructuring phá hủy
+			Ví dụ:
+				zen, life = [42, 43]
+				
+			Mảng 2 chều
+			ví dụ:
+				zen, john = [[4, 8], [3, 16], [23, 42, 15]]
+				p zen
+				p john
+			Hàm
+			ví dụ:
+				def zen
+				  [42, true]
+				end
+				x, y = zen
+				puts x
+				puts y
+			Khối
+			ví dụ:
+			[[1, 2, 3, 4], [42, 43]].each { |a, b| puts "#{a} #{b}" }
+		The splat toán tử *
+			Ví dụ:
+				*cdr = [42, 43, 44]
+				p *cdr
+			Ví dụ:
+				zen = *(1..42)
+				str = *"Zen"
+				p zen
+				p str
+				=> chuyển range và str thành 1 mảng
+			Tạo hash bằng mảng:
+				puts Hash[4, 8]
+				puts Hash[ [[4, 8], [15, 16]] ]
+	Using the API
+		Đếm phần tử 1 mảng
+			ví dụ:
+				puts [4, 8, 15, 16, 23, 42].count
+				puts [4, 8, 15, 16, 23, 42].size
+				puts [4, 8, 15, 16, 23, 42].length
+				=> cả 3 cách đều cho biết số lượng phần tử
+			ví dụ:
+				puts [42, 8, 15, 16, 23, 42].count(42) 
+				puts ["Jacob", "Alexandra", "Mikhail", "Karl", "Dogen", "Jacob"].count("Jacob")
+				=> có thể đếm được cả chuỗi 
+		tìm chỉ số mảng
+			ví dụ:
+				puts [4, 8, 15, 16, 23, 42].index(15)
+				puts [4, 8, 15, 16, 23, 42].index { |e| e % 2 == 0 }
+				=> index sẽ trả ra phần tử đầu tiên chia hết cho 2
+		làm phẳng mảng
+			p [4, 8, 15, 16, 23, 42].flatten
+			p [4, [8], [15], [16, [23, 42]]].flatten
+			=> làm phẳng và trả về mảng mới
+		Hợp nhất từng phần tử 2 mảng 
+			p [4, 8, 15, 16, 23, 42].zip([42, 23, 16, 15, 8]) 
+			=> nếu hết số sẽ trả về nil 
+		Trích xuất mảng
+			p [4, 8, 15, 16, 23, 42].slice(2)
+			p [4, 8, 15, 16, 23, 42].slice(2..5)
+			=> lấy tại ví trí 2 và 1 cái lấy từ vị trí 2 đến 5
+		Dùng shift để xóa bỏ phần tử đầu của mảng 
+			p [4, 8, 15, 16, 23, 42].shift 
+			p [4, 8, 15, 16, 23, 42].shift(3) 
+			=> xóa 3 cái đầu và tạo thành 1 mảng mới
+		Dùng unshift để thêm phần tử mới vào đầu mảng 
+			p [8, 15, 16, 23, 42].unshift(4) 
+			p [16, 23, 42].unshift(4, 8, 15)
+	Ngăn xếp 
+		Định nghĩa: last in , first out . Phần tử cuối cùng được thêm vào là phần tử đầu tiên được lấy ra 
+		Ví dụ:
+			class Stack
+			  def initialize
+			    @store = Array.new
+			  end
+
+			  def pop
+			    @store.pop
+			  end
+
+			  def push(element)
+			    @store.push(element)
+			    self
+			  end
+
+			  def size
+			    @store.size
+			  end
+
+			  def display
+			    @store.each { |element| puts element }
+			  end
+			end
+			stack = Stack.new
+			stack.push(1).push(2).push(3)
+			puts "Size: #{stack.size}"
+			stack.display
+			puts "Pop: #{stack.pop}"
+			puts "Display:"
+			stack.display
+			puts "Size: #{stack.size}"
+	Hàng đợi
+		Định nghĩa : First In, First Out , phần tử đầu tiên được thêm vào là phần tử đầu tiên được lấy ra. 
+		Ví dụ: 
+			class Queue 
+			  def initialize 
+			    @store = Array.new 
+			  end 
+			  def dequeue 
+			    @store.pop 
+			  end 
+			  def enqueue(element) 
+			    @store.unshift(element) 
+			    self 
+			  end 
+			  def size 
+			    @store.size 
+			  end 
+			  def display 
+			    @store.each { |element| puts element } 
+			  end 
+			end 
+			queue = Queue.new 
+			queue.enqueue(1).enqueue(2).enqueue(3) 
+			puts "Size: #{queue.size}" 
+			puts "Display:" 
+			queue.display 
+			puts "Dequeue: #{queue.dequeue}" 
+			puts "Display:" 
+			queue.display 
+			puts "Size: #{queue.size}"
+	Mảng rời rạc
+		Định nghĩa: mảng chứa nhiều loại khác nhau như object, chuỗi, hash, ...
+		ví dụ:
+			["xkcd", 9, Object.new, ["a", "clean", "array"], {:a => "hash"}].each do |e|
+			  puts e.class
+			end
+	Ma trận giả
+		Định nghĩa: mảng kết hợp chứa tổ hợp của các phần tử
+		Ví dụ:
+			array1 = ["Alice", "Bob", "Carol"]
+			array2 = ["Dave", "Eve", "Frank"]
+			
+			couples = array1.product(array2)
+			puts couples
+	Phương thức include
+		Ví dụ:
+			module Foo
+			  def self.included(klass)
+			    puts "Foo has been included in class #{klass}"
+			  end
+			end
+
+			class Bar
+			  include Foo
+			end
+		Ví dụ:
+			module Foo
+			  def self.module_level_method
+			    puts "Module level method"
+			  end
+			end
+
+			class Bar
+			  include Foo
+			end
+
+			Bar.module_level_method
+			=> 
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				

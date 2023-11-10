@@ -1,9 +1,0 @@
-Gem là gì ?
-	Định nghĩa:
-		+ Gem trong Ruby là một thư viện hoặc mô-đun mở rộng chức năng của Ruby, cho phép bạn sử dụng các tính năng bổ sung.
-Gemset là gì ?
-	Định nghĩa: 
-		+ Gemset là một cách để quản lý các gem (thư viện Ruby) riêng rẽ cho từng dự án hoặc môi trường trong Ruby Version Manager (RVM).
-		+ Gemset cho phép bạn cài đặt và quản lý các phiên bản Ruby và gem cụ thể cho từng dự án một.
-	Các câu lệnh:
-		+ 
