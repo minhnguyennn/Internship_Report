@@ -1,0 +1,600 @@
+Declaring Data
+	Constants
+		Định nghĩa: các hằng số sẽ xuất hiện khi bạn đặt tên cho một biến với tiền tố ký tự viết hoa.
+		
+		Ví dụ: 
+		Argument::Truth = "Yes, I am."
+
+		def rewrite_history
+		  Argument::Truth = "No, you're not."
+		end
+
+		rewrite_history
+		
+		=> Đoạn mã trên gây lỗi liên quan đến hằng số vì Argument::Truth đã là 1 hằng số rồi nên không được gán lại nữa.
+		
+	Classes and modules
+		Định nghĩa: Ruby yêu cầu bạn sử dụng hằng số khi đặt tên cho các lớp và mô-đun. 
+		
+		Ví dụ:
+		fence = Module.new do
+		  def speak
+		    "I'm trapped!"
+		  end
+		end
+
+		class Sheep
+		  def speak
+		    "Baaaaahhhhh."
+		  end
+		end
+
+		dolly = Sheep.new
+		dolly.extend(fence)
+		puts dolly.speak
+		
+		=> Biến fence được coi như một hằng số. Nhưng theo quy ước thì nó nên được viết hoa nhưng đó chỉ là quy ước và nó
+		Không ảnh hưởng mã nguồn nên đoạn code trên vẫn chạy đúng.
+		
+		
+		Ví dụ 2:
+		def awkward_sheep
+		  sheep = Class.new do
+		    def speak
+		      "Bah."
+		    end
+		  end
+		end
+
+		sheep_instance = awkward_sheep.new
+		puts sheep_instance.speak
+		
+		=> Một biến cục bộ sheep được tạo trong phương thức awkward_sheep, và biến này có thể được coi như một loại "biến 
+		hằng số" trong ngữ cảnh của phương thức đó. Mặc dù đây không phải là hằng số thực sự, nhưng giá trị của nó không 
+		thay đổi trong phạm vi của phương thức awkward_sheep. Bạn có thể xem nó như một biến cục bộ có tính chất giống hằng 
+		số.
+		
+		Ví dụ 3:
+		module Fence
+		  Sheep = Class.new do
+		    def speak
+		      "Bah."
+		    end
+		  end
+		end
+
+		def call_sheep
+		  Fence::Sheep.new.speak
+		end
+		
+		 => Fence::Sheep là một hằng số. Fence::Sheep là một lớp được định nghĩa trong module Fence, và nó được xem xét 
+		 như một hằng số.
+		 
+Collections
+	Enumerators and Enumerables
+		Phương thức each_with_index cho mảng
+			- Định nghĩa: là một biến thể của each được sử dụng để lặp qua một mảng và trả về cả chỉ số của phần tử 
+			trong mảng.
+			
+			- Ví dụ:
+			[4, 8, 15, 16, 23, 42].each_with_index { |e, i| puts "#{e} -- #{i}" }
+			
+		Phương thức each_with_index cho Hash
+			- Định nghĩa: Khi sử dụng each_with_index cho Hash, phương thức này trả về cặp key-value dưới dạng một mảng 
+			và chỉ số của cặp đó trong Hash.
+			
+			- Ví dụ: 
+			{:locke => "4", :hugo => "8"}.each_with_index do |kv, i| 
+			  puts "#{kv} -- #{i}"
+			end
+			
+			=> [:locke, "4"] -- 0
+			   [:hugo, "8"] -- 1
+			   
+		Phương thức map
+			- Định nghĩa: Phương thức map là một phương thức của Enumerable được sử dụng để thực hiện một phép biến 
+			đổi trên mỗi phần tử của mảng hoặc hash và trả về một mảng mới với các giá trị đã được biến đổi.
+			
+			- Ví dụ: 
+			def map_value
+			  [3, 7, 14, 15, 22, 41].map { |e| e + 1 }
+			end
+
+			p map_value
+			
+		Phương thức inject
+			- Định nghĩa: Phương thức inject (hoặc reduce) được sử dụng để thực hiện lặp qua một mảng và tính tổng 
+			hoặc tích của các phần tử.
+			
+			- Ví dụ: 
+			result = [4, 8, 15, 16, 23, 42].inject(0) do |accumulator, iterated|
+			  accumulator += iterated
+			  accumulator
+			end
+
+			puts result
+			
+	Iterate, Filtrate and Transform
+		Cách sử dụng any?
+			Định nghĩa: Phương thức any? được sử dụng để kiểm tra xem có ít nhất một phần tử nào trong mảng thỏa mãn 
+			điều kiện trong khối được truyền vào hay không. Nếu có, phương thức này sẽ trả về true. Ngược lại, nó sẽ 
+			trả về false.
+			
+			Ví dụ:
+			p [4, 8, 15, 16, 23, "42"].any? { |e| e.class == String }
+			
+		Cách sử dụng all?
+			Định nghĩa: Phương thức all? được sử dụng để kiểm tra xem tất cả các phần tử trong mảng có thỏa mãn điều 
+			kiện trong khối được truyền vào hay không. Nếu tất cả các phần tử đều thỏa mãn điều kiện, phương thức này 
+			sẽ trả về true. Ngược lại, nó sẽ trả về false.
+
+			Ví dụ:
+			{:locke => 4, :hugo => 8}.all? { |candidate| candidate[1] > 4 }
+			
+			=> candidate có phần tử thứ 2 là :hugo => 8 và giá trị của nó là 8 sẽ lớn hơn 4. Nên kết quả sẽ trả ra true
+			
+		Cách sử dụng none?
+			Định nghĩa: Phương thức none? được sử dụng để kiểm tra xem không có phần tử nào trong mảng thỏa mãn điều 
+			kiện trong khối được truyền vào hay không. Nếu không có phần tử nào thỏa mãn điều kiện, phương thức này sẽ 
+			trả về true. Ngược lại, nó sẽ trả về false.
+
+			Ví dụ:
+			{:locke => 4, :hugo => 8}.none? { |candidate| candidate[1] < 4 }
+			
+	Growth, decay and transformation
+		Toán tử |
+			Định nghĩa: Nó nối hai mảng và trả về kết quả với các bản sao được xóa.
+
+			Ví dụ:
+			union_example = ["a", "b", "a"] | ["c", "c"]
+			puts union_example
+			
+			=> Nối 2 mảng lại và xóa đi các phần tử trùng nhau, gồm a và c là 2 phần tử bị trùng nhau
+			
+		Toán tử &
+			Định nghĩa: Để thực hiện phép giao (intersection) giữa hai mảng, bạn có thể sử dụng phương thức & 
+			hoặc phương thức intersection.
+
+			Ví dụ với toán tử &:
+			arr1 = [1, 2, 3, 4, 5]
+			arr2 = [3, 4, 5, 6, 7]
+
+			result = arr1 & arr2
+			puts result
+			# Kết quả: [3, 4, 5]
+			
+			=> Giao hai mảng lại và tìm phần giống nhau giữa 2 mảng
+			
+			Ví dụ với phương thức intersection:
+			arr1 = [1, 2, 3, 4, 5]
+			arr2 = [3, 4, 5, 6, 7]
+
+			result = arr1.intersection(arr2)
+			puts result
+			# Kết quả: [3, 4, 5]
+			
+		Toán tử -
+			Định nghĩa: Khi bạn sử dụng toán tử - giữa hai mảng, nó trả về một mảng mới chứa các phần tử mà chỉ 
+			có trong mảng đầu tiên và không có trong mảng thứ hai.
+
+			Ví dụ với toán tử -:
+			arr1 = [1, 2, 3, 4, 5]
+			arr2 = [3, 4, 5, 6, 7]
+
+			result = arr1 - arr2
+			puts result
+			# Kết quả: [1, 2]
+			
+			Cũng có thể thay bằng difference, ví dụ:
+			arr1 = [1, 2, 3, 4, 5]
+			arr2 = [3, 4, 5, 6, 7]
+
+			result = arr1.difference(arr2)
+			puts result
+			# Kết quả: [1, 2]
+			
+		Toán tử +
+			Định nghĩa: toán tử + có thể được sử dụng để nối hai mảng lại với nhau, tạo ra một mảng mới chứa tất cả 
+			các phần tử từ cả hai mảng. 
+
+			Ví dụ với toán tử +:
+			arr1 = [1, 2, 3]
+			arr2 = [4, 5, 6]
+
+			result = arr1 + arr2
+			puts result
+			# Kết quả: [1, 2, 3, 4, 5, 6]
+			
+			
+			Ngoài ra, bạn cũng có thể sử dụng phương thức concat để thực hiện cùng một nhiệm vụ:
+			Ví dụ:
+			arr1 = [1, 2, 3]
+			arr2 = [4, 5, 6]
+
+			arr1.concat(arr2)
+			puts arr1
+			# Kết quả: [1, 2, 3, 4, 5, 6]
+
+	Building Collections
+		Phương thức each
+			Định nghĩa: each chấp nhận một khối mã làm đối số. Nó lặp lại qua tất cả các phần tử của bộ sưu tập và 
+			đối với mỗi phần tử, nó sẽ thực thi mã.
+			
+			Ví dụ:
+			[1,2,3].each do |number|
+			    puts number
+			end
+			
+		Sử dụng each để xây dựng collection
+			Ví dụ:
+			
+			class FibonacciNumbers
+			    NUMBERS = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+
+			    def each
+			      NUMBERS.each {|number| yield number }
+			    end
+			end
+
+			f=FibonacciNumbers.new
+			f.each do |fibonacci_number|
+			  puts "A Fibonacci number multiplied by 10: #{fibonacci_number*10}"
+			end
+			
+		Sử dụng select để xây dụng collection
+			Ví dụ:
+			
+			class FibonacciNumbers
+
+			  NUMBERS = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+
+			  def select(&filtering_condition_block)
+			    filtered_result = []
+			    NUMBERS.each do |number|
+			      filtered_result << number if filtering_condition_block.call(number)
+			    end
+			    filtered_result
+			  end
+
+			end
+
+			# print only the even Fibonacci numbers
+			nums = FibonacciNumbers.new
+			nums.select {|num| num % 2 == 0}.each {|num| puts num}
+	
+	Enumerables là gì?
+		Định nghĩa: Enumerables là một bộ sưu tập các đối tượng. Trong định nghĩa này, có hai khái niệm: tham chiếu đối tượng 
+		và thứ tự trong bộ sưu tập.
+		
+		Tham chiếu đối tượng là : khi bạn khai báo một biến và gán một đối tượng cho biến đó, bạn thực sự đang tạo ra một 
+		tham chiếu đến đối tượng đó, chứ không phải chính đối tượng.
+		
+
+		Phương thức Bang : một quy ước đặt tên cho một số phương thức mà thay đổi trạng thái của đối tượng gọi phương thức. 
+		Quy ước này được thể hiện bằng việc thêm dấu chấm than (!) vào cuối tên của phương thức.
+		
+		Ví dụ, nếu bạn có một mảng và muốn sắp xếp nó và thay đổi mảng gốc, bạn có thể sử dụng phương thức sort!. 
+		Dấu chấm than ở cuối tên phương thức (sort!) thường được gọi là "bang" và chỉ ra rằng phương thức sẽ thay đổi 
+		trực tiếp đối tượng gọi nó.
+		
+		Ví dụ:
+		arr = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
+		arr.sort!  # Sắp xếp mảng và thay đổi nó
+		puts arr   # In mảng đã được sắp xếp
+		
+		Ví dụ 2:
+		a = "tom"
+		b = "jerry"
+		superheroes = [a,b]
+		puts superheroes
+
+		a = "batman"
+		puts superheroes
+
+		b.gsub!("jerry", "superman")
+		puts superheroes
+		
+		Kết luận: Nên thận trọng khi sử dụng các phương thức "bang" trên các đối tượng được tham chiếu bởi các biến, đặc 
+		biệt là khi sử dụng các đối tượng Enumerable. Thay đổi giá trị của đối tượng bằng các phương thức "bang" có thể 
+		dẫn đến các kết quả không mong muốn.
+		
+
+Finding and Fixing Bugs
+	The Debugging Primaries
+		Dùng puts và p để gỡ lỗi
+		
+		Ví dụ:
+		p 10/2
+		p 10/3
+		p 10.to_f / 3
+			
+		=> Lỗi khi 10 / 3 vì 2 số nguyên chia cho nhau sẽ ra số nguyên
+			
+		=> Lỗi nay xảy ra vì ruby luôn chuyển thành số nguyên khi mà kết quả dù không phải số nguyên
+			
+		=> Số nguyên thuộc loại Fixnum , các số có dấu thập phân là Float.
+			
+		=> Nếu bạn chia hai số và mong đợi kết quả chính xác với dấu thập phân, thì ít nhất một số trong phép 
+		toán phải là Float.
+			
+	Logging
+		Định nghĩa: Logger là một module cung cấp các chức năng ghi log, giúp bạn quản lý thông tin hoạt động của ứng dụng. 
+		Logger cho phép bạn ghi lại các sự kiện quan trọng, lỗi, hoặc thông tin hữu ích khác vào một file hoặc một đối tượng 
+		đầu ra khác.
+		
+		Mức độ ưu tiên:
+			DEBUG (0): Mức độ dành cho thông báo debug, thường được sử dụng để ghi lại thông tin chi tiết về quá trình 
+			thực thi ứng dụng, hữu ích cho việc theo dõi và phân tích lỗi.
+
+			INFO (1): Mức độ thông tin, thường được sử dụng để ghi lại các sự kiện quan trọng trong quá trình hoạt động 
+			của ứng dụng.
+
+			WARN (2): Mức độ cảnh báo, dành cho các thông báo chỉ ra sự cố tiềm ẩn hoặc điều cần chú ý nhưng không phải 
+			là lỗi nghiêm trọng.
+
+			ERROR (3): Mức độ lỗi, được sử dụng để ghi lại thông báo về lỗi trong ứng dụng, những điều không mong muốn 
+			đã xảy ra nhưng không làm ứng dụng ngừng hoạt động.
+
+			FATAL (4): Mức độ nghiêm trọng, dành cho các thông báo về lỗi nghiêm trọng có thể làm ứng dụng ngừng 
+			hoạt động.
+
+		Ví dụ:
+		require 'logger'
+
+		# Tạo một đối tượng Logger và ghi log vào STDOUT
+		logger = Logger.new(STDOUT)
+
+		logger.debug('This is a debug message')
+		logger.info('This is an info message')
+		logger.warn('This is a warning message')
+		logger.error('This is an error message')
+		logger.fatal('This is a fatal error message')
+		
+	Benchmarking Ruby Code
+		Đo thời gian thực thi bằng cách sử dụng sleep
+			- Một phương thức tính toán phức tạp và bạn muốn biết thời gian cần thiết để phương thức đó thực thi. 
+			
+			- Bạn có thể sử dụng phương thức sleep để tạm dừng luồng hiện tại trong một khoảng thời gian nhất định 
+			và sau đó đo thời gian trước và sau khi phương thức được thực thi.
+			
+			- Ví dụ:
+			begin_time = Time.now
+			sleep 0.3
+			end_time = Time.now
+			puts "Time taken is #{end_time - begin_time}."
+			
+			- Tạo ra phương thức đo thời gian thực thi:
+			def benchmark
+			  start_time = Time.now
+			  yield
+			  end_time = Time.now
+			  return end_time - start_time
+			end
+
+			puts benchmark {1 + 2}
+			
+			
+			Ví dụ:
+			def benchmark
+			  start_time = Time.now
+			  yield   # This executes the block passed to the function
+			  end_time = Time.now
+			  return end_time - start_time
+			end
+
+			time_taken = benchmark do
+			  sleep 0.1
+			end
+
+			puts "Time taken: #{time_taken} seconds"
+			
+		Ruby có cung cấp lớp Benchmark để đo thời gian
+			Định nghĩa: Phương thức Benchmark.measure được sử dụng để đo thời gian đã trôi qua, thời gian CPU sử dụng 
+			bởi người dùng, và thời gian CPU sử dụng bởi hệ thống khi thực hiện một đoạn mã cụ thể. 
+			
+			Ví dụ:
+			require 'benchmark'
+
+			puts Benchmark.measure { 602214.times { 3.14159 * 6.626068 } }
+			
+			#=>  0.038585   0.000528   0.039113 (  0.054831)
+
+			
+			=> đoạn mã sẽ thực thi phép nhân 60 ngàn lần
+			
+			=> 0.038585 giây: Thời gian thực tế trôi qua từ khi bắt đầu đến khi kết thúc đoạn mã.
+			
+			=> 0.000528 giây: Thời gian CPU sử dụng bởi người dùng, tức là thời gian CPU thực tế mà CPU dành để 
+			thực hiện công việc của đoạn mã. 
+			
+			=> 0.039113 giây: hời gian CPU sử dụng bởi hệ thống, tức là thời gian CPU mà hệ điều hành dành để hỗ 
+			trợ đoạn mã chạy.
+			
+			=> (0.054831) giây: Tổng thời gian CPU, là tổng của thời gian CPU sử dụng bởi người dùng và thời gian 
+			CPU sử dụng bởi hệ thống.
+			
+Ruby's Object Model
+	What is an object?
+		- Mọi thứ trong Ruby đề là đối tượng ngay cả các phương thức
+		
+		- Ví dụ:
+			Class
+			Module
+			Method
+			Object.new
+			"a string"
+			42
+			lambda { puts "This is a block of code. An object!"}
+			SomeUserDefinedClass.new
+			
+			=> Chúng đều là đối tượng trong Ruby.
+			
+	Object Identity
+		- "Object Identity" đề cập đến khả năng nhận diện một đối tượng cụ thể trong bộ nhớ. Mỗi đối tượng trong Ruby có 
+		một địa chỉ duy nhất trong bộ nhớ, và "Object Identity" là cách xác định xem hai biến hay hai tham chiếu có đang trỏ 
+		đến cùng một đối tượng hay không.
+		
+		- Ví dụ:
+		a = "Hello"
+		b = "Hello"
+
+		puts a.object_id  # In ra địa chỉ của đối tượng a
+		puts b.object_id  # In ra địa chỉ của đối tượng b
+
+		puts a.object_id == b.object_id  # So sánh địa chỉ của a và b
+		
+		- Ví dụ 2:
+		class Foo
+		end
+
+		p "a".object_id
+		p "a".object_id
+		p Foo.new.object_id
+		
+		=> a được tạo lại nên sẽ có id khác
+		
+		- Ví dụ 3:
+		p "a".class
+		p 1.class
+
+		class Foo
+		end
+		p Foo.new.class
+		
+		-Ví dụ 4:
+		class Foo
+		end
+
+		p Foo.class
+
+		# While we are at it, lets check out the classes of a few other objects
+		p String.class
+		p Fixnum.class
+		p Array.class
+		
+	Behaviour
+		- Ví dụ:
+		class Foo
+		end
+
+		foo=Foo.new
+		p foo.send(:object_id)
+		p foo.send(:class)
+		
+		=> :object_id và :class thì không có trong lớp Foo vậy nó từ đâu ra.
+		
+		=> Theo mặc định, mọi đối tượng Ruby đều kế thừa từ Object, nên tất cả các phương thức cá thể được xác định bởi Object
+		 đều có sẵn cho mọi đối tượng trong Ruby.
+		 
+		 - Ví dụ 2:
+		class Foo
+		end
+
+		p Foo.is_a?(Object)
+		p Foo.new.is_a?(Object)
+		
+		=> Foo.new.is_a?(Object) được dùng để kiểm tra xem intance được tạo ra có phải là 1 object không
+		
+	Superclass
+		Định nghĩa: "Superclass" (Lớp cha) là một khái niệm liên quan đến cấu trúc kế thừa. Mỗi lớp trong một ngôn ngữ lập 
+		trình hướng đối tượng thường được kế thừa từ một lớp khác, và lớp mà một lớp khác kế thừa từ được gọi là "Superclass"
+		hay "Lớp cha".
+		
+		Ví dụ:
+		
+		class Bar
+		  def shout
+		    "I'm a Bar!!"
+		  end
+		end
+
+		class Foo < Bar
+		end
+
+		p Foo.new.shout
+		p Foo.superclass
+		
+		=> Foo.superclass sẽ đưa ra tên của class cha nó
+		
+		Ví dụ 2:
+		
+		class Foo
+		end
+
+		p Foo.superclass
+		
+		=> Lớp cha của Foo sẽ là lớp Object
+		
+		Sử dụng cây kế thừa để kiếm tra Object
+		
+		Ví dụ:
+		
+		class Foo
+		end
+
+		p Foo.superclass                           	#=> Object
+		p Foo.superclass.superclass			#=> BasicObject
+		p Foo.superclass.superclass.superclass		#=> nil
+
+		=> cha của object là basic object
+		
+	Ancestors
+		Định nghĩa: phương thức ancestors là một phương thức có sẵn cho mọi class và module. Phương thức này trả về 
+		một mảng chứa tất cả các class và module mà một class hoặc module cụ thể đang kế thừa hoặc bao gồm
+		
+		Ví dụ:
+		class Bar
+		end
+		  
+		class Foo < Bar
+		end
+
+		p Foo.ancestors
+		
+		#=> [Foo, Bar, Object, Kernel, BasicObject]
+		
+		
+		Kernel là gì ?
+			Định nghĩa: Kernel là một module được include tự động trong mọi class trong Ruby, vì vậy 
+			tất cả các object trong Ruby đều có thể sử dụng các phương thức của Kernel.
+			
+			Kernel có các phương thức như: puts, print, gets, sprintf
+			Những phương thức này giúp thực hiện các công việc phổ biến như in ra màn hình, đọc dữ liệu từ bàn phím, 
+			và định dạng chuỗi.
+			
+	BasicObject
+		Định nghĩa: Trong Ruby, BasicObject là một class cơ bản, là class gốc nhất trong hệ thống lớp của ngôn ngữ. 
+		Mọi class khác trong Ruby đều là subclass của BasicObject
+		
+	Singleton methods là gì ?
+		Định nghĩa: 
+		
+		
+		
+			
+			
+
+		
+		
+				
+			
+
+
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

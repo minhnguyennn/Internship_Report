@@ -1,0 +1,229 @@
+MCV là gì
+	Nguồn gốc.
+		viết tắt của modle, view và controller. Ý tưởng mỗi phần mã có mục đích và ý tưởng riêng. Một bộ phận chứa dữ liệu,
+		một bộ phận làm giao diện đẹp, một bộ phận điều khiển ứng dụng chạy. 
+		
+	Giải thích từng thành phần.
+		Model: Model là phần cốt lõi của ứng dụng, nó chịu trách nhiệm lưu trữ và quản lý dữ liệu của ứng dụng. Nó có thể chứa 
+		dữ liệu thô hoặc nó sẽ định nghĩa các thành phần thiết yếu của ứng dụng. Ví dụ: nếu bạn đang xây dựng một ứng dụng 
+		To-do, thì model code sẽ định nghĩa "nhiệm vụ" là gì và "danh sách" là gì - vì đó là những thành phần chính của một 
+		ứng dụng todo.
+
+		View : View là phần hiển thị của ứng dụng, chịu trách nhiệm hiển thị dữ liệu cho người dùng và thu thập thông tin 
+		nhập từ người dùng. View bao gồm tất cả các hàm tương tác trực tiếp với người dùng. Đây là code tạo cho ứng 
+		dụng của bạn trông đẹp mắt.
+
+		Controller : Controller là bộTrong một số trường hợp, việc sử dụng lazy loading có thể dẫn đến việc thực hiện quá 
+		nhiều truy vấn, ảnh hưởng đến hiệu suất, nếu không được quản lý đúng cách. trung tâm của ứng dụng, chịu trách nhiệm 
+		kết nối Model và View với nhau. Controller nhận thông tin nhập từ người dùng và quyết định cách xử lý nó. Nó là bộ 
+		não của ứng dụng và liên kết Model và View lại với nhau.
+		
+	Một ví dụ thức tế.
+		Bạn muốn làm một bữa tối cho Lễ Tạ Ơn. Thì:
+		
+		Modle: giống như một chiếc tủ lạnh chứa đầy các nguyên liệu đề làm món ăn
+		
+		Controller: giống như bộ công thức nấu ăn. Bạn có thể xem công thức nấu ăn như là một bộ điều khiển, vì nó 
+		quyết định những gì bạn sẽ lấy ra khỏi tủ lạnh, cách bạn kết hợp chúng và thời gian bạn nấu chúng.
+		
+		View: giống như bát đĩa, đồ trang trí, ... các dụng cụ này sẽ tương tác trực tiếp với nguyên liệu và công thức nấu ăn.
+		
+	Ưu điểm:
+		- Giúp tổ chức xây dựng web cỡ lỡn : Vì có sự phân tách mã giữa ba cấp độ, việc phân chia và sắp xếp logic ứng dụng 
+		web thành các ứng dụng quy mô lớn trở nên cực kỳ dễ dàng
+		
+		- Dễ dàng sửa đổi : Sử dụng phương pháp MVC cho phép dễ dàng sửa đổi toàn bộ ứng dụng. Bất kỳ thay đổi nào trong 
+		một phần nhất định của ứng dụng sẽ không bao giờ ảnh hưởng đến toàn bộ kiến ​​trúc. 
+		
+		- Quy trình phát triển nhanh hơn : MVC cho phép một nhà phát triển làm việc trên một phần cụ thể trong khi một nhà 
+		phát triển khác có thể làm việc trên bất kỳ phần nào khác đồng thời.
+		
+		- Lên kế hoạch và bảo trì dễ dàng : hữu ích trong giai đoạn lập kế hoạch ban đầu của ứng dụng vì nó cung cấp cho 
+		nhà phát triển một bản phác thảo về cách sắp xếp các ý tưởng của họ thành mã thực tế.
+		
+		- Nền tảng thân thiện với SEO : MVC cung cấp một cách dễ dàng để phát triển các URL RESTful thân thiện với SEO
+		
+ORM là gì ?
+	Định nghĩa : 
+		ORM là một kỹ thuật trong lập trình máy tính giúp tương tác với cơ sở dữ liệu một cách thuận tiện hơn. Mô hình ORM 
+		giúp ánh xạ giữa các đối tượng trong mã nguồn và bảng trong cơ sở dữ liệu. Thay vì sử dụng câu lệnh SQL trực tiếp 
+		để truy vấn và thao tác dữ liệu, bạn có thể sử dụng các đối tượng trong ngôn ngữ lập trình của mình, và ORM sẽ tự 
+		động chuyển đổi các thao tác này thành câu lệnh SQL tương ứng.
+		
+	Lợi ích :
+		Các nhà phát triển cũng có thể thực hiện nhiều thao tác tạo, đọc, cập nhật và xóa dữ liệu (CRUD) khác nhau trong cơ 
+		sở dữ liệu quan hệ mà không cần sử dụng SQL. Khả năng này đặc biệt hữu ích cho những nhà phát triển không biết SQL 
+		hoặc không muốn lãng phí thời gian viết mã SQL. Với ORM, họ không cần phải hiểu và viết SQL hay dựa vào trình tạo 
+		truy vấn SQL để thêm lớp trừu tượng vào mã SQL.
+	Ánh xạ trong ORM :
+		- ORM sử dụng dữ liệu trong ánh xạ để dịch dữ liệu giữa cơ sở dữ liệu và biểu mẫu đối tượng. 
+		
+		- Trong cơ sở dữ liệu ORM, các bảng trở thành lớp, các trường trở thành thuộc tính.
+		
+		- 
+		
+	
+	Ưu điểm :
+		Giảm Cần Thiết Viết SQL Trực Tiếp: không cần phải viết các câu lệnh SQL trực tiếp, điều này giảm sự phụ thuộc 
+		vào ngôn ngữ SQL
+		
+		Tăng Sự Trừu Tượng Hóa: ORM tạo ra một lớp trừu tượng giữa mã nguồn và cơ sở dữ liệu, giúp bạn làm việc với đối 
+		tượng thay vì bảng và cột.
+		
+		Giảm Lỗi Cơ sở Dữ Liệu: ORM giúp giảm rủi ro sai sót khi tương tác với cơ sở dữ liệu. Do không cần phải viết các 
+		truy vấn SQL phức tạp thủ công, nguy cơ phát sinh lỗi giảm đi đáng kể.
+		
+		Tăng Hiệu suất Phát triển: ORM giảm thời gian và công sức phát triển bằng cách tự động tạo và thực hiện các truy 
+		vấn cơ sở dữ liệu, giúp tập trung vào logic ứng dụng thay vì việc xử lý chi tiết của cơ sở dữ liệu.
+		
+	Nhược điểm :
+		Hiệu suất : Một số tình huống yêu cầu truy cập cơ sở dữ liệu một cách hiệu quả và tối ưu về hiệu suất. Các truy 
+		vấn được tạo tự động bởi ORM có thể không hiệu quả bằng những truy vấn tối ưu được tối chỉnh bởi nhà phát triển.
+		
+		Điều khiển: có thể giới hạn khả năng điều khiển của bạn đối với cách truy vấn được thực hiện. Đôi khi, để tối 
+		ưu hóa hiệu suất hoặc xử lý các yêu cầu đặc biệt, bạn có thể cần viết truy vấn SQL tùy chỉnh.
+		
+		Tổ chức Quá nhiều Mã: ORM thường yêu cầu một lượng mã lớn để cấu hình và duy trì. Điều này có thể làm cho mã 
+		nguồn trở nên phức tạp hơn, đặc biệt là trong những dự án lớn.
+		
+		Học phức tạp : Sử dụng ORM đôi khi đòi hỏi học một số kiến thức về cách nó hoạt động và làm thế nào để tối ưu 
+		hóa sử dụng nó. Điều này có thể làm tăng độ dốc khi mới bắt đầu.
+		
+		
+		Hiện Tượng Lười Load (Lazy Loading): Trong một số trường hợp, việc sử dụng lazy loading có thể dẫn đến việc 
+		thực hiện quá nhiều truy vấn, ảnh hưởng đến hiệu suất, nếu không được quản lý đúng cách.
+		
+		
+	Active record :
+		Định nghĩa :
+			- Active Record là chữ M trong mô hình MVC (nghĩa là model)
+			
+			- Bản thân nó là mô tả của hệ thống Ánh xạ quan hệ đối tượng.
+			
+			- ORM sử dụng gem Active Record để xử lý các thao tác liên quan tới database. 
+	
+			- Active Record lấy những data được lưu trữ trong các bảng của database sử dụng các row và column.
+			
+	 		- Ví dụ: bình thường muốn lấy user ra khỏi bảng cần dùng SELECT * FROM users. Nhưng giờ đơn giản hơn bằng cách
+	 		 User.all, Active Record sẽ lấy về cho bạn một mảng bao gồm tất cả các user của bạn.
+	 	 
+			- Mỗi đối tượng Active Record có các thao tác CRUD để truy cập cơ sở dữ liệu.
+	Data Mapper :
+		Định nghĩa :
+			- Một mô hình ánh xạ hướng đối tượng (ORM) và khác với mô hình Active Record.
+			
+			- Data Mapper giữ cho dữ liệu trong máy và trong cơ sở dữ liệu độc lập với nhau.
+			
+	So sánh Data Mapper và Active record
+		Câu mở đầu : Active Record và Data Mapper là hai mô hình thiết kế phổ biến được sử dụng trong lập trình mà đều 
+		liên quan đến ORM (Object-Relational Mapping), nhưng chúng có sự khác biệt quan trọng về cách tiếp cận và tổ chức 
+		mã nguồn.
+		
+		Active Record:
+			Biểu diễn Đối tượng: Mỗi bản ghi trong cơ sở dữ liệu được biểu diễn bởi một đối tượng trong mã nguồn. 
+			Đối tượng này chứa cả dữ liệu và các phương thức thao tác với cơ sở dữ liệu.
+			
+			Tích hợp Logic Kinh doanh và Logic Cơ sở dữ liệu: Logic kinh doanh và logic tương tác với cơ sở dữ liệu 
+			được tích hợp trong cùng một đối tượng.
+			
+			Cấu trúc Dữ liệu tương ứng: Các trường của bảng cơ sở dữ liệu tương ứng với các thuộc tính của đối 
+			tượng.
+			
+			Thiết lập Mối quan hệ: Hỗ trợ thiết lập mối quan hệ giữa các đối tượng, như quan hệ một nhiều, nhiều nhiều,..
+			
+			Dễ sử dụng và Nhanh chóng phát triển: Dễ sử dụng và thích hợp cho các ứng dụng đơn giản hoặc các tình huống 
+			cần phát triển nhanh chóng.
+			
+		Data Mapper:
+			Biểu diễn Đối tượng: Đối tượng chỉ chứa dữ liệu và không biết về cơ sở dữ liệu. Logic tương tác với cơ 
+			sở dữ liệu được đặt ở một lớp tách biệt (mapper).
+			
+			Tích hợp Logic Kinh doanh và Logic Cơ sở dữ liệu: Logic kinh doanh và logic cơ sở dữ liệu được tách biệt, 
+			giúp tạo ra mã nguồn rõ ràng hơn về cách các phần của hệ thống tương tác.
+			
+			Cấu trúc Dữ liệu tương ứng: Các trường của bảng cơ sở dữ liệu và đối tượng không cần phải giống nhau.
+			
+			Thiết lập Mối quan hệ: Yêu cầu kiểm soát chặt chẽ hơn khi quản lý mối quan hệ.
+			
+	Business logic
+		Chịu trách nhiệm cho xử lý và thực hiện các quy tắc, chuẩn, và quy trình liên quan đến nghiệp vụ hoặc mục tiêu chính 
+		của tổ chức. Nó thường bao gồm các quy tắc kinh doanh, quy định quy trình làm việc, và các loại xử lý dữ liệu liên 
+		quan đến nghiệp vụ cụ thể.
+		
+Áp dùng mô hình ORM vào rail
+
+	Rails là gì ?
+		- Rails là một framework ứng dụng web chạy trên ngôn ngữ lập trình Ruby.
+		
+		- Giúp việc lập trình ứng dụng web trở nên dễ dàng hơn bằng cách đưa ra các giả định về những gì mọi nhà phát 
+		triển cần để bắt đầu.
+		
+		- Cho phép viết ít mã hơn trong khi hoàn thành được nhiều việc hơn ngôn ngữ và framework khác.
+		
+		- Triết lý của Rail:
+			- Đừng lặp lại chính mình: 
+				Định nghĩa : "Mỗi mảng kiến thức phải có một biểu diễn duy nhất, rõ ràng, có thẩm quyền trong 
+				hệ thống." Nguyên lý này khuyến khích việc tránh lặp lại thông tin, mã nguồn, hoặc logic trong hệ 
+				thống của bạn.
+				
+				Lợi ích : 
+					- Duy trì Mã Người Dùng Một Lần: Mỗi mảng kiến thức, thông tin, hay logic trong hệ thống 
+					chỉ nên có một nơi duy nhất nơi nó được đặc trưng. Điều này giúp tránh sự không đồng nhất 
+					và mâu thuẫn trong hệ thống.
+					
+					- Giữ Mã Người Dùng Dễ Bảo Trì và Mở Rộng: Nếu một thay đổi cần được thực hiện, bạn chỉ cần 
+					thay đổi một nơi duy nhất thay vì phải cập nhật nhiều bản sao của thông tin đó. Điều này 
+					làm cho mã nguồn trở nên dễ bảo trì hơn và giảm rủi ro phạm sai lầm.
+					
+					- Tăng Khả Năng Mở Rộng: Việc không lặp lại thông tin giúp mã nguồn trở nên dễ mở rộng hơn. 
+					Khi hệ thống phát triển và cần thêm chức năng mới, việc chỉnh sửa một nơi duy nhất giảm thiểu 
+					rủi ro phá vỡ các phần khác của hệ thống.
+					
+					- Giảm Lỗi: Nếu thông tin nằm ở nhiều nơi và cần phải được cập nhật, có thể dẫn đến sự 
+					không nhất quán và sai lầm. "Don't Repeat Yourself" giúp giảm thiểu khả năng xuất hiện lỗi 
+					do sự không đồng nhất.
+				
+			
+			- Quy ước về cấu hình: 
+				Định nghĩa: 
+					Đây là một cách tiếp cận thiết kế hệ thống mà framework tự động áp dụng một số 
+					quy chuẩn và quy ước mà bạn không cần phải cấu hình chi tiết từng cái một. Thay 
+					vào đó, bạn chỉ cần tuân thủ những quy chuẩn này.
+			
+				Ví dụ:
+					- Rails có quy ước về cách đặt tên các tệp và thư mục. Nếu bạn tuân thủ quy ước này, Rails sẽ 
+					tự động hiểu và sử dụng chúng mà không cần phải cấu hình.
+				
+					- Rails có quy ước về cách xác định mối quan hệ giữa các bảng trong cơ sở dữ liệu. Nếu bạn tuân 
+					thủ các quy ước này, Rails sẽ tự động xây dựng các truy vấn SQL phù hợp mà không cần bạn phải cấu 
+					hình chi tiết.
+				
+				Lợi ích :
+					- Người phát triển sẽ tiết kiệm được nhiều công sức, vì họ không cần phải đặt cấu hình chi tiết 
+					từng khía cạnh của ứng dụng.
+				
+					- Giảm độ phức tạp của mã nguồn, tăng khả năng đọc hiểu, và làm giảm khả năng phạm sai lầm do 
+					cấu hình không đồng nhất.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			
+		
+	
