@@ -567,8 +567,140 @@ Ruby's Object Model
 		Mọi class khác trong Ruby đều là subclass của BasicObject
 		
 	Singleton methods là gì ?
-		Định nghĩa: 
+		Định nghĩa: một singleton method là một phương thức chỉ tồn tại cho một đối tượng cụ thể. Điều này có nghĩa là 
+		bạn có thể định nghĩa một phương thức chỉ cho một đối tượng cụ thể, chứ không phải cho tất cả các đối tượng của 
+		cùng một lớp.
 		
+		Cách hoạt động:
+			- Khi tạo một singleton, ruby sẽ tự tạo một metaclass . Lớp này có chức năng chỉ chứa phương thức đơn lẻ
+			của đối tượng tạo singletoin.
+			
+			- Propagation (truyền tải): khi gọi một phương thức, ruby sẽ kiểm tra xem phương thức đó có trong metaclass hay 
+			không . Nếu không nó mới tìm đến lớp thực của đối tượng.
+			
+			- Inheritance Hierarchy (Cây kế thừa): Nếu phương thức không được tìm thấy trong metaclass hoặc lớp của đối
+			 tượng, Ruby sẽ tiếp tục tìm kiếm trong cấu trúc kế thừa của lớp đó. Nó sẽ đi lên theo cây kế thừa cho đến 
+			 khi nó tìm thấy phương thức hoặc khi hết tùy chọn.
+		
+		Ví dụ:
+		foo = "I'm a string object"
+
+		def foo.shout
+		  puts self.upcase
+		end
+
+		foo.shout
+		
+		=> Vì mọi thứ trong ruby đều là đối tượng nên foo cũng là 1 đối tương. Nó tự tạo ra shout và gọi đến shout.
+		
+		Ví dụ 1:
+		class Dog
+		  def initialize(name)
+		    @name = name
+		  end
+
+		  # Đây là một phương thức thường
+		  def bark
+		    puts "Woof, woof!"
+		  end
+		end
+
+		# Tạo một đối tượng của lớp Dog
+		my_dog = Dog.new("Buddy")
+
+		# Định nghĩa một singleton method cho đối tượng cụ thể
+		def my_dog.sit
+		  puts "#{@name} is sitting"
+		end
+
+		# Gọi phương thức thường
+		my_dog.bark
+
+		# Gọi singleton method
+		my_dog.sit
+
+		=> Định nghĩa singleton method my_dog.sit là chỉ có  đối tượng my_dog có, còn các đối tượng khác thuộc 
+		lớp Dog cũng sẽ không có.
+		
+		
+		Ví dụ 2:
+		
+		class Foo
+		end
+
+		foo=Foo.new
+		def foo.shout
+		  puts "Foo Foo Foo!"
+		end
+		foo.shout
+		  
+		p Foo.new.respond_to?(:shout)
+		
+		=> respond_to? lệnh này kiểm tra xem Foo có phương thức :shout không. Bởi vì shout là 1 singleton của foo nên Foo
+		sẽ không đáp ứng
+		
+	Cloning objects
+		Tham chiếu là gì ?
+			- Đối tượng thường được tạo và lưu trữ ở một vùng nhớ trong bộ nhớ máy tính.
+			
+			- Biến không trực tiếp chứa giá trị của đối tượng. Thay vào đó, biến thực sự chứa một tham chiếu đến 
+			vùng nhớ (địa chỉ) nơi đối tượng được lưu trữ.
+			
+			- Ví dụ: a = "Hello" có nghĩa là biến a giờ đây chứa một tham chiếu đến đối tượng xây dựng từ 
+			chuỗi "Hello".
+			
+		Ví dụ về sự sao chép sai lầm:
+		
+		a = [1,2,3]
+		b = a
+		b << 4
+
+		p a
+		p b
+
+		
+		=> vì b = a nên b sẽ chứa tham chiếu đến vùng nhớ của a. Nên khi b thêm 4 thì vùng nhớ đó cũng thêm 4. Do đó
+		, a và b cũng trỏ vào 1 vùng nhớ nên nó sẽ có giá trị giống nhau
+		
+		Cách sửa:
+		
+		a = [1,2,3]
+		b = a.clone
+		b << 4
+
+		p a
+		p b
+		
+		=> b = a.clone : a.clone sẽ tạo ra một địa chỉ mới chứa mảng mới. Sau đó, b cũng sẽ tham chiếu đến địa chỉ này
+		Do đo, b sẽ có 1 địa chỉ mới và mảng  mới nên khi thêm 4 sẽ không ảnh hưởng đến cũ	
+	
+		Ví dụ về sự thay đổi địa chỉ của string
+		
+		foo = "foo"
+		p foo.object_id
+		
+		foo = foo.upcase
+		p foo.object_id
+		
+		=> vì string theo ruby là sẽ không đôi nên khi nó được viết hóa sẽ bỏ vào 1 địa chỉ mới. Vì vậy foo sẽ có 2 địa chỉ
+		khác nhau
+		
+		Ví dụ về bang
+		
+		foo = "foo"
+		foos = [foo]
+		foo = foo.upcase
+		p foos
+
+		bar = "bar"
+		bars = [bar]
+		bar.upcase!				
+		p bars		
+		
+		
+
+
+
 		
 		
 			

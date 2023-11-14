@@ -1,0 +1,78 @@
+Sử dụng lệnh này nếu khi đổi mysql2 bị báo lỗi : sudo apt-get install libmysqlclient-dev
+
+
+
+farmwork cung cap 1 mo hinh: tool, thu vien san, 
+rail mo hinh mvc
+tuan thu theo mvc, cung cap cac cai tool 
+xay dung web, co the lam web nua, web co rail, game
+co farmwork. Ngoai rail con sinatra
+
+touch .ruby-version
+rvm list
+echo ruby-3.2.2 > .ruby-version
+touch .ruby-gemset
+echo demo82 > .ruby-gemst
+touch Gemfile
+source ''
+gem install rails
+rails new .
+y
+tu dong nhung thu vien subget vao gemfile, ho tro
+rat manh
+
+loi thu vien inportmap-rail
+loi lien quan thu vien open ssl
+rail console (co the dung cac thu vien cua rail)
+rail server (start 1 con servel rail mac dinh 
+bot 3000
+)
+
+rails server -p 3001
+
+- cai dat rails ban moi nhat 7.1.2
+- su dung webrick thay vi puna
+- thay sqlite3 => mysql2
+- config lai thu muc trong rails
+
+=> tai sao can nhieu moi truong, moi truong test
+dung cho khach hang test, production la moi truong
+cuoi
+
+lenh tao va set up database
+rails db:create
+
+- module orm active record => migration (raisl)
+quan ly cau truc database dua tren version
+lenh: rails g migration create_users
+nho phai them s de dung cu phap
+
+t.string :name
+t.string :email
+
+t.timetamps 
+
+sau khi cai dat xong => rail db migration
+vao sql kiem tra xem users co chua
+created va updated do timetamps tu tao
+=> chu y: nhung field do kieu gi
+vd: email kieu string, active kieu boolean,
+text cho decription, emil null: false, uniq: true
+index: true => emial lon xon, khong trung nhau
+gay loi database, dam bao tinh nhat quan, danh index
+ra sao vi khi danh index se tang toc doi len,
+vi du khi minh tim kiem email, danh index se tang
+toc do tim kiem email len
+
+=> ails g migration add_fields_to_users
+add_column :users, :active, 
+danh index, default: true, null => uu tien xu ly, nhung cai nao
+lam duoc hay xu ly
+
+rails db:roll_back
+
+schema_migaration => chua cac version da chay
+migration roi
+
+rail -T : XEM CAC LENH LIEN QUAN MIGARATION DB
+

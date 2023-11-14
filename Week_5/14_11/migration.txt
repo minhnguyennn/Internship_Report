@@ -1,0 +1,273 @@
+Đinh dạng về tiền:
+	t.decimal :price, precision: 8, scale: 2
+	
+	=> decimal là số thập phân, precision là có tối đa 8 số, scale là tối đa 2 số sau dấu phẩy
+	
+
+2 Generating Migrations
+	2.1 Creating a Standalone Migration
+		rails g migration AddPartNumberToProducts => tạo một migration có tên class là AddPartNumberToProducts
+		
+	2.2 Adding New Columns
+		rails g migration AddPartNumberToProducts part_number:string => thêm cột part_number vào bảng products
+		
+		rails g migration AddPartNumberToProducts part_number:string:index 
+		=> thêm cột part_number có index vào bảng products
+		
+		rails g migration AddDetailsToProducts part_number:string price:decimal
+		=> không bị giới hạn số lượng cột khi thêm
+		
+	2.3 Removing Columns
+		rails g migration RemovePartNumberFromProducts part_number:string => xóa cột part_number
+		
+	2.4 Creating New Tables
+		rails g migration CreateProducts name:tring part_number:string  => tạo bảng products mới
+		
+	2.5 Creating associations using references
+		rails g migration AddUserRefToProducts user:references => thêm user có kiểu dữ liệu references vào bảng products
+		
+		rails g migration CreateJoinTableCustomerProduct customer product
+		=> giúp join 2 bảng customer và product với nhau
+		=> join table thể hiện mối quan hệ nhiều - nhiều
+		
+	2.6 Model Generators
+	
+		rails g model Product name:string description:text
+		
+		=> Vừa tạo 1 file migration và vừa tạo một file model product.rb trong models
+		
+	2.7 Passing Modifiers
+	
+		rails g migration AddDetailsToProducts 'price:decimal{5,2}' supplier:references{polymorphic}
+		
+		=> price:decimal{5,2} : giá có tối đa 5 chữ số và có tối đa 2 số sau dấu phẩy
+		
+		=> supplier:references{polymorphic} : sẽ tạo một khóa ngoại supplier vào bảng products. Quá trình tạo này
+		sẽ thêm 2 trường vào products là supplier_id và supplier_type. polymorphic là một mối quan hệ đa hình (polymorphic
+		 relationship)
+		 
+		 Mối quan hệ đa hình là gì ?
+		 	Định nghĩa : Mối quan hệ đa hình (polymorphic relationship) là một cách để tạo mối quan hệ giữa một bảng và 
+		 	nhiều bảng khác, cho phép một thực thể có thể tham chiếu đến nhiều loại thực thể khác nhau thông qua một 
+		 	cột khóa ngoại và một cột kiểu để xác định loại thực thể mà thực thể đó tham chiếu đến.
+		 	
+		 	
+		 	Ví dụ: Một mối quan hệ đa hình giữa bảng products và nhiều loại thực thể như Supplier, Manufacturer, 
+		 	và Distributor, bạn có thể sử dụng mối quan hệ đa hình để các sản phẩm có thể được cung cấp, sản xuất 
+		 	hoặc phân phối bởi các thực thể khác nhau mà không cần phải tạo một cột khóa ngoại riêng cho mỗi loại thực thể.
+		 	
+3 Writing Migrations
+
+	3.1 Creating a Table
+	
+	
+		Code tạo bảng
+		
+			create_table :products do |t|
+			  t.string :name
+			end
+			
+			=> Theo mặc định, create_table sẽ ngầm tạo một khóa chính được gọi id
+			
+			
+		Có thể thay đổi cột khác làm khóa chính
+		
+			create_table :table_name, primary_key: "custom_id" do |t|
+			  # Khai báo các cột khác trong bảng ở đây
+			end
+			
+			=> primary_key: "custom_id" : lệnh này có tác dụng đổi cột custom_id làm khóa chính
+			
+			
+		Thêm tùy chọn
+
+			create_table :products, options: "ENGINE=BLACKHOLE" do |t|
+			  t.string :name, null: false
+			end
+
+			=> options: "ENGINE=BLACKHOLE" : tùy chọn BLACKHOLE sẽ làm cho bảng này không lưu trữ dữ liệu mà chỉ 
+			tiêu thụ không gian lưu trữ mà không giữ bất kỳ dữ liệu nào được ghi vào.
+			
+			
+		Thêm index
+		
+			create_table :users do |t|
+			  t.string :name, index: true
+			  t.string :email, index: { unique: true, name: 'unique_emails' }
+			end
+			
+			=> Index giúp tăng tốc độ truy vấn trong cơ sở dữ liệu, làm cho việc tìm kiếm và sắp xếp thông tin 
+			trong cột trở nên nhanh hơn.
+			
+			=> index: { unique: true, name: 'unique_emails' } : tạo một index đặc biệt cho email
+			
+			unique: yêu cầu index cho cột email phải là duy nhất (không được phép trùng lặp). Điều này đảm bảo 
+			mỗi giá trị trong cột email phải là duy nhất trong bảng.
+			
+			name: 'unique_emails' chỉ định tên cho index này là 'unique_emails'.
+			
+			Lưu ý: việc đặt tên cho index trong cơ sở dữ liệu giúp tăng tính rõ ràng, dễ quản lý và dễ bảo trì 
+			cho cơ sở dữ liệu của bạn.
+			
+			
+		Tùy chọn comment
+		
+			create_table :users, comment: 'This table stores information about users' do |t|
+			  t.string :name, comment: 'Name of the user'
+			  t.string :email, comment: 'Email address of the user'
+			end
+			
+			=> Định nghĩa: một tùy chọn được sử dụng để thêm mô tả, chú thích hoặc thông tin khác về bảng hoặc cột 
+			trong cơ sở dữ liệu.
+			
+			=> Tác dụng: giúp tăng tính rõ ràng và dễ hiểu trong quá trình quản lý cơ sở dữ liệu.
+			
+			
+	3.2 Creating a Join Table
+	
+		Code:
+			create_join_table :products, :categories
+			
+			=> Một bảng mới có tên categories_products sẽ được tạo ra
+			
+			=> Có 2 cột tạo tự động gồm category_id và product_id
+			
+			=> tên của bảng theo thứ tự alphabet
+			
+		
+		Ghi đề mặc định null
+			create_join_table :products, :categories, column_options: { null: true }
+			
+			=> Theo mặc định, 2 cột category_id và product_id khi được tạo ra sẽ không có giá trị null
+			
+			=> Tuy nhiên, có thể ghi đè bằng câu lệnh column_options: { null: true }
+			
+			
+		Thay đổi tên mặc định
+			create_join_table :products, :categories, table_name: :categorization
+
+			=> (table_name: :categorization) sẽ tạo một bảng liên kết có tên là categorization thay vì sử dụng tên 
+			mặc định theo quy ước của Rails
+			
+			
+		Có thể thêm một khối khí tạo join
+			create_join_table :products, :categories do |t|
+			  t.index :product_id
+			  t.index :category_id
+			end
+			
+			=> 2 lệnh trên thêm index vào product_id và category_id
+			
+			
+	3.3 Changing Tables
+		Code:
+			change_table :products do |t|
+			  t.remove :description, :name
+			  t.string :part_number
+			  t.index :part_number
+			  t.rename :upccode, :upc_code
+			end
+			
+			=>   (t.remove :description, :name) xóa description và name
+			
+			=> (t.string :part_number) thêm part_number
+			
+			=> (t.index :part_number) thêm index cho part_number
+			
+			=> (t.rename :upccode, :upc_code) đổi tên upccode thành upc_code
+			
+		
+	3.4 Changing Columns
+		Code:
+		
+			change_column :products, :part_number, :text
+
+			=> Thay đổi kiểu dữ liệu của cột part_number trong bảng products từ kiểu dữ liệu hiện tại sang kiểu 
+			dữ liệu mới là text.
+			
+		
+		Thay đổi default và null
+		
+			change_column_null :products, :name, false
+			change_column_default :products, :approved, from: true, to: false
+			
+			=> (change_column_null :products, :name, false) cột name không được null
+			
+			=> approved sẽ thay đổi giá trị mặc định từ true sang false
+			
+	3.6 References
+		Code:
+			add_reference :users, :role
+
+			=> Bảng users đang tạo 1 khóa ngoại đến bảng role
+			
+			=> Tạo một cột có tên role_id trong bảng users, và cũng sẽ tạo một ràng buộc ngoại (foreign key constraint) 
+			từ cột này tới cột id trong bảng roles.
+			
+			
+		Thêm tham chiếu đa hình 
+			add_belongs_to :taggings, :taggable, polymorphic: true
+
+			=> Thêm taggable_id và taggable_type vào bảng taggings
+			
+			=> Hai cột này sẽ được sử dụng để tạo một quan hệ đa hình (polymorphic relationship) với các bản ghi 
+			trong các bảng khác trong cơ sở dữ liệu.
+			
+		
+		Thêm tham chiếu bằng tùy chọn foreign_key
+			add_reference :users, :role, foreign_key: true
+			
+			=> Thêm một cột tham chiếu mới có tên role_id vào bảng users. 
+			
+			=> Tùy chọn foreign_key: true, nó cũng sẽ tạo một ràng buộc ngoại (foreign key constraint) từ cột 
+			role_id trong bảng users tới cột id trong bảng roles.
+			
+		
+		Loại bỏ tham chiếu
+			remove_reference :products, :user, foreign_key: true, index: false
+
+			=> loại bỏ cột tham chiếu user_id từ bảng products.
+			
+			
+	3.7 Foreign Keys
+		add_foreign_key :articles, :authors
+
+		=> thêm khóa ngoại từ articles đến authors
+
+
+			
+		
+
+			
+		
+			
+	
+			
+		
+
+			
+		
+
+		 
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+

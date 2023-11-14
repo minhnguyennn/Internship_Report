@@ -353,3 +353,28 @@ select * from customers
 limit 1,3; 
 
 => lấy 3 phần tử tiếp theo bắt đầu từ index 1 
+
+
+
+template engine render ra htm/xml
+user request controller (redirect, render) 
+
+
+result = connect.query(abc).result
+
+res tra ve 1 list ket qua
+
+database users (name, sex, age)
+
+class user
+end
+
+om se tu map voi user o tren
+
+=> user = User.new
+user.sex
+user.name
+user.age
+
+'select * from users => User.all
+
