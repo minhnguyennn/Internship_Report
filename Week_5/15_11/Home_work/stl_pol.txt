@@ -1,0 +1,149 @@
+Single Table Inheritance
+	- Định nghĩa: 
+		+ STI là một cách mô phỏng sự kế thừa trong lập trình hướng đối tượng trong cơ sở dữ liệu quan hệ. Thay vì tạo 
+		một bảng riêng cho mỗi lớp con trong hệ thống phân cấp, STI lưu trữ tất cả các thuộc tính của tất cả các lớp con 
+		trong một bảng duy nhất. Để xác định lớp của một đối tượng, STI sử dụng một cột đặc biệt được gọi là cột "type" 
+		để lưu trữ tên lớp của đối tượng đó.
+	
+	- Ưu điểm: 
+		+ Đơn giản và dễ thực hiện: 
+			- STI chỉ cần một bảng duy nhất để lưu trữ tất cả các lớp con.
+			- Điều này giúp cho việc triển khai STI đơn giản và dễ thực hiện hơn.
+		
+		+  Hiệu quả cho các truy vấn liên quan đến nhiều lớp con:
+			- STI không yêu cầu nhiều liên kết bảng 
+			- Điều này có thể làm cho các truy vấn liên quan đến nhiều lớp con trở nên hiệu quả hơn.
+		
+	- Nhược điểm:
+		+ Lãng phí không gian đĩa:
+			- STI chứa nhiều cột null cho các đối tượng không thuộc lớp con.
+			- Điều này có thể dẫn đến việc lãng phí không gian đĩa.
+			
+		+ Truy vấn phức tạp: 
+			- Các nhà phát triển phải cẩn thận xử lý các cột null trong các truy vấn của họ
+			- Điều này có thể khiến các truy vấn trở nên phức tạp hơn.
+			
+	- Cách dùng:
+		+ STI nên đuợc sử dụng trong các hệ thống phân cấp nhỏ hoặc trung bình, nơi việc lãng phí không gian 
+		đĩa không phải là một vấn đề lớn.
+		
+		+ STI nên được sử dụng trong các hệ thống phân cấp nơi các truy vấn liên quan đến nhiều lớp con là phổ biến.
+		
+	- Ví dụ:
+		class Company < ActiveRecord::Base; end
+		class Firm < Company; end
+		class Client < Company; end
+		class PriorityClient < Client; end
+		
+		Giải thích:
+			- Firm và Client kế thừa Company.
+			
+			- Khi bạn tạo một đối tượng Firm bằng cách sử dụng Firm.create(name: "37signals"), dữ liệu của đối 
+			tượng này sẽ được lưu trong bảng companies với giá trị của cột "type" là "Firm".
+			
+			- Khi bạn truy xuất lại dữ liệu này bằng cách sử dụng Company.where(name: '37signals').first, nó sẽ trả 
+			về một đối tượng Firm. Điều này cho phép bạn lưu trữ và truy xuất các đối tượng của các lớp con từ cùng 
+			một bảng dữ liệu.
+			
+			
+Polymorphic Association
+	- Định nghĩa:
+		+ Mối quan hệ đa hình (polymorphic relationship) là một cách để tạo mối quan hệ giữa một bảng và 
+		 nhiều bảng khác, cho phép một thực thể có thể tham chiếu đến nhiều loại thực thể khác nhau thông 
+		 qua một cột khóa ngoại và một cột kiểu để xác định loại thực thể mà thực thể đó tham chiếu đến.
+		 
+	-Ý nghĩa:
+		+ Mối quan hệ đa hình cho phép một đối tượng con thuộc về nhiều đối tượng cha khác nhau. Ví dụ, một sản phẩm có 
+		thể được bán bởi nhiều nhà bán lẻ khác nhau. Trong trường hợp này, sản phẩm là đối tượng con và nhà bán lẻ là đối
+		tượng cha.
+		
+		+ Một đối tượng con có thể belong_to nhiều đối tượng cha với một mối quan hệ duy nhất. Điều này có nghĩa là 
+		không cần phải tạo nhiều mối quan hệ belongs_to riêng biệt cho từng đối tượng cha.
+		
+	- Tác dụng:
+		+ Về mạng xã hội Facebook, cả cá nhân và nhóm đều có thể chia sẻ bài viết. Tuy nhiên, cá nhân và nhóm có cấu trúc 
+		dữ liệu khác nhau. Một nhóm có thể có các trường như số lượng thành viên (member_count) và loại nhóm (group_type) 
+		không áp dụng cho cá nhân. Ngược lại, cá nhân có thể có các trường như tuổi (age) và địa điểm (location) không áp 
+		dụng cho nhóm.
+		
+		+ Sử dụng lớp đa hình, bạn có thể định nghĩa phương thức chia sẻ bài viết trong cả lớp cá nhân và lớp nhóm. 
+		Tuy nhiên, hành vi của phương thức này sẽ khác nhau tùy thuộc vào loại đối tượng được gọi phương thức. Đối với 
+		cá nhân, phương thức này có thể chỉ đơn giản là lưu trữ bài viết trong cơ sở dữ liệu. Đối với nhóm, phương thức 
+		này có thể cần gửi bài viết đến tất cả thành viên của nhóm.
+		
+	- Nếu không có polymorphic associations:
+		class Post
+		  belongs_to :person
+		  belongs_to :group
+		end
+
+		class Person
+		  has_many :posts
+		end
+
+		class Group
+		  has_many :posts
+		end
+		
+		=> Muốn kiểm tra xem Person hay Group đang chia sẻ Post thì kiểm tra foreign_key.
+		
+		=> Nhưng mà bảng Posts lại có hai foreign_key là group_id và person_id. Chúng ta sẽ phải kiểm tra cả hai 
+		cột. Chuyện gì sẽ xảy ra nếu chúng ta gặp phải tình huống cả hai cột đều có giá trị?
+		
+		=> Polymorphic associations giải quyết vấn đề này bằng cách cho phép chúng ta xác định một model duy nhất 
+		sở hữu một post, bất kể nó là person hay group. Điều này loại bỏ sự cần thiết phải kiểm tra cả hai cột 
+		foreign_key và đảm bảo rằng luôn có một chủ sở hữu rõ ràng cho mỗi post.
+		
+	- Đặc điểm:
+		+ Trong Ruby on Rails, có một cách đặt tên quy ước cho các mối quan hệ đa hình, đó là sử dụng hậu tố "-able" với 
+		tên lớp (ví dụ: ":postable" cho lớp Post). Điều này giúp bạn dễ dàng nhận biết lớp nào là đa hình trong các mối 
+		quan hệ của bạn. Tuy nhiên, bạn vẫn có thể tự do đặt tên cho mối quan hệ đa hình của mình theo ý muốn.
+		
+		+ Để thông báo cho cơ sở dữ liệu rằng chúng ta đang sử dụng mối quan hệ đa hình, chúng ta sử dụng các cột đặc 
+		biệt "type" và "id" cho lớp đa hình.
+		
+		+ Cột postable_type ghi lại mô hình mà bài đăng thuộc về, trong khi cột postable_id theo dõi ID của đối tượng sở hữu.
+
+		
+	- Ví dụ:
+		+ Chúng ta có thể tạo một bảng products với các cột id, name, price, và seller_id. Cột seller_id cho biết sản phẩm 
+		được bán bởi nhà bán lẻ nào.
+		
+		+ Để tạo mối quan hệ đa hình giữa bảng products và bảng sellers, chúng ta có thể sử dụng ràng buộc foreign_key 
+		
+		class Product < ApplicationRecord
+		  belongs_to :seller, polymorphic: true
+		end
+
+		class Seller < ApplicationRecord
+		  has_many :products
+		end
+		
+		=> (polymorphic: true) chỉ định rằng mối quan hệ belongs_to của products là đa hình.
+		
+		=> Mô hình Seller sử dụng phương thức has_many để chỉ định rằng nó có nhiều sản phẩm.
+		
+		
+
+				
+	
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

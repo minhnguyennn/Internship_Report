@@ -84,6 +84,8 @@ Lệnh reload! : tải lại toàn bộ mã trong môi trường rails
 		end
 		
 		=> Kiểm tra xem name có độ dài tối thiểu 2 không
+		
+
 
 
 
