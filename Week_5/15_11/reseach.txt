@@ -1,0 +1,113 @@
+Lệnh reload! : tải lại toàn bộ mã trong môi trường rails
+1 Validations Overview
+	validates :name, presence: true 
+		=> name không được để trống
+		
+	Person.create(name: "John Doe").valid?
+		=> tạo mới và trả ra true nếu thỏa valid
+		
+	Person.create!(name: 'Minh').valid?
+		=> trả ra false nếu không thỏa và báo lỗi
+		
+	1.2 When Does Validation Happen?
+		p = Person.new(name: "John Doe")
+		p.new_record?
+		p.save
+		p.new_record?
+		
+		=> new_record? dùng kiểm tra xem đối tượng có trong cơ sở dữ liệu chưa
+		
+	1.4 valid? and invalid?
+		irb> p = Person.new
+		=> #<Person id: nil, name: nil>
+		irb> p.errors.size
+		=> 0
+		
+		=> Lỗi không được phát hiện
+		
+	1.5 errors[]
+		Person.new.errors[:name].any?
+		=> false
+		
+		=> đoạn mã kiểm tra xem khỏi tạo :name có lỗi không
+		
+		
+2 Validation Helpers
+	2.1 acceptance
+		class Person < ApplicationRecord
+		  validates :terms_of_service, acceptance: true
+		end
+		
+		=> kiểm tra xem check box có được đánh chưa
+		
+	2.2 confirmation
+		class Person < ApplicationRecord
+		  validates :email, confirmation: true
+		end
+		
+		=> kiểm tra xem email và email_confirmation có giống nhau hay không
+		
+	2.3 comparison
+		class Promotion < ApplicationRecord
+			validates :end_date, comparison: { greater_than: :start_date }	
+		end
+		
+		=> ngày bắt đầu nhỏ hơn ngày kết thúc
+		
+	2.4 format
+		class Product < ApplicationRecord
+			validates :legacy_code, format: { with: /\A[a-zA-Z]+\z/, message: 'only allows letters'}
+		end
+		
+		=> kiểm tra xem legacy_code có thỏa regax không
+		
+	2.5 inclusion
+		class Coffee < ApplicationRecord
+		  validates :size, inclusion: { in: %w(small medium large),
+		    message: "%{value} is not a valid size" }
+		end
+		
+		=> Kiểm tra xem size có nằm trong mảng không
+		
+	2.6 exclusion
+		class Account < ApplicationRecord
+		  validates :subdomain, exclusion: { in: %w(www us ca jp),
+		    message: "%{value} is reserved." }
+		end
+		
+		=> kiểm tra xem subdomain có chữa trong mảng không, nếu có báo lỗi
+		
+	2.7 length
+		class Person < ApplicationRecord
+			validates :name, presence: true
+			validates :name, length: { minimum: 2}
+		end
+		
+		=> Kiểm tra xem name có độ dài tối thiểu 2 không
+
+
+
+
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+

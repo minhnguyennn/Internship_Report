@@ -1,0 +1,61 @@
+model đặt tên số ít
+
+rails c
+Product.last
+Product.first
+Product.new(name: 'PRODUCT 01', price: 10)
+product.save
+product.update
+Product.where(name: 'product 02 update', price: 10)
+
+== test valid?
+reload! 
+Product.new(price: 10)
+product.valid?
+product.errors
+product.errors.full_messages
+another_product - Product.new(price: 10)
+another_product.errors.full_messages
+=> chua chay valid ko kiem tra dc loi
+another_product.save
+=> false
+another_product.errors.full_messages
+another_product.save!
+=> luu ko thanh cong vang ra loi luon, ko tra ve 
+true va false
+another_product.update!(price: 10)
+
+==test name ko chua ky tu
+reload!
+
+====================================
+Association = quan he trong sql
+
+user co nhieu product
+
+has_many :products (nho nhieu phai co s)
+belongs_to: 
+
+reload!
+product = Product.first	
+User.create(name: 'user 01')
+User.first.products
+=> khong map dc voi user_is o cho product
+=> vang loi
+
+add_reference :products, :user
+User.first.products
+
+khi product thuoc ve 1 user
+thi product phai khoi tao
+user_id 
+
+dung optional: true se ko loi nay nua
+
+============
+call back		
+after_create
+before_save
+
+chu y: dung can than lenh save 
+khong se roi vong lap vo tan

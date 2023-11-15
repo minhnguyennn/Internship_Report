@@ -223,21 +223,39 @@
 			role_id trong bảng users tới cột id trong bảng roles.
 			
 		
+		So sánh 2 câu lệnh add_reference :users, :role , add_reference :users, :role, foreign_key: true
+			- add_reference :users, :role 
+				+ Lệnh này chỉ tạo một cột tham chiếu mới trong bảng users, có tên là role_id. Nó không tạo 
+				ràng buộc ngoại (foreign key constraint) mặc định đến bảng roles.
+				
+				+ Điều này có nghĩa là dữ liệu có thể chứa các giá trị không hợp lệ nếu không kiểm tra bằng 
+				code hoặc các phương pháp khác.
+			
+			
+			- add_reference :users, :role, foreign_key: true
+				+ Lệnh này cũng tạo một cột tham chiếu role_id trong bảng users, nhưng nó còn tạo một ràng buộc 
+				ngoại tự động từ cột role_id tới cột id trong bảng roles.
+				
+				+ Khi dữ liệu được thêm vào cột role_id trong bảng users, ràng buộc ngoại sẽ đảm bảo rằng các 
+				giá trị trong cột này chỉ có thể trỏ tới các giá trị hợp lệ trong cột id của bảng roles, giúp đảm 
+				bảo tính nhất quán và nguyên tắc của cơ sở dữ liệu.
+				
+		
 		Loại bỏ tham chiếu
 			remove_reference :products, :user, foreign_key: true, index: false
 
 			=> loại bỏ cột tham chiếu user_id từ bảng products.
+			
+			=> foreign_key: true sẽ oại bỏ ràng buộc ngoại (foreign key constraint) kèm theo cột tham chiếu khi xóa 
+			cột đó từ bảng.
+
+
 			
 			
 	3.7 Foreign Keys
 		add_foreign_key :articles, :authors
 
 		=> thêm khóa ngoại từ articles đến authors
-
-
-			
-		
-
 			
 		
 			
