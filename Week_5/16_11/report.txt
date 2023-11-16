@@ -1,0 +1,516 @@
+RuboCop Rails
+	- gem 'rubocop-rails', require: false
+		=> (require: false) có tác dụng là phải thực hiện việc require rubocop-rails một cách rõ ràng tại những nơi muốn sử dụng 
+		rubocop-rails.
+		
+	- Tạo .rubocop.yml và set up cho nó
+		# .rubocop.yml
+
+		require:
+		  - rubocop-rails
+
+		AllCops:
+		  TargetRailsVersion: 7.1.2
+
+		Style/Documentation:
+		  Enabled: false
+		  
+		 
+1 Why Associations?
+	- Định nghĩa: 
+		+ Sự kết nối giữa hai model Active Record. 
+		
+	- Lợi ích của Associations:
+		+ Một ứng dụng Rails đơn giản bao gồm một model cho tác giả và một model cho sách. Mỗi tác giả có thể có nhiều sách.
+		
+		+ Không có Associations:
+			class Author < ApplicationRecord
+			end
+
+			class Book < ApplicationRecord
+			end
+
+		+ Điều này có nghĩa là bạn sẽ phải viết code thủ công để truy cập các sách liên quan đến một tác giả cụ thể. Ví dụ, 
+		để lấy danh sách tất cả sách của tác giả với ID là 1, bạn sẽ phải viết code như thế này:
+		
+			books = Book.where(author_id: 1)
+			
+
+		+ Điều này có thể được cải thiện bằng cách sử dụng association. Với association, khai báo model sẽ trông như thế này:
+
+			class Author < ApplicationRecord
+			  has_many :books
+			end
+
+			class Book < ApplicationRecord
+			  belongs_to :author
+			end
+			
+		+ Với cấu trúc này, một Author có thể viết nhiều Book, nhưng mỗi Book chỉ có thể thuộc về một Author duy nhất.
+			
+		+ Điều này cho phép bạn truy cập các sách liên quan đến một tác giả cụ thể bằng cách sử dụng phương thức books trên 
+		một instance của model Author:
+		
+			author = Author.find(1)
+			books = author.books
+			
+		+ Association cũng giúp bạn dễ dàng tạo mới hoặc hủy liên kết giữa các model. Ví dụ, để thêm một cuốn sách mới cho một 
+		tác giả cụ thể, bạn có thể sử dụng phương thức create trên một instance của model Author:
+		
+			author = Author.find(1)
+			book = author.books.create(title: "My New Book")
+			
+	- Kết luận: 
+		+ Như bạn có thể thấy, association làm cho code của bạn đơn giản hơn, dễ đọc hơn và dễ bảo trì hơn.
+		
+		
+2 The Types of Associations
+	2.1 The belongs_to Association
+		- Định nghĩa: 
+			+ Liên kết belongs_to thiết lập mối quan hệ giữa hai mô hình, sao cho mỗi thực thể của mô hình khai báo 
+			"thuộc về" một thực thể của mô hình khác. Ví dụ: nếu ứng dụng của bạn bao gồm tác giả và sách, và mỗi 
+			sách chỉ có thể được gán cho một tác giả duy nhất, bạn sẽ khai báo mô hình sách như thế này:
+				
+				class Book < ApplicationRecord
+				  belongs_to :author
+				end
+
+		- Lưu ý
+			+ belongs_to association phải sử dụng danh từ số ít
+			
+			+ Book.create(authors: @author) nếu dùng authors số nhiều như vậy sẽ lỗi"uninitialized constant Book::Authors"
+			
+		- Ví dụ:
+			class CreateBooks < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :books do |t|
+			      t.belongs_to :author
+			      t.datetime :published_at
+			      t.timestamps
+			    end
+			  end
+			end
+			
+		- Ví dụ:
+			class CreateAuthors < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :authors do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+			  end
+			end
+			
+			
+	2.2 The has_one Association
+		- Định nghĩa: 
+			+ Mối quan hệ "has_one" cho biết rằng một mô hình khác có tham chiếu đến mô hình này. Mô hình đó có thể được 
+			truy cập thông qua mối quan hệ này.
+			
+			+ Ví dụ: nếu mỗi nhà cung cấp trong ứng dụng của bạn chỉ có một tài khoản, bạn sẽ khai báo mô hình nhà cung 
+			cấp như thế này:
+				
+				class Supplier < ApplicationRecord
+				  has_one :account
+				end
+
+		- Lưu ý:
+			+ Sự khác biệt giữa belongs_to và has_one là:
+			
+			+ Book belongs_to author thì author_id nằm trong book
+			
+			+ Supplier has_one account thì suppplier_id nằm trong account
+			
+		- Ví dụ:
+			class CreateSuppliers < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :suppliers do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+			  end
+			end
+			
+		- Ví dụ:
+			class CreateAccounts < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :accounts do |t|
+			      t.belongs_to :suppliers
+			      t.string :account_number
+			      t.timestamps
+			    end
+			  end
+			end
+			
+			
+	2.3 The has_many Association
+		- Định nghĩa: 
+			+ Nó chỉ ra mối quan hệ một-đến-nhiều với một mô hình khác. Bạn thường sẽ tìm thấy liên kết này ở phía 
+			"bên kia" của liên kết belongs_to. Liên kết này cho biết rằng mỗi trường hợp của mô hình có không hoặc 
+			nhiều trường hợp của mô hình khác. 
+			
+			+ Ví dụ: trong ứng dụng chứa tác giả và sách, mô hình tác giả có thể được khai báo như thế này:
+				
+				class Author < ApplicationRecord
+				  has_many :books
+				end
+
+		- Lưu ý:
+			+ Khi sử dụng has_many thì tên của model phải số nhiều books
+			
+		- Ví dụ:
+			class CreateAuthors < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :authors do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+
+			    create_table :books do |t|
+			      t.belongs_to :author
+			      t.datetime :published_at
+			      t.timestamps
+			    end
+			  end
+			end
+			
+			
+	2.4 The has_many :through Association
+		- Định nghĩa: 
+			+ Một mối quan hệ nhiều-nhiều (many-to-many) thể hiện sự liên kết giữa hai mô hình, trong đó mỗi thực thể 
+			của mô hình này có thể được liên kết với nhiều thực thể của mô hình kia và ngược lại.
+			
+			+ Mối quan hệ has_many :through (có nhiều qua) là một cách thiết lập mối quan hệ nhiều-nhiều trong Rails, 
+			một framework phổ biến để phát triển ứng dụng web bằng Ruby.
+			
+		- Ví dụ: Trong ví dụ về cơ sở y tế, một bác sĩ có thể khám cho nhiều bệnh nhân và ngược lại, một bệnh nhân 
+			 có thể được khám bởi nhiều bác sĩ. Mô hình Appointment đóng vai trò trung gian để liên kết giữa hai mô 
+			 hình Physician và Patient. Mối bác sĩ có nhiều lịch hẹn và mỗi bệnh nhân cũng có nhiều lịch hẹn. Do đó, cả 
+			 hai mô hình Physician và Patient đều có mối quan hệ has_many với mô hình Appointment.
+			
+		- Code:
+			class Physician < ApplicationRecord
+			  has_many :appointments
+			  has_many :patients, through: :appointments
+			end
+
+			class Appointment < ApplicationRecord
+			  belongs_to :physician
+			  belongs_to :patient
+			end
+
+			class Patient < ApplicationRecord
+			  has_many :appointments
+			  has_many :physicians, through: :appointments
+			end
+
+			=> Physican.create(name: 'Minh 04') << Patient.create(name: 'Hoan 01')
+			Tạo 1 bệnh nhân mới cho 1 bác sĩ
+				
+
+		- Lưu ý:
+			+ Liên kết has_many :through cũng hữu ích cho việc thiết lập các "phím tắt" thông qua các liên kết has_many 
+			lồng nhau. Ví dụ, nếu một tài liệu có nhiều phần và một phần có nhiều đoạn văn, đôi khi bạn có thể muốn lấy 
+			một tập hợp đơn giản của tất cả các đoạn văn trong tài liệu. Bạn có thể thiết lập nó theo cách này:
+			
+			class Document < ApplicationRecord
+			  has_many :sections
+			  has_many :paragraphs, through: :sections
+			end
+
+			class Section < ApplicationRecord
+			  belongs_to :document
+			  has_many :paragraphs
+			end
+
+			class Paragraph < ApplicationRecord
+			  belongs_to :section
+			end
+			
+			=> Document.find(1).sections
+			
+			=> Document.find(1).paragraphs
+			
+	
+	2.5 The has_one :through Association
+		- Định nghĩa: 
+			+ has_one :through thiết lập một mối quan hệ một-một với một mô hình khác. Điều này cho biết rằng mô hình khai
+			báo có thể được khớp với một thực thể của một mô hình khác bằng cách tiến hành qua một mô hình thứ ba.
+			
+		- Ví dụ: nếu mỗi nhà cung cấp có một tài khoản và mỗi tài khoản được liên kết với một lịch sử tài khoản, thì mô
+			hình nhà cung cấp có thể trông như thế này:
+			
+		- Code model:
+			class Supplier < ApplicationRecord
+			  has_one :account
+			  has_one :account_history, through: :account
+			end
+
+			class Account < ApplicationRecord
+			  belongs_to :supplier
+			  has_one :account_history
+			end
+
+			class AccountHistory < ApplicationRecord
+			  belongs_to :account
+			end
+
+			
+		- Code migration:
+			class CreateAccountHistories < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :suppliers do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+
+			    create_table :accounts do |t|
+			      t.belongs_to :supplier
+			      t.string :account_number
+			      t.timestamps
+			    end
+
+			    create_table :account_histories do |t|
+			      t.belongs_to :account
+			      t.integer :credit_rating
+			      t.timestamps
+			    end
+			  end
+			end
+			
+	2.6 The has_and_belongs_to_many Association
+		- Định nghĩa: 
+			+ Liên kết has_and_belongs_to_many tạo ra một kết nối nhiều-nhiều trực tiếp với một mô hình khác, không có 
+			mô hình trung gian nào.
+			
+			+ Liên kết này cho biết rằng mỗi thực thể của mô hình khai báo tham chiếu đến không hoặc nhiều thực thể của 
+			mô hình khác.
+			
+			
+		- Ví dụ: 
+			Nếu ứng dụng của bạn bao gồm các cụm lắp ráp và chi tiết, với mỗi cụm lắp ráp có nhiều chi tiết và 
+			mỗi chi tiết xuất hiện trong nhiều cụm lắp ráp, bạn có thể khai báo các mô hình theo cách này:
+			
+			
+		- Code model:
+			class Assembly < ApplicationRecord
+			  has_and_belongs_to_many :parts
+			end
+
+			class Part < ApplicationRecord
+			  has_and_belongs_to_many :assemblies
+			end
+
+			
+		- Code migration:
+			class CreateAssembliesAndParts < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :assemblies do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+
+			    create_table :parts do |t|
+			      t.string :part_number
+			      t.timestamps
+			    end
+
+			    create_table :assemblies_parts, id: false do |t|
+			      t.belongs_to :assembly
+			      t.belongs_to :part
+			    end
+			  end
+			end
+
+			
+	2.9 Polymorphic Associations
+		- Định nghĩa: 
+			+ Các mối quan hệ này cho phép các mô hình trao đổi dữ liệu và tương tác với nhau một cách hiệu quả. Một 
+			loại mối quan hệ đặc biệt hữu ích là mối quan hệ đa hình (polymorphic association).
+			
+			+ Mối quan hệ đa hình cho phép một mô hình có thể thuộc về nhiều mô hình khác trên cùng một mối quan hệ.
+			
+		- Ví dụ: Bạn có thể có một mô hình "Picture" (hình ảnh) có thể thuộc về một trong hai mô hình "Employee" (nhân viên) 
+		hoặc "Product" (sản phẩm). Điều này có nghĩa là một hình ảnh có thể liên kết với một nhân viên cụ thể hoặc với một 
+		sản phẩm cụ thể.
+			
+		- Code model:
+			class Picture < ApplicationRecord
+			  belongs_to :imageable, polymorphic: true
+			end
+
+			class Employee < ApplicationRecord
+			  has_many :pictures, as: :imageable
+			end
+
+			class Product < ApplicationRecord
+			  has_many :pictures, as: :imageable
+			end
+
+
+			
+		- Code migration:
+			class CreatePictures < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :pictures do |t|
+			      t.string :name
+			      t.references :imageable, polymorphic: true
+			      t.timestamps
+			    end
+			  end
+			end
+			
+			class CreateProducts < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :products do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+			  end
+			end
+
+			class CreateEmployees < ActiveRecord::Migration[7.1]
+			  def change
+			    create_table :employees do |t|
+			      t.string :name
+			      t.timestamps
+			    end
+			  end
+			end
+			
+5 Single Table Inheritance (STI)
+	- Định nghĩa: 
+			+ Giả sử chúng ta có các mô hình Car (xe hơi), Motorcycle (xe máy) và Bicycle (xe đạp). Chúng ta sẽ muốn chia 
+			sẻ các thuộc tính color (màu sắc) và price (giá cả) và một số phương thức cho tất cả chúng, nhưng có một số 
+			hành vi cụ thể cho từng loại xe và các bộ điều khiển riêng biệt.
+			
+		- Ví dụ: 
+			+ rails g model vehicle type:string color:string price:decimal{10.2}
+			=> Lệnh tạo model vehicle và migrate vehicle
+			
+			+ rails g model car --parent=Vehicle
+			=> Tạo một model và migrate car là con của Vehicle
+			
+			+ Model của car sẽ trong như này:
+			class Car < Vehicle
+			end
+			
+			+ Car.create(color: 'Red', price: 10000)
+			=> Tạo xe ô tô có màu đỏ và giá tiền
+			
+			=> Ô tô sẽ tự lưu vào bảng vehicles với cột type là Car
+			
+			
+Active Record Callbacks
+	1 The Object Life Cycle
+		Trong quá trình hoạt động bình thường của một ứng dụng Rails, các đối tượng có thể được tạo, cập nhật và tiêu hủy.
+		Active Record cung cấp các điểm móc nối vào vòng đời của đối tượng này để bạn có thể kiểm soát ứng dụng và dữ liệu 
+		của nó.
+
+		Callbacks cho phép bạn kích hoạt logic trước hoặc sau khi thay đổi trạng thái của đối tượng.
+		
+		Ví dụ:
+			class Baby < ApplicationRecord
+			  after_create -> { puts "Congratulations!" }
+			end
+			
+			=> Chạy irb: @baby = Baby.create
+			
+			=> Khi đối tượng Baby được tạo thành công, callback after_create sẽ được kích hoạt và thực hiện hành động 
+			được xác định, trong trường hợp này là xuất một thông báo "Congratulations!".
+			
+	2 Callbacks Overview
+		Callbacks là các phương thức được gọi tại các thời điểm nhất định trong vòng đời của đối tượng. Với callbacks, 
+		có thể viết code sẽ được chạy bất cứ khi nào đối tượng Active Record được tạo, lưu, cập nhật, xóa, xác thực hoặc 
+		được tải từ cơ sở dữ liệu.
+		
+	2.1 Callback Registration
+		Để sử dụng các callback có sẵn, bạn cần đăng ký chúng. Bạn có thể triển khai các callback như các phương thức 
+		thông thường và sử dụng phương thức lớp kiểu macro để đăng ký chúng làm callback:
+		
+		Ví dụ:
+			class User < ApplicationRecord
+			  validates :login, :email, presence: true
+
+			  before_validation :ensure_login_has_a_value
+
+			  private
+			    def ensure_login_has_a_value
+			      if login.blank?
+				self.login = email unless email.blank?
+			      end
+			    end
+			end
+			
+			=> (before_validation :ensure_login_has_a_value) callback được đăng ký để chạy trước khi xác nhận
+			 (before_validation). 
+			
+			=> (validates :login, :email, presence: true) đảm bảo rằng login và email không được để trống khi lưu 
+			một đối tượng User vào cơ sở dữ liệu. Nếu login hoặc email trống, đối tượng không được lưu.
+			
+			=> Call back before_validation sẽ chạy trước khi validates chạy
+			
+			
+		Các phương thức lớp kiểu macro cũng có thể nhận một khối. Hãy cân nhắc sử dụng kiểu này nếu code bên trong khối 
+		của bạn quá ngắn để phù hợp với một dòng duy nhất:
+		
+		Ví dụ:
+			class User < ApplicationRecord
+			  validates :login, :email, presence: true
+
+			  before_create do
+			    self.name = login.capitalize if name.blank?
+			  end
+			end
+			
+		
+			=> Nếu name trống login viết hoa sẽ được thêm vào tên
+			
+			
+
+
+
+
+
+
+
+			
+		
+
+			
+		
+
+		
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+

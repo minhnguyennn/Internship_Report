@@ -1,0 +1,10 @@
+# .rubocop.yml
+
+require:
+  - rubocop-rails
+
+AllCops:
+  TargetRailsVersion: 7.1.2
+
+Style/Documentation:
+  Enabled: false
