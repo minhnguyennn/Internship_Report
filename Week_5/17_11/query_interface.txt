@@ -1,0 +1,739 @@
+Active Record Query Interface
+
+	1 What is the Active Record Query Interface?
+	
+		- Khái niệm:		
+		
+			Active Record Query Interface là tính năng của Ruby on Rails giúp thực hiện các thao tác truy vấn cơ sở dữ 
+			liệu thông qua các phương thức Ruby thay vì viết các truy vấn SQL trực tiếp. Nó giúp trừu tượng hóa việc tương 
+			tác với cơ sở dữ liệu và cho phép thực hiện các thao tác như truy vấn, tạo, cập nhật và xóa bản ghi một cách 
+			dễ dàng và an toàn hơn. Điều này giúp code linh hoạt, dễ đọc và không bị ảnh hưởng bởi loại cơ sở dữ liệu 
+			sử dụng.
+			
+		- Ví dụ:
+			class Author < ApplicationRecord
+			  has_many :books, -> { order(year_published: :desc) }
+			end
+			
+			=> Khi gọi author.books, danh sách books của author sẽ được trả về và sắp xếp theo năm xuất bản giảm dần.
+			
+			
+			class Book < ApplicationRecord
+			  belongs_to :supplier
+			  belongs_to :author
+			  has_many :reviews
+			  has_and_belongs_to_many :orders, join_table: 'books_orders'
+
+			  scope :in_print, -> { where(out_of_print: false) }
+			  scope :out_of_print, -> { where(out_of_print: true) }
+			  scope :old, -> { where(year_published: ...50.years.ago.year) }
+			  scope :out_of_print_and_expensive, -> { out_of_print.where('price > 500') }
+			  scope :costs_more_than, ->(amount) { where('price > ?', amount) }
+			end
+			
+			=> (scope :in_print) phạm vi in , điều kiện sách không còn in nữa
+			
+			 (scope :out_of_print) sách đã in rồi
+			 
+			 (scope :old) sách đã xuất bản cách đây 50 năm
+			 
+			 (scope :out_of_print_and_expensive) sách không còn in nữa và có giá lơn hơn 500
+			 
+			 (scope :costs_more_than) nhận một số lượng tiền và trả về các sách có giá cao hơn số tiền được chỉ định.
+			 
+			 
+			 
+			class Customer < ApplicationRecord
+			  has_many :orders
+			  has_many :reviews
+			end
+			
+			
+			
+			class Order < ApplicationRecord
+			  belongs_to :customer
+			  has_and_belongs_to_many :books, join_table: 'books_orders'
+
+			  enum :status, [:shipped, :being_packed, :complete, :cancelled]
+
+			  scope :created_before, ->(time) { where(created_at: ...time) }
+			end
+			
+			=> enum :status, [:shipped, :being_packed, :complete, :cancelled]
+			 Phương thức enum giúp định nghĩa một enum (kiểu liệt kê) cho trường status của Order. Điều này cho phép trạng 
+			 thái của mỗi Order có thể là một trong các giá trị đã định nghĩa: :shipped, :being_packed, :complete,
+			 hoặc :cancelled.
+			 
+			 => scope :created_before, ->(time) { where(created_at: ...time) }
+			Phạm vi created_before được định nghĩa để trả về các Order được tạo trước một thời điểm cụ thể, sử dụng điều 
+			kiện created_at so sánh với thời gian được truyền vào.
+			
+			
+			class Review < ApplicationRecord
+			  belongs_to :customer
+			  belongs_to :book
+
+			  enum :state, [:not_reviewed, :published, :hidden]
+			end
+			
+			
+			class Review < ApplicationRecord
+			  belongs_to :customer
+			  belongs_to :book
+
+			  enum :state, [:not_reviewed, :published, :hidden]
+			end
+			
+			
+2 Retrieving Objects from the Database
+
+	Các phương thức finder cơ bản của Active Record trong Ruby on Rails:
+		- find: Tìm bản ghi theo khóa chính.
+		- find_by: Tìm bản ghi đầu tiên dựa trên điều kiện.
+		- where: Tìm bản ghi theo điều kiện và trả về một collection.
+		- order: Sắp xếp bản ghi theo một trường cụ thể.
+		- limit: Giới hạn số lượng bản ghi trả về.
+		- offset: Bỏ qua số lượng bản ghi trước khi trả về.
+		- pluck: Lấy các giá trị cụ thể của các trường.
+		- first và last: Lấy bản ghi đầu tiên hoặc cuối cùng.
+		
+	
+	Phương thức Model.find(options) trong Active Record hoạt động như sau:
+		- Chuyển các tùy chọn thành truy vấn SQL tương ứng.
+		- Thực hiện truy vấn và lấy kết quả từ cơ sở dữ liệu.
+		- Tạo các đối tượng Ruby tương ứng với kết quả.
+		- Chạy các callback after_find và after_initialize, nếu có.
+
+2.1 Retrieving a Single Object
+
+	2.1.1 find
+	
+		Trong ActiveRecord của Ruby on Rails, phương thức find được sử dụng để lấy một đối tượng từ cơ sở dữ liệu dựa trên 
+		khóa chính đã được chỉ định.
+		
+		irb> customer = Customer.find(10)
+		=> #<Customer id: 10, first_name: "Ryan">
+		
+		Bạn cũng có thể sử dụng phương thức này để truy vấn nhiều đối tượng bằng cách truyền vào một mảng các khóa chính. 
+		Kết quả sẽ là một mảng chứa các bản ghi phù hợp với các khóa chính đã cung cấp.
+		
+		irb> customers = Customer.find([1, 10]) # OR Customer.find(1, 10)
+		=> [#<Customer id: 1, first_name: "Lifo">, #<Customer id: 10, first_name: "Ryan">]
+		
+		Lưu ý:
+			Phương thức find sẽ ném ra một ngoại lệ ActiveRecord::RecordNotFound trừ khi tìm thấy các bản ghi phù hợp
+			với tất cả các khóa chính được cung cấp.
+			
+		Nếu bảng của bạn sử dụng khóa chính hợp thành phần (composite primary key), bạn sẽ cần truyền vào find một mảng để 
+		tìm một mục duy nhất. Ví dụ, nếu khóa chính của bảng customers được định nghĩa là [:store_id, :id]:
+		
+		irb> customers = Customer.find([3, 17])
+		=> #<Customer store_id: 3, id: 17, first_name: "Magda">
+		
+		
+		Có thể lấy nhiều khóa kết hợp:
+		irb> customers = Customer.find([[1, 8], [7, 15]]) # OR Customer.find([1, 8], [7, 15])
+		=> [#<Customer store_id: 1, id: 8, first_name: "Pat">, #<Customer store_id: 7, id: 15, first_name: "Chris">]
+		
+		
+	2.1.2 take
+	
+		Phương thức này taketruy xuất một bản ghi mà không có bất kỳ thứ tự ngầm định nào. Ví dụ:
+		
+		irb> customer = Customer.take
+		=> #<Customer id: 1, first_name: "Lifo">
+		
+		
+		Tương đương :
+		SELECT * FROM customers LIMIT 1
+
+
+		Bạn có thể chuyển một đối số bằng số vào takephương thức để trả về số lượng kết quả đó. Ví dụ
+		
+		irb> customers = Customer.take(2)
+		=> [#<Customer id: 1, first_name: "Lifo">, #<Customer id: 220, first_name: "Sara">]
+		
+		
+	2.1.3 first
+	
+		Phương firstthức tìm bản ghi đầu tiên được sắp xếp theo khóa chính (mặc định). Ví dụ:
+		irb> customer = Customer.first
+		=> #<Customer id: 1, first_name: "Lifo">
+		
+		
+		Bạn có thể chuyển một đối số bằng số vào firstphương thức để trả về số lượng kết quả đó. Ví dụ
+		irb> customers = Customer.first(3)
+		=> [#<Customer id: 1, first_name: "Lifo">, #<Customer id: 2, first_name: "Fifo">, #<Customer id: 3, first_name: "Filo">]
+		=> lấy 3 phần tử đầu tiên
+		
+		
+		Các mô hình có khóa chính tổng hợp sẽ sử dụng khóa chính tổng hợp đầy đủ để đặt hàng. Ví dụ: nếu khách hàng được 
+		xác định bằng [:store_id, :id]khóa chính:
+		irb> customer = Customer.first
+		=> #<Customer id: 2, store_id: 1, first_name: "Lifo">
+
+
+		Trên bộ sưu tập được sắp xếp bằng cách sử dụng order, firstsẽ trả về bản ghi đầu tiên được sắp xếp theo thuộc tính 
+		đã chỉ định cho order.
+		irb> customer = Customer.order(:first_name).first
+		=> #<Customer id: 2, first_name: "Fifo">
+		
+		
+	2.1.4 last
+	
+		Phương lastthức tìm bản ghi cuối cùng được sắp xếp theo khóa chính (mặc định). Ví dụ:
+		irb> customer = Customer.last
+		=> #<Customer id: 221, first_name: "Russel">
+		
+		
+		Bạn có thể chuyển một đối số bằng số vào lastphương thức để trả về số lượng kết quả đó. Ví dụ
+		irb> customers = Customer.last(3)
+		=> [#<Customer id: 219, first_name: "James">, #<Customer id: 220, first_name: "Sara">, #<Customer id: 221, first_name:
+		 "Russel">]
+		
+	2.1.5 find_by
+	
+		Phương thức này find_by tìm bản ghi đầu tiên khớp với một số điều kiện. 
+		
+		Ví dụ:
+			irb> Customer.find_by first_name: 'Lifo'
+			=> #<Customer id: 1, first_name: "Lifo">
+
+			irb> Customer.find_by first_name: 'Jon'
+			=> nil
+		
+		find_by tìm kiếm không phân biệt hoa thường
+		
+		Phương thức này find_by!hoạt động chính xác như find_by, ngoại trừ việc nó sẽ tăng ActiveRecord::RecordNotFoundnếu 
+		không tìm thấy bản ghi phù hợp
+		
+	2.1.5.1 Conditions with :id
+	
+		Hãy cẩn thận khi sử dụng find_by(id:) trên các mô hình mà :id không phải là khóa chính, chẳng hạn như các mô hình 
+		khóa chính composite. Ví dụ: nếu khách hàng được định nghĩa với [:store_id, :id] làm khóa chính:
+		
+		irb> customer = Customer.last
+		=> #<Customer id: 10, store_id: 5, first_name: "Joe">
+		irb> Customer.find_by(id: customer.id) # Customer.find_by(id: [5, 10])
+		=> #<Customer id: 5, store_id: 3, first_name: "Bob">
+		
+		Ở đây, chúng ta có thể định tìm kiếm một bản ghi có khóa chính tổng hợp [5, 10], nhưng Bản ghi hoạt động sẽ tìm kiếm 
+		bản ghi có cột:id 5 hoặc 10 và có thể trả về bản ghi sai.
+	
+		Sử dụng  id_value để sửa lỗi:
+		
+		irb> customer = Customer.last
+		=> #<Customer id: 10, store_id: 5, first_name: "Joe">
+		irb> Customer.find_by(id: customer.id_value) # Customer.find_by(id: 10)
+		=> #<Customer id: 10, store_id: 5, first_name: "Joe">
+		
+		
+2.2 Retrieving Multiple Objects in Batches
+
+	Ví dụ:
+		Customer.all.each do |customer|
+		  NewsMailer.weekly(customer).deliver_now
+		end
+		
+		=> Gửi email hàng tuần đến khách hàng
+		
+	Tuy nhiên, cách tiếp cận này trở nên ngày càng không thực tế khi kích thước bảng tăng lên, vì Customer.all.each yêu cầu 
+	Active Record truy xuất toàn bộ bảng trong một lần duy nhất, tạo một đối tượng mô hình cho mỗi hàng và sau đó giữ toàn bộ 
+	mảng các đối tượng mô hình trong bộ nhớ. Thật vậy, nếu chúng ta có một số lượng lớn bản ghi, thì toàn bộ bộ sưu tập có thể 
+	vượt quá dung lượng bộ nhớ có sẵn
+	
+	Rails cung cấp hai phương thức để giải quyết vấn đề này bằng cách chia các bản ghi thành các nhóm nhỏ hơn, dễ quản lý hơn để 
+	xử lý. Gồm find_each và find_in_batches
+	
+	2.2.1 find_each
+	
+		Phương thức này find_eachlấy các bản ghi theo lô và sau đó đưa từng bản ghi vào khối. Trong ví dụ sau, find_eachtruy 
+		xuất khách hàng theo lô 1000 và đưa từng khách hàng vào khối.
+		
+		Ví dụ:
+		
+			Customer.find_each do |customer|
+			  NewsMailer.weekly(customer).deliver_now
+			end
+			
+			=> Quá trình này được lặp lại, tìm nạp thêm lô nếu cần, cho đến khi tất cả bản ghi được xử lý.
+			
+		find_each hoạt động trên các lớp mô hình, như đã thấy ở trên, cũng như trên các mối quan hệ:
+		
+		Ví dụ:
+			Customer.where(weekly_subscriber: true).find_each do |customer|
+			  NewsMailer.weekly(customer).deliver_now
+			end
+			
+			=> Khách hàng phải đăng ký nhận email hàng tuần thì mới được gửi email
+			
+	2.2.1.1 Options for find_each
+	
+		:batch_size
+			Tùy chọn này :batch_sizecho phép bạn chỉ định số lượng bản ghi cần truy xuất trong mỗi lô trước khi được 
+			chuyển riêng lẻ vào khối. 
+			
+			Ví dụ: để truy xuất các bản ghi theo lô 5000:
+				Customer.find_each(batch_size: 5000) do |customer|
+				  NewsMailer.weekly(customer).deliver_now
+				end
+				
+		:start
+			Customer.find_each(start: 2000) do |customer|
+			  NewsMailer.weekly(customer).deliver_now
+			end
+			
+			Đoạn mã này sẽ truy xuất tất cả các bản ghi khách hàng có khóa chính từ 2000 trở lên và gửi email cho từng 
+			khách hàng. Tùy chọn :start cho biết rằng phương thức find_each nên bắt đầu truy xuất từ bản ghi có khóa chính 
+			là 2000. Điều này rất hữu ích nếu bạn muốn tiếp tục quá trình xử lý hàng loạt bị gián đoạn, vì nó cho phép bạn 
+			bỏ qua các bản ghi đã được xử lý trước đó.
+			
+		
+		:finish
+			Customer.find_each(start: 2000, finish: 10000) do |customer|
+			  NewsMailer.weekly(customer).deliver_now
+			end
+			
+			=> Gửi bản tin cho các khách hàng có khóa chính bắt đầu từ 2000 đến 10000
+			
+			=> 
+			
+			
+		:error_on_ignore
+			Customer.find_each(batch_size: 1000, error_on_ignore: true) do |customer|
+			  NewsMailer.weekly(customer).deliver_now
+			end
+			
+			=> Nếu bạn muốn đảm bảo rằng tất cả các bản ghi được xử lý theo đúng thứ tự, bạn có thể đặt :error_on_ignore
+			   thành true.
+			   
+			=> Trong ví dụ này, phương thức find_each sẽ xử lý người dùng theo từng đợt, với kích thước đợt là 1000 bản ghi.
+			   Nếu có thứ tự trong mối quan hệ, ngoại lệ sẽ được tạo và ứng dụng sẽ dừng lại.
+			   
+			   
+		:order
+			Customer.find_each(order: :desc) do |customer|
+			  NewsMailer.weekly(customer).deliver_now
+			end
+			
+			=> Tùy chọn order: :desc được sử dụng để sắp xếp các khách hàng theo thứ tự giảm dần theo ID của họ.
+
+	2.2.2 find_in_batches
+	
+		Phương thức find_in_batches được sử dụng để truy xuất các bản ghi từ cơ sở dữ liệu theo từng đợt. Phương thức này 
+		tương tự như phương thức find_each, cả hai đều truy xuất các lô bản ghi. Sự khác biệt là find_in_batches cung cấp các 
+		lô cho khối dưới dạng mảng các mô hình thay vì từng cái.
+		
+		Ví dụ:
+			# Truyền vào hàm add_customers một mảng có tối đa 1000 khách hàng mỗi lần
+			Customer.find_in_batches do |customers|
+			  export.add_customers(customers)
+			end
+			
+			=> Đoạn mã này truy vấn khách hàng theo từng lô và truyền từng lô dưới dạng một mảng các model vào khối mã.
+			   Phương thức export.add_customers(customers) nhận các mảng này của khách hàng để xử lý tiếp.
+			   
+			
+		Tương tự, find_in_batches có thể được sử dụng với các truy vấn được lọc:
+		
+		Ví dụ:
+			# Truyền vào hàm add_customers một mảng có tối đa 1000 khách hàng hoạt động gần đây mỗi lần
+			Customer.recently_active.find_in_batches do |customers|
+			  export.add_customers(customers)
+			end
+			
+			
+			=> Ở đây, recently_active là một phạm vi/lọc được áp dụng vào model Customer. Phương thức find_in_batches 
+			   sẽ truy vấn từng lô khách hàng hoạt động gần đây và chuyển từng lô (dưới dạng một mảng) vào 
+			   export.add_customers(customers).
+			   
+	
+	
+	So sánh find_in_batches và find_each ?
+	
+		Cả hai phương thức find_in_batches và find_each trong Rails được sử dụng để lấy dữ liệu từ cơ sở dữ liệu theo từng 
+		lô nhằm xử lý các bản ghi lớn một cách hiệu quả. Tuy nhiên, chúng có một số điểm khác nhau quan trọng:
+		
+		1. find_in_batches:
+			
+			- find_in_batches trả về các lô bản ghi dưới dạng mảng các model.
+			- Bạn có thể xác định kích thước của các lô thông qua batch_size.
+			- Cung cấp các lô bản ghi tới khối mã theo từng lô dưới dạng mảng.
+			- Thích hợp khi cần xử lý các lô bản ghi một cách riêng biệt hoặc khi cần thao tác trên các lô dữ liệu lớn.
+			
+			- Ví dụ sử dụng find_in_batches:
+
+				Customer.find_in_batches(batch_size: 1000) do |customers|
+				  # Xử lý từng lô bản ghi ở đây
+				end
+
+		2. find_each:
+			
+			- find_each trả về từng bản ghi một, dùng vòng lặp để duyệt qua từng bản ghi một cách tuần tự.
+			- Không thể điều chỉnh kích thước của các lô, mặc định lấy từng bản ghi một.
+			- Thích hợp khi cần thực hiện các thao tác xử lý trên từng bản ghi một và không cần quan tâm đến lô dữ liệu.
+			
+			- Ví dụ sử dụng find_each:
+				
+				Customer.find_each do |customer|
+				  # Xử lý từng bản ghi ở đây
+				end
+
+		3. Tóm lại
+			
+			Tóm lại, find_in_batches thích hợp khi bạn muốn xử lý các lô bản ghi một cách hiệu quả, trong khi find_each 
+			thích hợp cho việc thực hiện các thao tác xử lý trên từng bản ghi một cách tuần tự.
+			
+3 Conditions
+	
+	Phương thức where trong Rails cho phép xác định điều kiện để lấy bản ghi từ cơ sở dữ liệu. Có ba cách để chỉ định điều kiện:
+
+		- Chuỗi: User.where("age > 18")
+		
+		- Mảng: User.where(["age > ?", 18])
+		
+		- Hash: User.where(age: 18..30, gender: 'male')
+	
+	
+	3.1 Pure String Conditions
+		
+		Đoạn mã Book.where("title = 'Introduction to Algorithms'") sử dụng phương thức where trong Rails để truy vấn các cuốn 
+		sách từ cơ sở dữ liệu với điều kiện rằng trường title có giá trị là 'Introduction to Algorithms'. Câu lệnh này sẽ trả 
+		về tất cả các cuốn sách mà trường title có giá trị là 'Introduction to Algorithms'.
+		
+		Tuy nhiên, việc xây dựng điều kiện bằng cách sử dụng chuỗi thuần không an toàn, có thể dẫn đến lỗ hổng bảo mật gọi 
+		là "SQL injection exploits". 
+		
+		Ví dụ: Book.where("title LIKE '%#{params[:title]}%'")
+		
+		Khi sử dụng chuỗi trong câu lệnh Book.where("title LIKE '%#{params[:title]}%'"), phương thức where sẽ tìm kiếm các 
+		cuốn sách trong cơ sở dữ liệu mà trường title chứa một chuỗi mà người dùng nhập vào thông qua params[:title].
+
+		Tuy nhiên, việc này có thể gây ra lỗ hổng bảo mật gọi là "SQL injection". Nếu người dùng nhập vào một chuỗi có chứa 
+		các ký tự đặc biệt hoặc các đoạn mã SQL, chúng có thể được thực thi trực tiếp trong câu truy vấn SQL, gây ra rủi ro 
+		an ninh cho hệ thống.
+
+		Ví dụ, nếu người dùng nhập params[:title] là ' OR 1=1 --, câu lệnh SQL sẽ trở thành Book.where("title LIKE '% ' OR 1=1 --
+		%'"). Trong SQL, OR 1=1 luôn đúng, điều này có thể khiến cho câu truy vấn trở thành luôn đúng và trả về tất cả các 
+		cuốn sách trong cơ sở dữ liệu.
+
+		Điều này làm tăng nguy cơ cho lỗ hổng bảo mật vì người dùng có thể nhập các chuỗi gian lận, làm thay đổi hoặc thực 
+		thi các truy vấn SQL không mong muốn. Đây là lý do tại sao việc sử dụng chuỗi trực tiếp trong điều kiện có thể gây 
+		ra rủi ro về bảo mật, và cách tốt nhất là tránh điều này bằng cách sử dụng các phương pháp an toàn hơn như sử dụng 
+		mảng để đặt điều kiện trong câu truy vấn SQL.
+		
+		Cách tiếp cận tốt hơn là sử dụng các điều kiện được đặt trong một mảng để tránh lỗ hổng SQL injection. Ví dụ,
+		Book.where(["title LIKE ?", "%#{params[:title]}%"]) sử dụng một mảng để thay thế giá trị người dùng bằng cách 
+		sử dụng dấu ?, giúp tránh rủi ro an ninh khiến cho các truy vấn trở nên an toàn hơn.
+		
+		Sử dụng dấu ? trong Book.where(["title LIKE ?", "%#{params[:title]}%"]) là một cách an toàn để tránh lỗ hổng bảo mật 
+		gọi là "SQL injection".
+
+		Khi sử dụng dấu ? trong phương thức where và truyền tham số vào qua mảng, Rails sẽ xử lý các giá trị truyền vào như là 
+		các tham số an toàn. Cụ thể, trong ví dụ này, "title LIKE ?" là một mẫu điều kiện, và %#{params[:title]}% là giá trị thay
+		thế cho dấu ?.
+
+		Khi bạn sử dụng ? và truyền giá trị vào qua mảng, Rails sẽ tự động đảm bảo rằng các giá trị được thêm vào mẫu điều kiện
+		không thể thực thi như mã SQL. Rails sẽ ánh xạ các giá trị này một cách an toàn và truyền chúng vào câu lệnh SQL như là
+		các tham số an toàn, không cho phép chúng thay đổi cấu trúc của câu lệnh SQL ban đầu.
+
+		Kết quả là, người dùng không thể nhập các chuỗi gian lận hay các đoạn mã SQL phức tạp thông qua params[:title] để thực
+		hiện các tấn công SQL injection, do các giá trị này được xử lý an toàn và không thể làm thay đổi cấu trúc của truy vấn
+		SQL. Điều này giúp bảo vệ hệ thống khỏi các lỗ hổng bảo mật liên quan đến việc nhập các chuỗi không an toàn vào câu
+		lệnh SQL.
+		
+	
+	3.2 Array Conditions
+		
+		Ví dụ:
+			Book.where("title = ?", params[:title])
+
+		=> where("title = ?", params[:title]) dấu ? rails sẽ hiểu là params[:title] sẽ thay thế dấu ?
+		
+		
+		Ví dụ 2:
+			Book.where("title = ? AND out_of_print = ?", params[:title], false)
+			
+		=> params[:title] sẽ thay thế dẩu hỏi đầu tiên và false sẽ thay thế dấu hỏi thứ hai
+		
+		=> tiều đề sách và trạng thái sách không phải là hết hạn (out_of_print = false).
+		
+		
+		Ý nghĩa dấu ?:
+			Việc sử dụng dấu ? trong các điều kiện là rất quan trọng để đảm bảo an toàn cho các đối số được truyền vào. 
+			Sử dụng where("title = ?", params[:title]) là cách tốt hơn so với where("title = #{params[:title]}") vì nó bảo 
+			đảm an toàn cho đối số truyền vào. Nếu bạn đặt biến trực tiếp vào chuỗi điều kiện, nó có thể trở thành một 
+			nguy cơ SQL injection.
+			
+			WHERE title = ''; DELETE FROM users; -- 
+			
+			=> Một nguy cơ sql injection làm xóa đi bảng users vì đằng sau là -- nghĩa là comment.s
+			
+		SQL injection là gì ?
+			SQL injection là một kỹ thuật tấn công mà người dùng có thể chèn hoặc thay đổi các truy vấn SQL được thực thi
+			trên cơ sở dữ liệu. Việc sử dụng dấu ? và mảng đối số giúp tránh được nguy cơ này bằng cách xử lý an toàn các
+			giá trị truyền vào câu lệnh SQL, giúp bảo vệ cơ sở dữ liệu khỏi các cuộc tấn công tiềm ẩn. Điều này làm giảm
+			rủi ro cho hệ thống và bảo vệ dữ liệu của bạn khỏi các loại tấn công này.
+			
+			
+	3.2.1 Placeholder Conditions
+		 Bạn cũng có thể chỉ định các khóa trong chuỗi điều kiện cùng với một hash chứa các cặp khóa/giá trị tương ứng.
+		 
+		 Lợi ích:
+		 	Khi bạn có một chuỗi điều kiện phức tạp với nhiều điều kiện biến thiên, việc sử dụng hash để chỉ định các tham
+		 	số có thể làm cho mã của bạn dễ đọc hơn và rõ ràng hơn. Điều này đặc biệt hữu ích khi bạn có nhiều điều kiện
+		 	cần đặt trong câu lệnh where.
+		 	
+		 Ví dụ:
+			Book.where("created_at >= :start_date AND created_at 
+			<= :end_date",
+	 		  { start_date: params[:start_date], end_date: 
+	 		params[:end_date] })
+	 		
+	 		=> (created_at >= :start_date AND created_at <= :end_date) là điều kiện truy vấn SQL, nơi mà :start_date 
+	 		và :end_date là các placeholder sẽ được thay thế bằng giá trị tương ứng từ hash được truyền vào phía sau.
+	 		
+	 		=> { start_date: params[:start_date], end_date: params[:end_date] } là hash chứa các cặp key-value, trong đó 
+	 		keys (start_date và end_date) tương ứng với các placeholder trong điều kiện truy vấn SQL, và giá trị của chúng 
+	 		là params[:start_date] và params[:end_date], lấy từ người dùng thông qua HTTP request hoặc từ một nguồn dữ liệu
+	 		khác.
+	 		
+	 		=> Nếu params[:start_date] là "2023-01-01" và params[:end_date] là "2023-12-31", truy vấn này sẽ lấy tất cả 
+	 		các sách được tạo từ ngày 1 tháng 1 năm 2023 đến ngày 31 tháng 12 năm 2023 từ cơ sở dữ liệu. Đây là một cách 
+	 		để lọc các bản ghi theo khoảng thời gian.
+	 		
+	 		
+	3.2.2 Conditions That Use LIKE
+		Khi sử dụng điều kiện LIKE, các ký tự đặc biệt như % và _ không được tự động escape để ngăn chặn SQL injection.
+		Điều này có thể dẫn đến hành vi không mong muốn nếu giá trị không được làm sạch (unsanitized value) được sử dụng 
+		trong đối số.
+		
+		
+		Ví dụ:
+		
+			Book.where("title LIKE ?", params[:title] + "%")
+
+			=> Mục đích là để tìm các sách có tiêu đề bắt đầu bằng một chuỗi do người dùng chỉ định. Tuy nhiên, bất kỳ xuất
+			hiện của % hoặc _ trong params[:title] sẽ được coi là ký tự đại diện, dẫn đến kết quả truy vấn không mong muốn.
+			Trong một số trường hợp, điều này cũng có thể ngăn cản cơ sở dữ liệu sử dụng một index được dự định, làm cho
+			truy vấn trở nên chậm hơn nhiều.
+			
+	 		
+	 	Để tránh các vấn đề này, ta có thể sử dụng sanitize_sql_like để escape các ký tự đặc biệt trong phần liên quan của đối
+	 	số. Ví dụ:
+	 	
+	 		Book.where("title LIKE ?", Book.sanitize_sql_like(params[:title]) + "%")
+	 		
+	 		=> Hàm sanitize_sql_like sẽ xử lý chuỗi đầu vào params[:title], escape các ký tự % và _, giúp truy vấn LIKE hoạt
+	 		động chính xác mà không bị ảnh hưởng bởi các ký tự đặc biệt trong chuỗi tìm kiếm. Điều này giúp tránh các kết quả
+	 		truy vấn không mong muốn và hạn chế các vấn đề với hiệu suất của cơ sở dữ liệu.
+	 		
+	 		
+	3.3 Hash Conditions
+
+		Trong Active Record, hash conditions cho phép bạn áp dụng điều kiện với các trường cụ thể bằng cách sử dụng hash với 
+		các key là tên trường và các giá trị tương ứng là cách áp dụng điều kiện. Bạn có thể thực hiện các điều kiện như bằng
+		nhau, phạm vi, hoặc kiểm tra tập con. Tuy nhiên, các điều kiện phức tạp hơn như LIKE, NOT, OR, AND không thể được áp
+		dụng trực tiếp thông qua hash conditions.
+		
+		3.3.1 Equality Conditions
+			
+			1. Sử dụng key-value trong hash:
+			
+				Book.where(out_of_print: true)
+
+				=> Lấy các cuốn sách có trường out_of_print: true
+				
+				
+			2. Sử dụng chuỗi làm tên trường:
+				
+				Book.where('out_of_print' => true)
+				
+				=> Đây là cách khác để chỉ định điều kiện với tên trường là một chuỗi.
+				
+				
+			3. Sử dụng association key trong quan hệ belongs_to:
+			
+				author = Author.first
+				Book.where(author: author)
+				Author.joins(:books).where(books: { author: author })
+
+				=> Sử dụng khóa quan hệ author để lấy các cuốn sách của một tác giả cụ thể.
+				
+				=> Book.where(author: author) trường author được hiểu là một quan hệ.
+				
+				=> Active Record sẽ tự động chuyển đổi nó thành điều kiện để tìm các cuốn sách có trường author_id 
+				trùng khớp với id của tác giả được chọn.
+				
+				
+			4. Sử dụng hash conditions dưới dạng tuple-like syntax
+			
+				Book.where([:author_id, :id] => [[15, 1], [15, 2]])
+				
+				=> Đây là cách sử dụng điều kiện dưới dạng tuple-like syntax. Đoạn mã này được sử dụng để truy vấn 
+				các quan hệ với nhiều cột trong điều kiện, đặc biệt hữu ích khi bảng sử dụng khóa chính kết hợp.
+				
+			
+			5. Composite primary key (khóa chính kết hợp):
+			
+				class Book < ApplicationRecord
+				  self.primary_key = [:author_id, :id]
+				end
+
+				Book.where(Book.primary_key => [[2, 1], [3, 1]])
+
+				=> Trường hợp này giải thích việc sử dụng khóa chính kết hợp, nơi bảng có khóa chính bao gồm nhiều cột.
+				Đây là cách để truy vấn các quan hệ với bảng sử dụng khóa chính kết hợp.
+				
+		3.3.2 Range Conditions
+		
+			Book.where(created_at: (Time.now.midnight - 1.day)..Time.now.midnight)
+			
+			=> Một truy vấn để lấy tất cả các bản ghi từ bảng Book mà trường created_at nằm trong khoảng thời gian từ nửa
+			đêm ngày hôm trước đến nửa đêm của ngày hiện tại.
+			
+			Book.where(created_at: (Time.now.midnight - 1.day)..)
+			
+			=> Một truy vấn để lấy tất cả các bản ghi từ bảng Book mà trường created_at có giá trị bắt đầu từ thời điểm nửa
+			đêm của ngày trước đến thời điểm hiện tại.
+			
+		3.3.3 Subset Conditions
+		
+			Subset Conditions được sử dụng để tìm kiếm các bản ghi trong cơ sở dữ liệu dựa trên một tập hợp các giá trị.
+			
+			Ví dụ:
+				Customer.where(orders_count: [1, 3, 5])
+				
+				=> Tìm các order count có số là 1, 3 và 5 và lấy ra các bản ghi của bảng customer
+				
+	3.4 NOT Conditions
+	
+		Các truy vấn SQL NOT có thể được xây dựng bằng where.not
+		
+			Customer.where.not(orders_count: [1, 3, 5])
+
+			=> Truy vấn cơ sở dữ liệu để lấy tất cả các khách hàng ngoại trừ những khách hàng có orders_count là 1, 3 hoặc 5.
+
+			Customer.create!(nullable_country: nil)
+			Customer.where.not(nullable_country: "UK")
+			# => []
+
+			# But
+			Customer.create!(nullable_country: "UK")
+			Customer.where.not(nullable_country: nil)
+			# => [#<Customer id: 2, nullable_country: "UK">]
+			
+			
+	3.5 OR Conditions
+	
+		Điều kiện OR được sử dụng để kết hợp hai điều kiện lại với nhau. Nếu một trong hai điều kiện đúng thì kết quả của điều
+		kiện OR sẽ đúng. Điều kiện OR được ký hiệu là OR trong SQL và || trong Ruby.
+		
+		Ví dụ:
+			Customer.where(last_name: 'Smith').or(Customer.where(orders_count: [1, 3, 5]))
+			
+			=> lấy khách hàng có tên Smith và có orders_count là 1, 3, 5
+			
+			=> 1 trong 2 trường đúng thì sẽ trả ra kết quả của bản ghi
+			
+	3.6 AND Conditions
+		
+		Điều kiện AND cho sự giao nhau hợp lý giữa các quan hệ có thể được xây dựng bằng cách gọi and trên quan hệ đầu tiên và
+		truyền quan hệ thứ hai làm đối số.
+		
+		Ví dụ:
+			Customer.where(last_name: 'Smith').where(orders_count: [1, 3, 5])
+
+			=> Customer phải thỏa cả 2 điều kiện
+			
+4 Ordering
+
+	Phương thức order được sử dụng để sắp xếp các bản ghi được truy xuất từ cơ sở dữ liệu theo một thứ tự cụ thể. Phương thức này
+	cho phép bạn chỉ định thứ tự sắp xếp bằng cách truyền một hoặc nhiều trường vào phương thức.
+	
+	Book.order(:created_at)
+	# OR
+	Book.order("created_at")
+	
+	=> sắp xếp ngày tạo tăng dần
+	
+	Ví dụ:
+		Book.order(created_at: :desc)
+		# OR
+		Book.order(created_at: :asc)
+		# OR
+		Book.order("created_at DESC")
+		# OR
+		Book.order("created_at ASC")
+		
+	Ví dụ:
+		Book.order(title: :asc, created_at: :desc)
+		# OR
+		Book.order(:title, created_at: :desc)
+		# OR
+		Book.order("title ASC, created_at DESC")
+		# OR
+		Book.order("title ASC", "created_at DESC")
+		
+	Ví dụ:
+		Book.order("title ASC").order("created_at DESC")
+	
+	Lưu ý:
+		Nếu bạn muốn sắp xếp một tập kết quả theo một trường nào đó, thì trường đó phải được bao gồm trong danh sách các trường
+		được chọn. Ví dụ, nếu bạn muốn sắp xếp bảng customers theo trường name, thì bạn phải bao gồm trường name trong danh
+		sách các trường được chọn như sau:
+
+
+
+
+		
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+	
+			
+
+
+
+
+
+
+
+			
+
+
+
+	
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+
+

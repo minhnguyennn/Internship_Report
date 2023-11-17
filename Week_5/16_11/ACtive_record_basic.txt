@@ -1,0 +1,140 @@
+What is Active Record? 
+	Active Record là một mẫu thiết kế trong lập trình phần mềm, thường được sử dụng trong việc kết nối các ngôn ngữ lập trình 
+	hướng 	đối tượng với cơ sở dữ liệu quan hệ. Nó cho phép biểu diễn các bảng trong cơ sở dữ liệu dưới dạng các lớp trong mã 
+	ứng dụng, giúp thực hiện các thao tác C.R.U.D (Create, Read, Update, Delete) một cách dễ dàng thông qua các đối tượng mô hình 
+	hóa dữ liệu.
+	
+
+Object Relational Mapping
+	Object-Relational Mapping (ORM) là một kỹ thuật giúp ánh xạ dữ liệu từ cơ sở dữ liệu quan hệ thành các đối tượng trong mã 
+	nguồn, cho phép thao tác với cơ sở dữ liệu thông qua các đối tượng và phương thức thay vì trực tiếp viết các truy vấn SQL.
+	
+	
+RDBMS
+	RDBMS là Hệ thống quản lý cơ sở dữ liệu dựa trên mô hình quan hệ, sử dụng bảng để lưu trữ và quản lý dữ liệu thông qua các 
+	mối quan hệ giữa chúng. MySQL, PostgreSQL và Oracle là một số ví dụ phổ biến của RDBMS.
+	
+
+Convention over Configuration in Active Record	
+	Convention over Configuration trong Active Record là nguyên tắc giúp tự động hoá các cấu hình thông qua việc tuân theo các quy 
+	ước mặc định của framework, giảm việc phải cấu hình chi tiết trong mã code.
+	
+
+Naming Conventions
+	Naming Conventions là các quy tắc chuẩn hóa cách đặt tên cho các phần tử trong mã nguồn và cơ sở dữ liệu, giúp làm cho mã nguồn 
+	dễ đọc, hiểu và bảo trì hơn. Trong Active Record, ví dụ, quy ước này áp dụng cho đặt tên bảng, cột và các đối tượng trong cơ sở
+	dữ liệu.
+	
+	
+Schema Conventions
+	Active Record sử dụng các quy tắc đặt tên cho cột trong bảng cơ sở dữ liệu. Các tên cột quan trọng bao gồm khóa ngoại, khóa 
+	chính (mặc định là cột "id"), và các tên tùy chọn như created_at, updated_at, lock_version, type, (association_name)_type, và
+	(table_name)_count. Việc sử dụng các tên này đem lại các tính năng hoặc hạn chế cụ thể trong Active Record.
+	
+	
+	
+Creating Active Record Models
+	Khi tạo ứng dụng, lớp ApplicationRecord được tạo để làm cơ sở cho các model Active Record. Để tạo một model, chỉ cần kế thừa 
+	từ lớp ApplicationRecord. Ví dụ, class Product < ApplicationRecord tạo ra một model Product được ánh xạ với bảng products trong 
+	cơ sở dữ liệu. Bằng cách này, bạn có thể sử dụng các đối tượng của model để thao tác với dữ liệu, như gán giá trị cho các cột 
+	và làm việc với thuộc tính của chúng.
+	
+	
+Overriding the Naming Conventions
+
+	Ví dụ, nếu bạn muốn một model Product được ánh xạ với bảng "my_products" trong cơ sở dữ liệu thay vì "products", bạn có thể 
+	làm như sau:
+	
+	class Product < ApplicationRecord
+	  self.table_name = "my_products"
+	end
+	
+	
+	Tương tự, nếu bạn muốn sử dụng cột "product_id" làm khóa chính thay vì "id", bạn có thể:
+	
+	class Product < ApplicationRecord
+	  self.primary_key = "product_id"
+	end
+	
+	
+	Lưu ý rằng việc sử dụng cột "id" làm khóa chính là quy ước mặc định trong Rails. Nếu bạn muốn sử dụng cột khác làm khóa chính,
+	bạn cần thông báo cho Rails bằng cách sử dụng phương thức self.primary_key. Tuy nhiên, Rails không khuyến khích sử dụng cột 
+	"id" nhưng không phải là khóa chính, và nếu bạn cố tạo một cột "id" không phải là khóa chính, Rails sẽ thông báo lỗi khi thực
+	hiện các migrations (điều chỉnh cấu trúc cơ sở dữ liệu).
+	
+	
+CRUD: Reading and Writing Data
+	
+	CRUD là viết tắt của Create (Tạo), Read (Đọc), Update (Cập nhật) và Delete (Xóa). Trong Active Record của Rails, có các 
+	phương thức để thực hiện các hoạt động này trên dữ liệu.
+	
+
+	Tạo (Create):
+		Model.create tạo và lưu một bản ghi mới vào cơ sở dữ liệu.
+		Model.new tạo một đối tượng mới không lưu vào cơ sở dữ liệu, sau đó dùng save để lưu.
+		
+		
+	Đọc (Read):
+		Model.all trả về tất cả các bản ghi.
+		Model.first trả về bản ghi đầu tiên.
+		Model.find_by trả về bản ghi dựa trên điều kiện chỉ định.
+		
+		
+	Cập nhật (Update):
+		Model.find_by để lấy đối tượng cần cập nhật và sử dụng update hoặc save để thay đổi dữ liệu.
+		
+		
+	Xóa (Delete):
+		Model.find_by để lấy đối tượng cần xóa và sử dụng destroy.
+		Model.destroy_by hoặc Model.destroy_all để xóa nhiều bản ghi cùng một lúc.
+
+
+
+
+
+	
+	
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
