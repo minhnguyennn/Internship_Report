@@ -682,8 +682,51 @@ Active Record Query Interface
 		Nếu bạn muốn sắp xếp một tập kết quả theo một trường nào đó, thì trường đó phải được bao gồm trong danh sách các trường
 		được chọn. Ví dụ, nếu bạn muốn sắp xếp bảng customers theo trường name, thì bạn phải bao gồm trường name trong danh
 		sách các trường được chọn như sau:
+		
+			Customer.select('name').order('name')
+
+		Nếu bạn không bao gồm trường name trong danh sách các trường được chọn, thì bạn sẽ thấy lỗi
+		ActiveRecord::StatementInvalid. Điều này là do phương thức order không thể sắp xếp theo một trường mà không có trong 
+		tập kết quả.
+		
+5 Selecting Specific Fields
+	
+	Book.select(:isbn, :out_of_print)
+	# OR
+	Book.select("isbn, out_of_print")
+	
+	=> chọn các trường isbn và out_of_print
+	
+	Customer.select(:last_name).distinct
+	
+	=> lấy tên duy nhất
+	
+	# Returns unique last_names
+	query = Customer.select(:last_name).distinct
+
+	# Returns all last_names, even if there are duplicates
+	query.distinct(false)
+	
+	=> Loại bỏ các trùng lặp đã cài từ trước
+	
+6 Limit and Offset
+	Limit và Offset là hai phương thức được sử dụng để kiểm soát số lượng bản ghi được trả về bởi một truy vấn cơ sở dữ liệu.
+	
+	Customer.limit(5)
+	
+	=> Trả về tối đa 5 người
+	
+	
+	Customer.limit(5).offset(10)
+
+	=> Truy vấn này sẽ bỏ qua 10 bản ghi khách hàng đầu tiên và trả về 5 bản ghi tiếp theo.
+	
+7 Grouping
+	
+	
 
 
+		
 
 
 		
