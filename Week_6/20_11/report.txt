@@ -394,8 +394,40 @@ ActiveRecord::CounterCache::ClassMethods
 			# và cập nhật giá trị của updated_at
 			DiscussionBoard.decrement_counter(:posts_count, 5, touch: true)
 			
-
+			
 	increment_counter
+		Định nghĩa: 
+			Hàm increment_counter trong Rails được sử dụng để tăng giá trị của một trường số học lên một đơn vị 
+			thông qua một câu lệnh SQL trực tiếp.
+			
+		Cú pháp:
+			increment_counter(counter_name, id, by: 1, touch: nil)
+			
+		Dưới đây là một số thông tin về các tham số:
+			- counter_name: Tên của trường mà bạn muốn tăng giá trị.
+			
+			- id: ID của đối tượng mà bạn muốn tăng giá trị, hoặc một mảng các ID nếu 
+			bạn muốn tăng giá trị của nhiều đối tượng.
+			
+      			- by: Số lượng cần tăng giá trị. Mặc định là 1 nếu không được chỉ định.
+      			
+			- touch: Tùy chọn này giúp cập nhật timestamp của đối tượng khi thực hiện tăng giá trị. 
+			Bạn có thể chỉ định true để cập nhật updated_at hoặc updated_on. Bạn cũng có thể chỉ định tên 
+			của cột hoặc một mảng các tên cột để chỉ cập nhật các cột đó.
+			
+		Ví dụ:
+			# Tăng giá trị cột posts_count cho bản ghi có id là 5 lên 1 đơn vị
+			DiscussionBoard.increment_counter(:posts_count, 5)
+
+			# Tăng giá trị cột posts_count cho bản ghi có id là 5 lên một số lượng cụ thể (3 trong trường hợp này)
+			DiscussionBoard.increment_counter(:posts_count, 5, by: 3)
+
+			# Tăng giá trị cột posts_count cho bản ghi có id là 5 và cập nhật giá trị updated_at
+			DiscussionBoard.increment_counter(:posts_count, 5, touch: true)
+
+			
+
+	reset_counters
 		Định nghĩa: 
 			Phương thức reset_counters trong Rails được sử dụng để thiết lập lại một hoặc nhiều bộ đếm (counter caches) 
 			về giá trị chính xác của chúng bằng cách sử dụng một truy vấn SQL đếm (count query). Phương thức này hữu ích 

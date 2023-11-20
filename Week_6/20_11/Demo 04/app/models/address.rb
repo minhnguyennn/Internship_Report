@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Address
 class Address < ApplicationRecord
   belongs_to :client, inverse_of: :address
 
