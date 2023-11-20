@@ -138,6 +138,51 @@ Relational Callbacks
 	bị xóa, thông báo "Article destroyed" sẽ được hiển thị ra màn hình console hoặc log.
 	
 	
+Association Callbacks
+	1. before_add: Được gọi trước khi một đối tượng được thêm vào bộ sưu tập.
+	2. after_add: Được gọi sau khi một đối tượng đã được thêm vào bộ sưu tập.
+	3. before_remove: Được gọi trước khi một đối tượng được loại bỏ khỏi bộ sưu tập.
+	4. after_remove: Được gọi sau khi một đối tượng đã được loại bỏ khỏi bộ sưu tập.
+	
+	Ví dụ:
+	class Author < ApplicationRecord
+	  has_many :books, before_add: :check_credit_limit
+
+	  def check_credit_limit(book)
+	    # Thực hiện các hành động hoặc kiểm tra hợp lệ trước khi thêm sách vào bộ sưu tập
+	    # ...
+	  end
+	end
+	
+	Bạn cũng có thể xếp nhiều callback cho một sự kiện duy nhất bằng cách chuyển chúng dưới dạng một mảng:
+	
+	Ví dụ:
+	class Author < ApplicationRecord
+	  has_many :books,
+	    before_add: [:check_credit_limit, :calculate_shipping_charges]
+
+	  def check_credit_limit(book)
+	    # ...
+	  end
+
+	  def calculate_shipping_charges(book)
+	    # ...
+	  end
+	end
+	
+	Nếu một callback before_add ném ra :abort, đối tượng sẽ không được thêm vào bộ sưu tập. Tương tự, nếu một callback 
+	before_remove ném ra :abort, đối tượng sẽ không bị loại bỏ khỏi bộ sưu tập.
+	
+	def check_credit_limit(book)
+	  throw(:abort) if limit_reached?
+	end
+	
+	Lưu ý:
+		Các callback này chỉ được gọi khi các đối tượng được thêm vào hoặc loại bỏ khỏi bộ sưu tập thông qua các 
+		phương thức của mối quan hệ (<<, =, replace, vv). Việc cập nhật trực tiếp khóa ngoại của một đối tượng, 
+		ví dụ như book.update(author_id: 1), sẽ không kích hoạt các callback này.
+
+
 
 
 

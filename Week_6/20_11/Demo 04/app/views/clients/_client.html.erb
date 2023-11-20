@@ -1,0 +1,21 @@
+<div id="<%= dom_id client %>">
+  <p>
+    <strong>First name:</strong>
+    <%= client.first_name %>
+  </p>
+
+  <p>
+    <strong>Last name:</strong>
+    <%= client.last_name %>
+  </p>
+
+  <p>
+    <strong>Address:</strong>
+    <%= client.address.street %>
+    <br />
+    <%= client.address.city %>
+    <br />
+    <%= client.address.zipcode %>
+    <br />
+  </p>
+</div>
