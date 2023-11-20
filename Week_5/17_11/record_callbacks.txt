@@ -1,0 +1,172 @@
+after_initialize and after_find
+	Trong Ruby on Rails, có hai callback là after_initialize và after_find được gọi khi một đối tượng Active Record được 
+	khởi tạo hoặc tìm thấy từ cơ sở dữ liệu.
+	
+	Ví dụ:
+		class User < ApplicationRecord
+		  after_initialize do |user|
+		    puts "Bạn đã khởi tạo một đối tượng!"
+		  end
+
+		  after_find do |user|
+		    puts "Bạn đã tìm thấy một đối tượng!"
+		  end
+		end
+		
+		
+		irb> User.new
+		Bạn đã khởi tạo một đối tượng!
+		=> #<User id: nil>
+
+		irb> User.first
+		Bạn đã tìm thấy một đối tượng!
+		Bạn đã khởi tạo một đối tượng!
+		=> #<User id: 1>
+		
+		
+	after_initialize: Được gọi mỗi khi một đối tượng Active Record được khởi tạo, bất kể là thông qua new trực tiếp hoặc khi 
+	một bản ghi được tạo từ cơ sở dữ liệu. Điều này giúp tránh việc cần phải ghi đè trực tiếp lên phương thức initialize của 
+	Active Record.
+
+	after_find: Được gọi khi một bản ghi được tìm thấy từ cơ sở dữ liệu. Nó được gọi trước after_initialize nếu cả hai đều 
+	được định nghĩa.
+	
+after_touch
+	Trong Ruby on Rails, callback after_touch sẽ được gọi mỗi khi một đối tượng Active Record được "chạm vào" (touched).
+	
+	class User < ApplicationRecord
+	  after_touch do |user|
+	    puts "Bạn đã chạm vào một đối tượng"
+	  end
+	end
+	
+	
+	
+	irb> u = User.create(name: 'Kuldeep')
+	=> #<User id: 1, name: "Kuldeep", created_at: "2013-11-25 12:17:49", updated_at: "2013-11-25 12:17:49">
+
+	irb> u.touch
+	Bạn đã chạm vào một đối tượng
+	=> true
+
+	Callback after_touch có thể được sử dụng cùng với belongs_to hoặc has_many để tự động gọi touch trên đối tượng liên quan:
+	
+	class Book < ApplicationRecord
+	  belongs_to :library, touch: true
+	  after_touch { puts 'Một cuốn sách đã được chạm vào' }
+	end
+
+	class Library < ApplicationRecord
+	  has_many :books
+	  after_touch :log_when_books_or_library_touched
+
+	  private
+
+	  def log_when_books_or_library_touched
+	    puts 'Sách/Thư viện đã được chạm vào'
+	  end
+	end
+	
+	
+	
+	irb> @book = Book.last
+	=> #<Book id: 1, library_id: 1, created_at: "2013-11-25 17:04:22", updated_at: "2013-11-25 17:05:05">
+
+	irb> @book.touch # kích hoạt @book.library.touch
+	Một cuốn sách đã được chạm vào
+	Sách/Thư viện đã được chạm vào
+	=> true
+	
+Phương thức touch
+	touch là một phương thức được sử dụng để cập nhật thông tin thời gian (timestamps) của một bản ghi trong cơ sở dữ liệu 
+	mà không thay đổi các trường dữ liệu khác.
+	
+	Khi một đối tượng được tạo hoặc cập nhật trong Rails, thông thường Rails sẽ tự động cập nhật hai trường created_at và 
+	updated_at để lưu thời gian mà bản ghi được tạo hoặc cập nhật lần cuối. Tuy nhiên, trong một số trường hợp, bạn có thể 
+	muốn "chạm vào" (touch) một đối tượng mà không thay đổi dữ liệu của nó, chỉ để cập nhật thời gian.
+	
+	
+	Khi gọi phương thức touch trên một đối tượng ActiveRecord, nó sẽ thực hiện các hành động sau:
+		+ Cập nhật thời gian updated_at của đối tượng lên thời gian hiện tại.
+		+ Nếu đối tượng có quan hệ belongs_to với một đối tượng khác thông qua touch: true, thì cũng sẽ cập nhật 
+		thời gian updated_at của đối tượng liên quan.
+		
+	
+	Ví dụ:
+		+ Khi bạn gọi @book.touch trên một đối tượng sách (book), nó sẽ cập nhật thời gian updated_at của sách. 
+		Nếu có một mối quan hệ belongs_to với thư viện (library) thông qua touch: true, nó cũng sẽ cập nhật thời gian 
+		updated_at của thư viện liên quan.
+		
+Halting Execution
+	Toàn bộ chuỗi callback được bao bọc trong một giao dịch (transaction). Nếu bất kỳ callback nào ném ra một ngoại lệ, 
+	chuỗi thực thi sẽ bị dừng và một ROLLBACK sẽ được thực hiện. Để ngừng một chuỗi callback một cách cố ý, bạn có thể 
+	sử dụng:
+	
+	throw :abort
+	
+	
+Relational Callbacks
+	class User < ApplicationRecord
+	  has_many :articles, dependent: :destroy
+	end
+
+	class Article < ApplicationRecord
+	  after_destroy :log_destroy_action
+
+	  def log_destroy_action
+	    puts 'Article destroyed'
+	  end
+	end
+	
+	irb> user = User.first
+	=> #<User id: 1>
+	irb> user.articles.create!
+	=> #<Article id: 1, user_id: 1>
+	irb> user.destroy
+	Article destroyed
+	=> #<User id: 1>
+	
+	
+	=> (has_many :articles, dependent: :destroy) User model có mối quan hệ has_many với model Article, với tùy chọn
+	 dependent: :destroy. Điều này có nghĩa là khi một User bị xóa, tất cả các Article liên quan đến User đó cũng sẽ bị 
+	 xóa theo.
+	 
+	 => Article model có một callback after_destroy được định nghĩa. Khi một Article bị xóa, hàm log_destroy_action sẽ 
+	 được gọi và in ra thông báo "Article destroyed".
+	 
+	Với cấu hình trên, khi một User bị xóa, tất cả các Article liên quan đến User đó sẽ cũng bị xóa. Mỗi khi một Article 
+	bị xóa, thông báo "Article destroyed" sẽ được hiển thị ra màn hình console hoặc log.
+	
+	
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+

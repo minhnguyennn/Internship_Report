@@ -138,7 +138,7 @@ Active Record Query Interface
 		
 	2.1.2 take
 	
-		Phương thức này taketruy xuất một bản ghi mà không có bất kỳ thứ tự ngầm định nào. Ví dụ:
+		Phương thức này take truy xuất một bản ghi mà không có bất kỳ thứ tự ngầm định nào. Ví dụ:
 		
 		irb> customer = Customer.take
 		=> #<Customer id: 1, first_name: "Lifo">
@@ -156,7 +156,7 @@ Active Record Query Interface
 		
 	2.1.3 first
 	
-		Phương firstthức tìm bản ghi đầu tiên được sắp xếp theo khóa chính (mặc định). Ví dụ:
+		Phương first thức tìm bản ghi đầu tiên được sắp xếp theo khóa chính (mặc định). Ví dụ:
 		irb> customer = Customer.first
 		=> #<Customer id: 1, first_name: "Lifo">
 		

@@ -1,0 +1,157 @@
+Tìm hiểu về find ?
+	Định nghĩa: Phương thức find trong Ruby on Rails được sử dụng để truy vấn đối tượng theo khóa chính của chúng.
+	
+	Ví dụ:
+		1. Một ID duy nhất:
+			Khi truyền một ID duy nhất (số nguyên hoặc chuỗi biểu diễn số nguyên), nó sẽ trả về đối tượng có ID cụ thể đó.
+			
+			Person.find(1)          # Trả về đối tượng có ID = 1
+			Person.find("1")        # Trả về đối tượng có ID = 1
+
+		2. ID trong chuỗi:
+			Nếu ID nằm trong một chuỗi, nó sẽ trích xuất ID từ chuỗi đó và trả về đối tượng có ID đó.
+			
+			Person.find("31-sarah") # Trả về đối tượng có ID = 31
+
+		3. Nhiều IDs:
+			Truyền nhiều IDs dưới dạng các đối số riêng lẻ hoặc dưới dạng một mảng sẽ trả về một mảng các đối tượng 
+			có các ID cụ thể đó.
+			
+			Person.find(1, 2, 6)    # Trả về một mảng các đối tượng có IDs trong (1, 2, 6)
+			Person.find([7, 17])    # Trả về một mảng các đối tượng có IDs trong (7, 17) hoặc khóa chính composite [7, 17]
+			Person.find([1])        # Trả về một mảng cho đối tượng có ID = 1
+			
+		4. Kết hợp các truy vấn với where, order, và find:
+			Bạn có thể kết hợp các phương thức where, order, và find để thực hiện các truy vấn phức tạp hơn.
+			
+			Person.where("administrator = 1").order("created_on DESC").find(1)
+	
+	Lưu ý: nếu không có bản ghi nào khớp với các ID được cung cấp, ActiveRecord::RecordNotFound sẽ được kích hoạt.
+	
+	Tìm bản ghi cho mô hình khóa chính tổng hợp
+	
+	Ví dụ:
+		# Tìm một bản ghi với khóa chính là ["Ottawa", "London"]
+		TravelRoute.find(["Ottawa", "London"])
+		# Kết quả sẽ là: #<TravelRoute origin: "Ottawa", destination: "London">
+
+		# Tìm nhiều bản ghi với khóa chính là [["Paris", "Montreal"]]
+		TravelRoute.find([["Paris", "Montreal"]])
+		# Kết quả sẽ là: [#<TravelRoute origin: "Paris", destination: "Montreal">]
+
+		# Tìm nhiều bản ghi với các khóa chính khác nhau
+		TravelRoute.find(["New York", "Las Vegas"], ["New York", "Portland"])
+		# Kết quả sẽ là một mảng gồm các đối tượng: 
+		# [
+		#   #<TravelRoute origin: "New York", destination: "Las Vegas">,
+		#   #<TravelRoute origin: "New York", destination: "Portland">
+		# ]
+
+		# Tìm nhiều bản ghi với nhiều khóa chính khác nhau
+		TravelRoute.find([["Berlin", "London"], ["Barcelona", "Lisbon"]])
+		# Kết quả sẽ là một mảng gồm các đối tượng: 
+		# [
+		#   #<TravelRoute origin: "Berlin", destination: "London">,
+		#   #<TravelRoute origin: "Barcelona", destination: "Lisbon">
+		# ]
+		
+Tìm hiểu về find_by ?
+	Định nghĩa: Phương thức find_by được sử dụng để tìm bản ghi đầu tiên phù hợp với các điều kiện được chỉ định. Không có sắp 
+	xếp ngầm định nào được thực hiện nên nếu thứ tự quan trọng, bạn nên chỉ định rõ ràng.
+	Nếu không tìm thấy bản ghi nào phù hợp, phương thức sẽ trả về nil.
+	
+	Ví dụ 1:
+		Sử dụng Điều kiện Dạng Hash
+			Post.find_by(name: 'Spartacus', rating: 4)
+			
+			=> Đoạn mã này tìm bản ghi đầu tiên trong bảng Post có thuộc tính name là 'Spartacus' và rating là 4. 
+			Nếu tìm thấy, nó trả về bản ghi phù hợp; nếu không, nó trả về nil.
+			
+	Ví dụ 2:
+		Sử dụng Điều kiện SQL
+			Post.find_by("published_at < ?", 2.weeks.ago)
+
+			=> Đoạn mã này tìm bản ghi đầu tiên trong bảng Post có thuộc tính published_at thỏa mãn điều kiện SQL
+			("published_at < ?", 2 tuần trước). Nếu tìm thấy, nó trả về bản ghi phù hợp; nếu không, nó trả về nil.
+			
+Tìm hiểu về find_by! ?
+	Định nghĩa: Điều này có nghĩa là find_by! sẽ trả về bản ghi đầu tiên phù hợp nếu có, nhưng nếu không có bản ghi nào khớp 
+	với điều kiện, nó sẽ không trả về nil như find_by, mà thay vào đó sẽ ném một ngoại lệ ActiveRecord::RecordNotFound.
+	
+	Ví dụ 1:
+		Post.find_by!(name: 'Spartacus', rating: 4)
+			
+		=> Nếu có bản ghi nào trong bảng Post có thuộc tính name là 'Spartacus' và rating là 4, phương thức sẽ trả về bản 
+		ghi đó. Tuy nhiên, nếu không có bản ghi nào khớp với điều kiện, nó sẽ kích hoạt lỗi ActiveRecord::RecordNotFound.
+		
+Tìm hiểu về query n + 1  ?
+	Định nghĩa: 
+		+ N + 1 query là một vấn đề trong việc truy vấn dữ liệu từ cơ sở dữ liệu
+		+ Vấn đề này xuất hiện khi một truy vấn gốc được thực hiện để lấy danh sách các đối tượng, và sau đó, 
+		mỗi đối tượng đó yêu cầu một truy vấn riêng để lấy dữ liệu liên quan đến nó.
+		
+	Ví dụ:
+		Giả sử bạn có hai bảng dữ liệu: Authors và Books, mối quan hệ giữa chúng là một-nhiều (một tác giả có thể viết nhiều
+		cuốn sách). Khi bạn muốn lấy thông tin về tất cả tác giả cùng với sách mà họ đã viết, và bạn sử dụng N + 1 query,
+		quá trình này diễn ra như sau:
+		
+		authors = Author.all
+		authors.each do |author|
+		  books = author.books # Mỗi lần lặp lại, một truy vấn riêng được gọi để lấy sách của từng tác giả
+		end
+		
+	Giải thích:
+		Với mỗi tác giả trong danh sách, một truy vấn riêng lẻ được tạo ra để lấy thông tin sách của tác giả đó. Điều này 
+		dẫn đến N + 1 truy vấn: một truy vấn ban đầu để lấy danh sách tác giả, sau đó mỗi tác giả yêu cầu một truy vấn riêng 
+		để lấy sách của họ.
+		
+	Tác hại:
+		Vấn đề với N + 1 query là nó có thể dẫn đến tăng cường thời gian thực hiện và tài nguyên được sử dụng không hiệu quả.
+		Thay vì thực hiện nhiều truy vấn nhỏ, việc tối ưu hóa sẽ là thực hiện ít truy vấn lớn hơn hoặc sử dụng các kỹ thuật 
+		như eager loading (tải trước) để giảm số lượng truy vấn và tối ưu hóa hiệu suất.
+		
+	Giải quyết:
+		Sử dụng strict_loading để không gặp vấn đề N+1 query
+		
+		Ví dụ:
+			# Kích hoạt strict_loading cho đối tượng Author và Book
+			Author.strict_loading do
+			  Book.strict_loading do
+			    # Lấy danh sách tất cả tác giả và eager load sách của từng tác giả
+			    authors = Author.includes(:books).all
+
+			    # Lặp qua từng tác giả và in thông tin về sách của từng tác giả
+			    authors.each do |author|
+			      puts "Author: #{author.name}"
+			      author.books.each do |book|
+				puts "Book: #{book.title}"
+			      end
+			    end
+			  end
+			end
+
+
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+

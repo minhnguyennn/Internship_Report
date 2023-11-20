@@ -1,0 +1,279 @@
+Select DISTINCT
+	SELECT DISTINCT Country FROM Customers;
+	
+Count Distinct
+	SELECT COUNT(DISTINCT Country) FROM Customers;
+	
+WHERE
+	SELECT * FROM Customers
+	WHERE Country='Mexico';
+	
+	-- Sử dụng single quotes cho giá trị văn bản
+	SELECT * FROM Customers WHERE name = 'John';
+	
+	-- Không cần bao quanh giá trị số bởi dấu ngoặc
+	SELECT * FROM Orders WHERE order_id = 1001;
+	
+SQL ORDER BY
+	SELECT * FROM Products
+	ORDER BY Price;
+	
+	SELECT * FROM Products
+	ORDER BY Price DESC;
+	
+	
+	SELECT * FROM Customers
+	ORDER BY Country, CustomerName;
+	
+	=> Câu lệnh trên sẽ trả về tất cả các khách hàng từ bảng "Customers", được sắp xếp theo trường "Country" trước. 
+	Nếu có các khách hàng có cùng quốc gia, các hàng này sẽ tiếp tục được sắp xếp theo trường "CustomerName".
+	
+	
+	SELECT * FROM Customers
+	ORDER BY Country ASC, CustomerName DESC;
+	
+SQL AND
+	SELECT * 
+	FROM Customers 
+	WHERE Country = 'Spain' AND CustomerName LIKE 'G%';
+	
+	SELECT * FROM Customers
+	WHERE Country = 'Germany'
+	AND City = 'Berlin'
+	AND PostalCode > 12000;
+	
+	SELECT * FROM Customers
+	WHERE Country = 'Spain' AND (CustomerName LIKE 'G%' OR CustomerName LIKE 'R%');
+	
+	=> nếu không sử dụng dấu ngoặc để xác định rõ ràng thứ tự thực hiện của các điều kiện trong mệnh đề WHERE, kết quả 
+	có thể không như mong đợi.
+	
+	=> AND có mức độ ưu tiên cao hơn so với OR.
+	Do đó, các điều kiện Country = 'Spain' và CustomerName LIKE 'G%' được xử lý trước với AND.
+	
+SQL OR
+	SELECT *
+	FROM Customers
+	WHERE Country = 'Germany' OR Country = 'Spain';
+	
+	
+SQL NOT
+	SELECT * FROM Customers
+	WHERE NOT Country = 'Spain';
+	
+	=> Câu lệnh này sẽ trả về các khách hàng không có Country là 'Spain'. Nó sẽ loại bỏ tất cả các bản ghi có Country là 'Spain' 
+	và chỉ trả về các bản ghi có Country khác 'Spain'.
+	
+	SELECT * FROM Customers
+	WHERE CustomerName NOT LIKE 'A%';
+	
+	SELECT * FROM Customers
+	WHERE NOT CustomerID > 50;
+	
+	SELECT * FROM Customers
+	WHERE NOT CustomerId < 50;
+	
+SQL INSERT INTO
+	INSERT INTO Customers (CustomerName, City, Country)
+	VALUES ('Cardinal', 'Stavanger', 'Norway');
+	
+	INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
+	VALUES
+	('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway'),
+	('Greasy Burger', 'Per Olsen', 'Gateveien 15', 'Sandnes', '4306', 'Norway'),
+	('Tasty Tee', 'Finn Egan', 'Streetroad 19B', 'Liverpool', 'L1 0AA', 'UK');
+	
+SQL NULL Values
+	What is a NULL Value?
+		Lưu ý: Giá trị NULL khác với giá trị zero hoặc một trường chứa khoảng trắng. Một trường với giá trị NULL là trường đã 
+		được để trống trong quá trình tạo bản ghi.
+		
+	How to Test for NULL Values?
+		SELECT * FROM table_name
+		WHERE column_name IS NULL;
+		
+		SELECT CustomerName, ContactName, Address
+		FROM Customers
+		WHERE Address IS NULL;
+		
+		SELECT CustomerName, ContactName, Address
+		FROM Customers
+		WHERE Address IS NOT NULL;
+		
+SQL UPDATE
+	UPDATE Customers
+	SET ContactName = 'Alfred Schmidt', City = 'Frankfurt'
+	WHERE CustomerID = 1;
+	
+	UPDATE Customers
+	SET ContactName='Juan'
+	WHERE Country='Mexico';
+	
+	UPDATE Customers
+	SET ContactName='Juan';
+	
+	=> Nếu bỏ qua WHERE clause, TẤT CẢ các bản ghi sẽ bị cập nhật!
+	
+SQL DELETE
+	DELETE FROM Customers 
+	WHERE CustomerName='Alfreds Futterkiste';
+	
+	DELETE FROM Customers 
+	=>xóa hết dữ liệu trong bảng customer
+
+	DROP TABLE Customers;
+	=>xóa cả bảng customer
+	
+SQL SELECT LIMIT
+	SELECT * FROM Customers
+	LIMIT 3;
+	=> trả về chỉ 3 bản ghi đầu tiên từ bảng "Customers".
+	
+	
+	SELECT * FROM Customers
+	WHERE Country='Germany'
+	LIMIT 3;
+	
+	SELECT * FROM Customers
+	ORDER BY CustomerName DESC
+	LIMIT 3;
+	=>trả về 3 bản ghi đầu tiên từ bảng "Customers" sau khi đã được sắp xếp theo trường "CustomerName" theo thứ tự giảm dần. 
+
+SQL MIN() and MAX()
+	SELECT MIN(Price)
+	FROM Products;
+	
+	SELECT MAX(Price)
+	FROM Products;
+	
+SQL COUNT()
+	SELECT COUNT(ProductID)
+	FROM Products
+	WHERE Price > 20;
+	
+	SELECT COUNT(DISTINCT Price)
+	FROM Products;
+	
+	SELECT COUNT(*) AS [number of records]
+	FROM Products;
+	
+The SQL SUM()
+	SELECT SUM(Quantity)
+	FROM OrderDetails;
+	
+	=> Nó sẽ nhân số lượng (Quantity) của mỗi sản phẩm với giá 10 đô la 
+	và sau đó tính tổng của các giá trị thu được từ biểu thức này.
+	
+	SELECT SUM(Price * Quantity)
+	FROM OrderDetails
+	LEFT JOIN Products ON OrderDetails.ProductID = Products.ProductID;
+
+SQL AVG() 
+	SELECT AVG(Price)
+	FROM Products;
+	=> Nó sẽ tính toán giá trị trung bình của tất cả các giá trị số trong 
+	trường "Price" của mỗi bản ghi trong bảng và trả về kết quả là giá trị 
+	trung bình đó.
+	
+	Truy vấn nội tuyến (subquery) 
+	SELECT * FROM Products
+	WHERE price > (SELECT AVG(price) FROM Products);
+
+SQL LIKE
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE 'a%';
+	
+	
+	SELECT * FROM Customers
+	WHERE city LIKE 'L_nd__';
+	=> Câu truy vấn sẽ trả về tất cả các khách hàng từ một thành phố có tên bắt 
+	đầu bằng chữ 'L', theo sau là bất kỳ một ký tự nào (_), sau đó là 'nd', và cuối 
+	cùng là hai ký tự bất kỳ (__).
+	
+	SELECT * FROM Customers
+	WHERE city LIKE '%L%';
+	=> Câu lệnh LIKE '%L%' sẽ lựa chọn các bản ghi trong cột city mà chứa chữ 'L' ở bất 
+	kỳ vị trí nào, trước, sau hoặc ở giữa các ký tự khác.
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE 'La%';
+	=> Ký tự % ở cuối biểu thị rằng sau chuỗi 'La' có thể là bất kỳ ký tự nào hoặc không có ký tự nào. 
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE 'a%' OR CustomerName LIKE 'b%';
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE '%a';
+	=> câu lệnh LIKE '%a' sẽ chọn tất cả các khách hàng có tên kết thúc bằng chữ cái 'a'.
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE 'b%s';
+	=> Câu lệnh LIKE 'b%s' yêu cầu tên khách hàng bắt đầu bằng chữ "b" và kết thúc 
+	bằng bất kỳ ký tự nào, cuối cùng là chữ "s".
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE '%or%';
+	=> Trong truy vấn này, câu lệnh LIKE '%or%' sẽ chọn tất cả các khách hàng có tên chứa cụm từ 'or'.
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE 'a__%';
+	=> Điều này sẽ trả về tất cả các bản ghi trong cột CustomerName mà tên bắt đầu bằng "a" và có ít nhất 3 ký tự.
+	
+	SELECT * FROM Customers
+	WHERE CustomerName LIKE '_r%';
+	=> Điều này sẽ trả về tất cả các bản ghi trong cột CustomerName mà chứa chữ cái "r" 
+	ở vị trí thứ hai trong tên của khách hàng.
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
