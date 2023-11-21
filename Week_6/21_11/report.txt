@@ -1,0 +1,278 @@
+Scopes
+	Định nghĩa:
+		Scoping là cách để xác định các truy vấn thông dụng mà sau đó có thể gọi như các phương thức trên đối tượng liên kết
+		(association objects) hoặc các mô hình (models). Các phạm vi này giúp bạn sử dụng mọi phương thức where, joins và
+		includes. Tất cả các phạm vi (scopes) cần phải trả về một ActiveRecord::Relation hoặc nil để cho phép các phương thức
+		khác (như các phạm vi khác) có thể gọi đến nó.
+		
+	Cách dùng:
+		Để định nghĩa một phạm vi đơn giản, chúng ta sử dụng phương thức scope bên trong class, truyền truy vấn mà chúng ta muốn
+		chạy khi phạm vi này được gọi:
+		
+		class Book < ApplicationRecord
+		  scope :out_of_print, -> { where(out_of_print: true) }
+		end
+		
+		Giải thích:
+			Trong ví dụ trên, đoạn mã này xác định một phạm vi có tên là out_of_print cho mô hình Book. Khi bạn gọi
+			Book.out_of_print, nó sẽ trả về tất cả các sách mà thuộc tính out_of_print được đặt là true.
+			
+			out_of_print_books = Book.out_of_print
+			=> #<ActiveRecord::Relation> # all out of print books
+			
+			=> Biến out_of_print_books sẽ chứa một đối tượng ActiveRecord::Relation biểu diễn tất cả các sách được đánh 
+			dấu là hết phát hành trong cơ sở dữ liệu.
+			
+	Ví dụ:
+		class Book < ApplicationRecord
+		  scope :out_of_print, -> { where(out_of_print: true) }
+		  scope :out_of_print_and_expensive, -> { out_of_print.where("price > 500") }
+		end
+		
+		irb> author = Author.first
+		irb> author.books.out_of_print
+		=> #<ActiveRecord::Relation> # all out of print books by `author`
+
+	Lưu ý:
+		1. Các phạm vi (scopes) có thể được kết hợp với nhau hoặc với các phương thức khác như where, joins, includes, hoặc các
+		phương thức khác để thu hẹp hoặc thay đổi dữ liệu bạn muốn lấy từ cơ sở dữ liệu.
+
+		2. Phần thân của một phạm vi cần phải trả về một ActiveRecord::Relation hoặc nil để cho phép việc gọi các phương thức
+		hoặc phạm vi khác. Nếu phần thân của phạm vi trả về cái khác, có thể gây ra sự cố khi kết hợp với các phương thức khác.
+		
+		
+	Lợi ích:
+		Phạm vi (scopes) rất mạnh mẽ và hữu ích để giữ mã của bạn ngắn gọn và không lặp lại bằng cách bao gói logic truy vấn
+		thường xuyên được sử dụng.
+		
+	TRuyển tham số cho scope
+		Định nghĩa:
+			Bạn có thể truyền đối số vào các scopes để tạo các truy vấn linh hoạt dựa trên các giá trị cụ thể. Scopes có 
+			thể nhận các đối số và sử dụng chúng trong truy vấn.
+				
+		Ví dụ 1:
+			
+			class Book < ApplicationRecord
+			  scope :costs_more_than, ->(amount) { where("price > ?", amount) }
+			end
+
+			=> Ở đây, scope costs_more_than nhận một đối số amount, và khi bạn gọi Book.costs_more_than(100), 
+			nó sẽ trả về tất cả các sách có giá lớn hơn 100 đô la.
+			
+		Ví dụ 2:
+			Bản chất của scope có thể được tạo dưới dạng một phương thức của lớp:
+			
+			class Book < ApplicationRecord
+			  def self.costs_more_than(amount)
+			    where("price > ?", amount)
+			  end
+			end
+			
+			=> Cách sử dụng giống ví dụ 1
+			
+		Ví dụ 3:
+			Các phương thức này vẫn có thể được sử dụng trên các đối tượng liên kết (associations)
+			
+			author = Author.first
+			author.books.costs_more_than(100)
+			
+			=> Trong trường hợp này, nó sẽ trả về tất cả các sách của tác giả có giá lớn hơn 100. 
+			
+			=> Điều này cho phép bạn sử dụng các phương thức này trên các liên kết đối tượng (associations) để lọc dữ liệu
+			cụ thể mà không cần phải tạo các truy vấn phức tạp hơn.
+			
+	Phân biệt scopes và phương thức lớp
+		Định nghĩa:
+			Scopes và phương thức của lớp đều có thể chứa điều kiện để điều chỉnh truy vấn dữ liệu. Điểm khác biệt quan
+			trọng giữa chúng là cách mà chúng xử lý giá trị trả về khi điều kiện không được đáp ứng.
+			
+		Scopes sử dụng điều kiện:
+			class Order < ApplicationRecord
+			  scope :created_before, ->(time) { where(created_at: ...time) if time.present? }
+			end
+			
+			=> Đây là một scope có tên là created_before trong mô hình Order. Nó nhận một đối số time và áp dụng một điều
+			kiện để lấy các đơn hàng được tạo trước thời gian cụ thể nếu time tồn tại.
+			
+		Phương thức của lớp với điều kiện tương tự:
+			class Order < ApplicationRecord
+			  def self.created_before(time)
+			    where(created_at: ...time) if time.present?
+			  end
+			end
+			
+		So sánh:
+			Scope:
+				Scope sẽ luôn trả về một đối tượng ActiveRecord::Relation ngay cả khi điều kiện không đúng. 
+				Điều này có nghĩa rằng nó sẽ không trả về nil, mà sẽ trả về một đối tượng truy vấn.
+				
+			Phương thức của lớp:
+				Phương thức của lớp sẽ trả về nil nếu điều kiện không được đáp ứng. Điều này có thể gây ra vấn đề khi
+				bạn tạo chuỗi (chain) các phương thức vì nếu một trong các phương thức trả về nil, các phương thức tiếp
+				theo sẽ gây ra lỗi NoMethodError.
+				
+			Ví dụ:
+				orders = Order.created_before(some_time).other_method
+				
+				=> Nếu Order.created_before(some_time) không đáp ứng điều kiện và trả về một ActiveRecord::Relation 
+				trống, thì gọi .other_method không gây lỗi. Tuy nhiên, nếu nó trả về nil, sẽ gây lỗi khi
+				gọi .other_method.
+				
+	Default scope là gì?
+		Định nghĩa: 
+			Default scope là một phương thức trong Ruby on Rails cho phép bạn áp dụng một điều kiện truy vấn mặc định cho	
+			tất cả các truy vấn trên một mô hình nhất định. Khi bạn sử dụng default_scope, điều kiện này sẽ tự động được 
+			áp dụng vào mỗi truy vấn trên mô hình mà không cần phải viết điều kiện trong mỗi truy vấn riêng lẻ.
+			
+		Ví dụ:
+			class Book < ApplicationRecord
+			  default_scope { where(out_of_print: false) }
+			end
+			
+			=> default_scope được sử dụng để áp dụng một điều kiện mặc định là where(out_of_print: false) cho tất cả các 
+			truy vấn trên mô hình Book. Khi bạn thực hiện truy vấn như Book.all, điều kiện này sẽ tự động được áp dụng.
+			
+		Sử dụng default_scope như một phương thức của lớp:
+			Ví dụ:
+				class Book < ApplicationRecord
+				  def self.default_scope
+				    # Should return an ActiveRecord::Relation.
+				  end
+				end
+				
+				=> Bạn cũng có thể sử dụng default_scope như một phương thức của lớp để thực hiện logic phức tạp hơn.
+				Tuy nhiên, bạn cần đảm bảo rằng phương thức này trả về một ActiveRecord::Relation.
+				
+		Lưu ý khí dùn với một chuỗi truy vấn SQL
+			Ví dụ:
+				class Book < ApplicationRecord
+				  default_scope { where("out_of_print = ?", false) }
+				end
+				
+				irb> Book.new
+				=> #<Book id: nil, out_of_print: nil>
+				
+				=> Khi sử dụng chuỗi truy vấn SQL có thể làm sai định dạng của default_scope
+				
+	Kết hợp Scopes
+		Ví dụ:
+			class Book < ApplicationRecord
+			  scope :in_print, -> { where(out_of_print: false) }
+			  scope :out_of_print, -> { where(out_of_print: true) }
+
+			  scope :recent, -> { where(year_published: 50.years.ago.year..) }
+			  scope :old, -> { where(year_published: ...50.years.ago.year) }
+			end
+
+			
+			=> in_print và out_of_print là các scopes để lọc sách dựa trên việc sách có đang được in hay đã ngừng in.
+			
+			=> recent và old là các scopes để lọc sách dựa trên ngày xuất bản, phân loại chúng là sách mới hay cũ.
+			
+			Khi bạn kết hợp các scopes lại với nhau, ví dụ:
+			
+				irb> Book.out_of_print.old
+				SELECT books.* FROM books WHERE books.out_of_print = 'true' AND books.year_published < 1969
+				
+			Tương tự, bạn có thể kết hợp các scopes với điều kiện 'where' :
+				
+				Book.in_print.where(price: ...100)
+				SELECT books.* FROM books WHERE books.out_of_print = 'false' AND books.price < 100
+				
+			Nếu bạn muốn ưu tiên điều kiện từ một scope cụ thể hơn các scope khác, bạn có thể sử dụng merge:
+			
+				irb> Book.in_print.merge(Book.out_of_print)
+				SELECT books.* FROM books WHERE books.out_of_print = true
+
+				=> Dùng cú pháp merge ở giữa để kết hợp 2 scope lại , ưu tiên scope trong merge trước
+				
+		Sử dụng default_scope với câu điều kiện where
+			class Book < ApplicationRecord
+			  default_scope { where(year_published: 50.years.ago.year..) }
+
+			  scope :in_print, -> { where(out_of_print: false) }
+			  scope :out_of_print, -> { where(out_of_print: true) }
+			end
+			
+			irb> Book.all
+			SELECT books.* FROM books WHERE (year_published >= 1969)
+			
+			=> Book.all sẽ lấy danh sách theo mặc định là các sách xuất bản gần đây
+			
+			irb> Book.in_print
+			SELECT books.* FROM books WHERE (year_published >= 1969) AND books.out_of_print = false
+			
+			=> Book.in_print sẽ lấy danh sách theo mặc định là các sách xuất bản gần đây và còn xuất bản
+			
+			irb> Book.where('price > 50')
+			SELECT books.* FROM books WHERE (year_published >= 1969) AND (price > 50)
+			
+			=> Book.where sẽ lấy danh sách theo mặc định là các sách xuất bản gần đây và giá lớn hơn 50
+
+				
+	Xóa scope
+		Định nghĩa:
+		  	unscoped là một phương thức trong Ruby on Rails được sử dụng để loại bỏ các phạm vi (scopes) đã được áp dụng
+		  	trước đó đối với một model cụ thể.
+		  	
+		 Ví dụ 1:
+		 	Book.unscoped.load
+		
+			=> Đoạn mã này lấy tất cả các bản ghi từ bảng books mà không xem xét bất kỳ phạm vi nào đã được định nghĩa 
+			trước đó. Nó tạo một truy vấn SQL giống như SELECT books.* FROM books.
+			
+			
+		Ví dụ 2:
+			irb> Book.where(out_of_print: true).unscoped.all
+			SELECT books.* FROM books	
+	
+			=> Bỏ đi câu điều kiện where và default_scope của book
+			
+		Ví dụ 3:
+			irb> Book.unscoped { Book.out_of_print }
+			SELECT books.* FROM books WHERE books.out_of_print = true
+
+			=> Có thể dùng unscoped với 1 block
+			
+			=> Lệnh này sẽ chỉ lấy scope Book.out_of_print còn default_scope sẽ bị loại bỏ
+	
+
+
+			
+		
+	
+		
+
+
+
+
+			
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
