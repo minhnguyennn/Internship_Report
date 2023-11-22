@@ -1,0 +1,208 @@
+serialize
+	Định nghĩa:
+		Phương thức serialize cho phép bạn lưu trữ các đối tượng không cấu trúc, như mảng, hash, hoặc các đối tượng Ruby phức 
+		tạp khác, vào một cột trong cơ sở dữ liệu dưới dạng một chuỗi.
+		 
+	Cú pháp:
+		serialize(attr_name, class_name_or_coder = nil, coder: nil, type: Object, yaml: {}, **options)
+		
+	Parameters:
+		- attr_name: Đây là tên của attribute bạn muốn serialize. Ví dụ: nếu bạn có một attribute tên là data trong model và 
+		muốn lưu trữ dữ liệu phức tạp vào cột này, bạn sẽ sử dụng 'data' ở đây.
+
+		- coder: Tham số này chỉ ra loại trình serializer bạn muốn sử dụng, như JSON, YAML, hoặc bất kỳ trình serializer tùy chỉnh
+		nào bạn có thể đã tạo. Phương thức dump(value) của trình serializer được sử dụng để serialize giá trị của attribute và
+		load(string) được sử dụng để deserialize giá trị đó.
+
+		- type (tùy chọn): Tham số này chỉ ra loại của đối tượng sau khi được serialize. Khi đặt, nếu cố gắng serialize một loại 
+		dữ liệu khác sẽ dẫn đến lỗi ActiveRecord::SerializationTypeMismatch. Nếu cột là NULL hoặc bắt đầu từ một bản ghi mới, 
+		giá trị mặc định sẽ được đặt là type.new.
+
+		- yaml (tùy chọn): Tham số này chứa các tùy chọn cụ thể cho YAML khi sử dụng nó làm trình serializer. Nó bao gồm:
+
+			:permitted_classes: Một mảng chỉ định các lớp được phép trong quá trình deserialize từ YAML.
+
+			:unsafe_load: Cho phép YAML tải bất kỳ lớp nào, có thể gây ra rủi ro về an ninh. Hãy sử dụng cẩn thận vì điều 
+			này có thể làm tăng rủi ro an ninh.
+		
+	Options:
+		:default có thể sử dụng tùy chọn này trong phương thức serialize để xác định giá trị mặc định của một attribute khi không 
+		có giá trị nào được cung cấp.
+		
+	Ví dụ 1:
+		# user.rb
+		class User < ActiveRecord::Base
+		  serialize :interests, Array
+		end
+		
+		# Creating a new user
+		user = User.new
+		user.name = 'John Doe'
+		user.email = 'john@example.com'
+		user.interests = ['Reading', 'Hiking', 'Cooking']
+		user.save
+		
+		=> Khi lưu, thông tin của  user sẽ thành chuỗi và  lưu vào cơ sở dữ liệu
+	
+	Ví dụ 2:
+		# app/models/example.rb
+		class Example < ApplicationRecord
+		  serialize :data, JSON # ở đây, `data` là tên của attribute cần serialize và `JSON` là định dạng để serialize (có thể là
+		  JSON, YAML, hoặc một định dạng tùy chỉnh khác)
+
+		  # ... các mã khác trong model ...
+		end
+		
+		=> Khi bạn gọi serialize :data, JSON, nó sẽ tự động thực hiện việc serialize và deserialize các đối tượng bạn gán cho
+		 attribute data khi lưu và lấy dữ liệu từ cơ sở dữ liệu.
+		 
+		=> Nếu trường hợp của bạn đòi hỏi xử lý phức tạp hơn, ví dụ như chuyển đổi giữa các đối tượng của ứng dụng và cơ sở dữ
+		 liệu, Rails cung cấp ActiveRecord::Attributes API, giúp bạn xác định các loại tùy chỉnh và xử lý serialize/deserialize một
+		 cách rõ ràng hơn cho các attribute cụ thể.
+		 
+	Ví dụ 3:
+		class Address
+		  attr_reader :line, :city, :country
+
+		  def self.load(payload)
+		    data = YAML.safe_load(payload)
+		    new(data["line"], data["city"], data["country"])
+		  end
+
+		  def self.dump(address)
+		    YAML.safe_dump(
+		      "line" => address.line,
+		      "city" => address.city,
+		      "country" => address.country,
+		    )
+		  end
+
+		  def initialize(line, city, country)
+		    @line, @city, @country = line, city, country
+		  end
+		end
+
+		class User < ActiveRecord::Base
+		  serialize :address, coder: Address
+		end
+		
+		=> Phương thức self.load(payload): Phương thức lớp này có trách nhiệm giải mã một dữ liệu đầu vào (giả định là dạng YAML)
+		trở lại thành một đối tượng Address. Nó sử dụng YAML.safe_load để an toàn cho việc phân tích cú pháp của dữ liệu đầu vào
+		và tạo một đối tượng Address mới.
+		
+		=> new(data["line"], data["city"], data["country"]) : Hàm new(data["line"], data["city"], data["country"]) đang thực hiện
+		việc khởi tạo một đối tượng mới từ lớp Address và truyền các giá trị của line, city, và country vào như là các đối số
+		của hàm khởi tạo (initialize) của lớp Address.
+		
+		=> Phương thức self.dump(address): Phương thức lớp này chuyển đổi một đối tượng Address thành một chuỗi YAML. 
+		Nó tạo một hash với các thuộc tính line, city, và country của đối tượng Address và sử dụng YAML.safe_dump để chuyển 
+		đổi hash này thành một chuỗi YAML.
+		
+		=> (serialize :address, coder: Address) : cột có tên address trong bảng cơ sở dữ liệu liên kết với mô hình User sẽ được
+		serialized. Khi dữ liệu được lưu vào cột này, ActiveRecord sẽ sử dụng lớp Address để thực hiện quá trình serialization
+		(chuyển đổi đối tượng thành dạng có thể lưu trữ, chẳng hạn như chuỗi) và deserialization (chuyển đổi từ dạng lưu trữ
+		thành đối tượng) khi trích xuất dữ liệu từ cơ sở dữ liệu.
+		
+	Một số cách dùng Serialize:
+	
+	Ví dụ 1:
+		class User < ActiveRecord::Base
+		  serialize :preferences, coder: YAML
+		end
+	
+		=> Đoạn mã này chỉ định rằng cột preferences trong bảng cơ sở dữ liệu liên kết với mô hình User sẽ được serialized bằng
+		cách sử dụng YAML. Dữ liệu trong cột này sẽ được chuyển đổi thành định dạng YAML khi lưu trữ và chuyển đổi từ YAML về
+		đối tượng khi trích xuất từ cơ sở dữ liệu.
+		
+	Ví dụ 2:
+		class User < ActiveRecord::Base
+		  serialize :preferences, coder: JSON
+		end
+		
+		=> Đoạn mã này tương tự như trên, nhưng lần này sử dụng JSON thay vì YAML để serialize cột preferences. 
+		Dữ liệu sẽ được chuyển đổi thành định dạng JSON khi lưu trữ và chuyển đổi từ JSON về đối tượng khi trích xuất từ 
+		cơ sở dữ liệu.
+		
+	Ví dụ 3:
+		class User < ActiveRecord::Base
+		  serialize :preferences, type: Hash, coder: YAML
+		end
+		
+		=> Đoạn mã này chỉ định rằng thuộc tính preferences trong mô hình User là một Hash và sử dụng YAML để serialize nó. 
+		Điều này giúp ActiveRecord biết rằng preferences là một Hash và áp dụng serialization theo cách phù hợp với kiểu dữ 
+		liệu này.
+		
+	Ví dụ  4:
+		class User < ActiveRecord::Base
+		  serialize :preferences, coder: YAML, yaml: { permitted_classes: [Symbol, Time] }
+		end
+		
+		=> Đoạn mã này giống như ví dụ đầu tiên sử dụng YAML để serialize preferences, nhưng có thêm tùy chọn permitted_classes.
+		Nó chỉ định rằng khi serialize, chỉ các lớp cụ thể như Symbol và Time được phép xuất hiện trong dữ liệu YAML, các lớp khác
+		sẽ không được phép. Điều này giúp bảo mật và kiểm soát dữ liệu được serialize.
+		
+		=> Ví dụ, nếu thuộc tính preferences trong mô hình User chứa các đối tượng có kiểu dữ liệu không phải là Symbol hoặc
+		Time, khi serialize dữ liệu này thành YAML, các đối tượng không thuộc các kiểu dữ liệu được cho phép sẽ không xuất hiện
+		trong dữ liệu YAML được tạo ra.
+		
+	Ví dụ 5:
+		class Rot13JSON
+		  def self.rot13(string)
+		    string.tr("a-zA-Z", "n-za-mN-ZA-M")
+		  end
+
+		  # Serializes an attribute value to a string that will be stored in the database.
+		  def self.dump(value)
+		    rot13(ActiveSupport::JSON.dump(value))
+		  end
+
+		  # Deserializes a string from the database to an attribute value.
+		  def self.load(string)
+		    ActiveSupport::JSON.load(rot13(string))
+		  end
+		end
+
+		class User < ActiveRecord::Base
+		  serialize :preferences, coder: Rot13JSON
+		end
+		
+		=> Tạo một custom coder (Rot13JSON) để sử dụng trong việc serialization và deserialization của thuộc tính preferences
+		trong mô hình User.
+		
+		=> string.tr("a-zA-Z", "n-za-mN-ZA-M") : ROT13 là một phương pháp mã hoá đơn giản thay thế mỗi ký tự trong chuỗi ban đầu
+		bằng ký tự cách xa nó 13 vị trí trong bảng chữ cái. ROT13 dùng để giấu đi thông tin trong văn bản.
+		
+		=> Phương thức dump nhận giá trị (value), sử dụng ActiveSupport::JSON.dump để chuyển đổi giá trị này thành chuỗi JSON, 
+		sau đó áp dụng mã hoá ROT13 (chuyển đổi các ký tự trong chuỗi theo một quy tắc đơn giản) lên chuỗi JSON đã tạo để lưu 
+		trữ vào cơ sở dữ liệu.
+		
+		=> Phương thức load nhận một chuỗi từ cơ sở dữ liệu, thực hiện giải mã ROT13 trước, sau đó sử dụng
+		ActiveSupport::JSON.load để chuyển đổi chuỗi JSON đã giải mã thành giá trị gốc.
+		
+		=> (serialize :preferences, coder: Rot13JSON): điều này chỉ định rằng dữ liệu trong cột preferences sẽ được serialize và
+		deserialize bằng cách sử dụng Rot13JSON, tức là sẽ sử dụng custom coder bạn đã tạo ra để xử lý dữ liệu trước khi lưu 
+		trữ và khi trích xuất từ cơ sở dữ liệu.
+
+
+
+
+
+	
+	
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
