@@ -1,0 +1,122 @@
+pluralize
+	Định nghĩa: 
+		pluralize là một phương thức hữu ích để xử lý việc định dạng chuỗi với số lượng nhiều và ít. Nó được sử dụng để xác
+		định cách sử dụng danh từ được chỉ định dựa trên số lượng của một đối tượng.
+	
+	Ví dụ:
+		<%= pluralize(user.errors.count, "error") %>
+		
+		=> Điều này sẽ trả về số lượng lỗi được ghi lại trong đối tượng user.errors, và nếu số lượng lỗi là một (1), nó sẽ trả
+		về chuỗi "error", ngược lại nó sẽ trả về chuỗi "errors".
+		
+		=> Nếu user.errors.count là 1, nó sẽ trả về "1 error".
+		   Nếu user.errors.count là 3, nó sẽ trả về "3 errors".
+		   
+Partial
+	Định nghĩa:
+		 "partials" là các phần của một view template được tách riêng thành các tệp nhỏ để tái sử dụng hoặc để làm cho code view
+		 trở nên dễ đọc và dễ quản lý hơn. Partials cho phép bạn tái sử dụng một đoạn code HTML hoặc Ruby trong nhiều nơi khác
+		 nhau trong ứng dụng của bạn mà không cần phải sao chép và dán mã HTML đó nhiều lần.
+		 
+	Tên của partial:
+		Tên của partial có dấu gạch dưới ở đầu như _form.html.erb
+		Điều này giúp phân biệt với các view chính khác
+		
+	Cách dùng:
+		<%= render "form", user: @user %>
+		
+		<%= form_with(model: user) do |form| %>	
+		
+		=> truyền user qua form_with để liên kết với model user
+		
+respond_to
+	Định nghĩa:
+		respond_to giúp ứng dụng của bạn có thể xử lý nhiều loại định dạng phản hồi từ cùng một action trong controller, tùy 
+		thuộc vào định dạng yêu cầu của client.
+		
+	Ví dụ:
+	    	    respond_to do |format|
+		      if @user.save
+			format.html { redirect_to user_url(@user), notice: "User was successfully created." }
+			format.json { render :show, status: :created, location: @user }
+		      else
+			format.html { render :new, status: :unprocessable_entity }
+			format.json { render json: @user.errors, status: :unprocessable_entity }
+		      end
+		    end
+		    
+		   => Nếu thành công đưa ra 1 thông báo vào chuyển hướng đến trang users có id
+		   
+		   => Mã trạng thái HTTP unprocessable_entity (422 - Dữ liệu không hợp lệ) để hiển thị form nhập liệu lại cho người dùng.
+		
+helper method button_to
+	Định nghĩa:
+		button_to là một helper method cung cấp sẵn giúp tạo ra một nút (button) trong HTML form. Helper methods như button_to 
+		được cung cấp để tạo các phần tử HTML một cách dễ dàng và tiện lợi trong các view của ứng dụng Rails.
+		
+	Ví dụ:
+		<%= button_to "Destroy this user", @user, method: :delete %>
+		
+		=> Dùng xóa 1 user theo id
+		
+Nested Resources
+	Định nghĩa:
+		Nested resources trong Rails đề cập đến cách tổ chức các routes trong ứng dụng Rails dựa trên mối quan hệ phân cấp giữa
+		các model. Khi một model có mối quan hệ cha con với một model khác, việc sử dụng nested resources cho phép bạn xác định 
+		và quản lý các routes để phản ánh mối quan hệ này.
+		
+		Ví dụ, nếu một model trong ứng dụng của bạn có mối quan hệ cha con với một model khác thông qua các association (quan
+		hệ), bạn có thể sử dụng nested resources để xác định cách các URL được cấu trúc theo cách liên quan đến mối quan hệ này.
+
+	Ví dụ:
+		class Magazine < ApplicationRecord
+		  has_many :ads
+		end
+
+		class Ad < ApplicationRecord
+		  belongs_to :magazine
+		end
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+		
