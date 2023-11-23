@@ -1,0 +1,10 @@
+<!-- Dynamic Address Show Here -->
+<div>
+  <% @employee.addresses.each do |address| %>
+    <p>&#10145; House Number: <%= address.house_number %></p>
+    <p>&#10145; Society Name: <%= address.society_name %></p>
+    <p>&#10145; Area: <%= address.area %></p>
+    <p>&#10145; City: <%= address.city %></p>
+    <hr>
+  <% end %>
+</div>

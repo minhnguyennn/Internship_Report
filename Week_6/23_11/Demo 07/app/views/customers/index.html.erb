@@ -1,0 +1,17 @@
+<!-- Customers -->
+<h1>Customers</h1>
+
+<div id="customers" class="mt-4">
+  <% @customers.each do |customer| %>
+    <div class="card mb-3">
+      <div class="card-body">
+        <%= render customer %>
+        <p>
+          <%= link_to "Show this customer", customer, class: "btn btn-primary" %>
+        </p>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= link_to "New customer", new_customer_path, class: "btn btn-success" %>

@@ -1,0 +1,655 @@
+Bộ điều khiển làm gì?
+	Định nghĩa:
+		Trong MVC, Controller là "C", và nó có nhiệm vụ xử lý yêu cầu từ người dùng sau khi Router (bộ định tuyến) xác định được
+		controller nào sẽ xử lý yêu cầu đó. Controller chịu trách nhiệm hiểu yêu cầu và tạo ra đầu ra phù hợp. Action Controller,
+		một phần của framework Rails (Ruby on Rails), thực hiện phần lớn công việc cơ bản và sử dụng các quy ước thông minh để
+		làm điều này một cách dễ dàng.
+
+		Trong hầu hết các ứng dụng theo mô hình RESTful (có cấu trúc REST), Controller sẽ nhận yêu cầu, lấy hoặc lưu dữ liệu từ
+		một Model (mô hình), và sử dụng một View (giao diện) để tạo ra đầu ra dạng HTML. Tuy nhiên, nếu controller cần làm việc
+		một cách khác biệt, điều này không phải là vấn đề, bởi đây chỉ là cách làm phổ biến nhất của một controller.
+		
+Quy ước đặt tên bộ điều khiển
+	Định nghĩa:
+		- Quy ước đặt tên này khuyến khích việc sử dụng sự số nhiều của từ cuối cùng trong tên của controller, mặc dù điều này
+		không bắt buộc (ví dụ: ApplicationController).
+		
+		- Ví dụ, thay vì sử dụng ClientController, việc sử dụng ClientsController được ưu tiên hơn; hoặc thay vì
+		SiteAdminController hoặc SitesAdminsController, việc sử dụng SiteAdminsController được khuyến khích.
+		
+		- Việc tuân thủ quy ước này sẽ giúp bạn sử dụng các công cụ tạo đường dẫn mặc định (ví dụ: resources, v.v.) mà không cần
+		phải chỉ định từng :path hoặc :controller, và sẽ giữ cho việc sử dụng các trợ giúp đường dẫn có tên (named route helpers)
+		một cách nhất quán trong toàn bộ ứng dụng của bạn.
+		
+Phương pháp và hành động
+	Định nghĩa:
+		Một controller trong Rails là một lớp (class) trong Ruby, thừa kế từ ApplicationController và có các phương thức giống 
+		như bất kỳ lớp nào khác. Khi ứng dụng của bạn nhận được một yêu cầu (request), hệ thống định tuyến sẽ xác định controller
+		và action (hành động) nào cần chạy, sau đó Rails tạo một phiên bản (instance) của controller đó và thực thi phương thức 
+		có cùng tên với action đó.
+		
+	Ví dụ 1:
+		class ClientsController < ApplicationController
+		  def new
+		  end
+		end
+		
+		=> Trong đoạn mã trên, khi một người dùng truy cập vào /clients/new trong ứng dụng của bạn để thêm một khách hàng mới,
+		Rails sẽ tạo một phiên bản của ClientsController và gọi phương thức new của nó. Lưu ý rằng phương thức trống như trong 
+		ví dụ trên sẽ hoạt động tốt vì Rails sẽ mặc định hiển thị view new.html.erb trừ khi action có chỉ định khác.
+		
+	Ví dụ 2:
+		def new
+		  @client = Client.new
+		end
+		
+		=> Trong đoạn mã trên, @client là một biến instance của lớp Client được tạo ra trong phương thức new của
+		ClientsController. Khi Controller render một view (ví dụ: new.html.erb), biến @client này sẽ có thể được 
+		sử dụng và truy cập từ trong view đó. Điều này cho phép chúng ta truy cập và hiển thị thông tin về đối tượng 
+		Client trong giao diện người dùng.
+		
+Parameters
+	Hai loại parameters:
+		- Loại đầu tiên là các tham số được gửi đi như một phần của URL, được gọi là query string parameters. Query string là mọi
+		thứ sau dấu "?" trong URL. Các tham số này thường thấy trong các URL như /path/to/resource?param1=value1&param2=value2.
+		
+		- Loại thứ hai của tham số thường được gọi là POST data. Thông tin này thường đến từ một biểu mẫu HTML (HTML form) mà
+		người dùng đã điền thông tin vào. Nó được gọi là POST data vì nó chỉ có thể được gửi như một phần của yêu cầu HTTP POST.
+		Thông thường, dữ liệu này không hiển thị trực tiếp trong URL như query string parameters mà được gửi dưới dạng gói tin 
+		ẩn.
+		
+	Kết luận:
+		Rails không phân biệt sự khác biệt giữa các query string parameters và POST parameters, và cả hai đều có sẵn trong params
+		hash (bảng hash params) của Controller. params hash chứa tất cả các thông tin từ cả hai nguồn trên, cho phép bạn truy 
+		cập dữ liệu gửi đến từ người dùng trong các hành động của Controller. Điều này cho phép bạn xử lý và sử dụng thông tin
+		gửi đến từ người dùng một cách thuận tiện, bất kể chúng được gửi qua URL hay qua các yêu cầu HTTP POST.
+		
+Query string parameters là gì ?
+	Định nghĩa: 
+		Query string parameters là một phần của URL (Uniform Resource Locator) được sử dụng để truyền thông tin từ client (người
+		dùng) đến server. Nó được đặt sau ký tự "?" trong URL và bao gồm một chuỗi các cặp "tên=giá trị", trong đó mỗi cặp định
+		danh một thông tin cụ thể.
+		
+	Ví dụ:
+		https://www.example.com/search?q=term&page=1
+		
+		=> https://www.example.com/search là phần URL cơ bản.
+		
+		=> ?q=term&page=1 là query string parameter.
+		=> q=term và page=1 là hai cặp thông tin. Trong trường hợp này, q là tên tham số và term là giá trị của tham số đó; 
+		page là tên tham số khác và 1 là giá trị của tham số đó.
+		
+	Kết luận:
+		Query string parameters thường được sử dụng để truyền dữ liệu từ trình duyệt web đến server, cho phép server hiểu và xử
+		lý các yêu cầu của người dùng dựa trên thông tin được truyền đi. Các thông tin trong query string có thể được sử dụng để
+		tìm kiếm, lọc, phân trang hoặc thực hiện các tác vụ khác tùy thuộc vào ứng dụng web cụ thể.
+		
+POST data là gì ?
+	Định nghĩa:
+		Dữ liệu POST là loại dữ liệu được gửi từ client (thường là trình duyệt web) đến server thông qua phương thức HTTP POST.
+		Khi bạn gửi một yêu cầu HTTP POST từ trình duyệt web tới một trang web hoặc ứng dụng, dữ liệu sẽ được gửi dưới dạng 
+		gói tin ẩn danh (hidden) không hiển thị trực tiếp trong URL như là query string parameters mà thay vào đó được gửi qua
+		phần body của yêu cầu HTTP.
+		
+	Cách dùng:
+		Dữ liệu POST có thể được gửi dưới nhiều định dạng khác nhau, nhưng thông thường chúng được gửi dưới dạng các cặp 
+		"tên=giá trị", tương tự như query string parameters. Tuy nhiên, chúng không hiển thị trực tiếp trong URL và thường được 
+		mã hóa để bảo vệ thông tin.
+		
+	Tác dụng:
+		- Dữ liệu POST thường được sử dụng để gửi thông tin nhạy cảm hoặc lớn hơn so với những thông tin mà có thể được truyền 
+		qua query string parameters. Ví dụ, khi bạn điền một biểu mẫu trên trang web (như đăng nhập, đăng ký, hoặc gửi bài 
+		viết), thông tin từ các trường nhập liệu trong biểu mẫu đó thường được gửi đi qua phương thức POST.
+		
+		- Một số ứng dụng sử dụng dữ liệu POST để thực hiện các thay đổi trên server, lưu trữ thông tin, hoặc thực hiện các 
+		thao tác cần xử lý dữ liệu lớn hơn và nhạy cảm hơn so với việc truyền qua URL thông qua query string.
+		
+	Ví dụ:
+		<form action="/register" method="post">
+		  <label for="username">Tên người dùng:</label>
+		  <input type="text" id="username" name="username"><br><br>
+		  
+		  <label for="email">Email:</label>
+		  <input type="email" id="email" name="email"><br><br>
+		  
+		  <input type="submit" value="Đăng ký">
+		</form>
+		
+		Ví dụ về dữ liệu POST có thể gửi đi từ biểu mẫu trên:
+		
+		POST /register HTTP/1.1
+		Host: example.com
+		Content-Type: application/x-www-form-urlencoded
+
+		username=johndoe&email=johndoe@example.com
+		
+		
+		Trong ví dụ này, dữ liệu POST gửi đi thông qua phương thức POST với hai cặp "tên=giá trị":
+
+		username=johndoe: Tên người dùng được nhập là "johndoe".
+			
+		email=johndoe@example.com: Địa chỉ email được nhập là "johndoe@example.com".
+			
+		Server có thể xử lý dữ liệu này và thực hiện đăng ký người dùng với thông tin được cung cấp.
+		
+Params hash là gì ?
+	Định nghĩa:
+		Trong Rails, params là một đối tượng lưu trữ thông tin từ các yêu cầu HTTP gửi đến ứng dụng web của bạn. params chứa 
+		các thông tin từ các phần khác nhau của yêu cầu HTTP như query string parameters, dữ liệu POST từ các biểu mẫu HTML, 
+		các thông số truyền trong URL, và nhiều thông tin khác.
+		
+	Cấu trúc:
+		Trong params, thông tin được tổ chức dưới dạng một hash (bảng băm) trong Ruby, trong đó các khóa (keys) là các tên của 
+		các tham số và giá trị (values) tương ứng là dữ liệu được gửi từ client.
+		
+	Ví dụ:
+		Nếu bạn có một URL như sau: http://example.com/users/1, Rails sẽ phân tích và lưu trữ thông tin về người dùng trong
+		params:
+		
+		def show
+  		  user_id = params[:id]
+		end
+		
+		Ngoài ra, khi gửi dữ liệu từ một biểu mẫu HTML thông qua phương thức POST, thông tin từ biểu mẫu đó cũng sẽ được lưu 
+		trữ trong params:
+		
+		def create
+		  username = params[:user][:username]
+		  email = params[:user][:email]
+		end
+		
+
+	Ví dụ params:
+		{
+		  controller: "users",
+		  action: "show",
+		  id: "1",
+		  name: "John",
+		  age: "25"
+		}
+		
+		- controller: Là tên của controller xử lý yêu cầu, trong trường hợp này là "users".
+ 		- action: Là tên của action trong controller, ở đây là "show".
+		- id: Là giá trị của tham số trong URL, được trích xuất từ phần cuối cùng của URL, trong trường hợp này là "1".
+		- name và age: Là các query string parameters được trích xuất từ URL, trong đó name có giá trị là "John" và age có giá 
+		trị là "25".
+		
+Hash and Array Parameters
+	Định nghĩa:
+		Rails xử lý tham số (parameters) được gửi đi từ trình duyệt khi tương tác với các tác vụ như lấy dữ liệu từ URL (GET
+		request) hoặc gửi dữ liệu thông qua biểu mẫu HTML (POST request).
+		
+	Tham số là một mảng (Array):
+		Để gửi một mảng các giá trị, bạn có thể thêm cặp ngoặc vuông rỗng "[]" vào sau tên của tham số:
+		
+			GET /clients?ids[]=1&ids[]=2&ids[]=3
+
+		Trong URL thực tế, nó sẽ được mã hóa thành "/clients?ids%5b%5d=1&ids%5b%5d=2&ids%5b%5d=3" vì các ký tự "[" và "]" 
+		không được phép trong URL. Thông thường trình duyệt sẽ tự động mã hóa nó cho bạn và Rails sẽ tự động giải mã, nhưng 
+		nếu bạn phải tự gửi các yêu cầu này đến máy chủ thì bạn cần nhớ điều này.
+		
+		Giá trị của params[:ids] sẽ là một mảng ["1", "2", "3"]. Lưu ý rằng các giá trị tham số luôn là chuỗi; Rails không cố 
+		gắng đoán hoặc chuyển đổi kiểu dữ liệu.
+		
+	Tham số là một hash (Hash):
+		Để gửi một hash, bạn có thể bao gồm tên của khóa trong dấu ngoặc vuông:
+		
+			<form accept-charset="UTF-8" action="/clients" method="post">
+			  <input type="text" name="client[name]" value="Acme" />
+			  <input type="text" name="client[phone]" value="12345" />
+			  <input type="text" name="client[address][postcode]" value="12345" />
+			  <input type="text" name="client[address][city]" value="Carrot City" />
+			</form>
+			
+		Khi biểu mẫu này được gửi đi, giá trị của params[:client] sẽ là một hash có dạng:
+			
+			{ "name" => "Acme", "phone" => "12345", "address" => { "postcode" => "12345", "city" => "Carrot City" } }
+			
+		Lưu ý hash lồng trong params[:client][:address].
+		
+JSON Parameters
+	Định nghĩa:
+		 Rails xử lý tham số được gửi dưới dạng JSON khi làm việc với các controller trong ứng dụng Rails, đặc biệt là khi 
+		 xây dựng một API.
+		 
+	Lưu ý:
+		Khi ứng dụng của bạn là một API và nhận tham số dưới dạng JSON, nếu header "Content-Type" của yêu cầu được đặt là
+		"application/json", Rails sẽ tự động tải tham số của bạn vào trong hash params, mà bạn có thể truy cập như thông thường.
+		
+	Ví dụ:
+		Nếu bạn gửi nội dung JSON sau:
+			{ "company": { "name": "acme", "address": "123 Carrot Street" } }
+			
+		Controller của bạn sẽ nhận được params[:company] như sau: 
+			{ "name" => "acme", "address" => "123 Carrot Street" }.
+			
+	Lưu ý:
+		Ngoài ra, nếu bạn đã bật cấu hình config.wrap_parameters trong file cấu hình hoặc gọi wrap_parameters trong controller 
+		của bạn, bạn có thể an tâm bỏ phần tử gốc trong tham số JSON. Trong trường hợp này, các tham số sẽ được sao chép và 
+		bao gói với một key được chọn dựa trên tên của controller của bạn.
+		
+		Ví dụ:
+			{ "name": "acme", "address": "123 Carrot Street" }
+
+		Và, giả sử bạn gửi dữ liệu đến CompaniesController, thì nó sẽ được bao gồm trong key :company như sau:
+		
+			{ 
+			  name: "acme", 
+			  address: "123 Carrot Street", 
+			  company: { 
+			    name: "acme", 
+			    address: "123 Carrot Street" 
+			  } 
+			}
+			
+Routing Parameters
+	Định nghĩa:
+		Khi một yêu cầu HTTP được gửi đến server, framework sẽ xác định cách xử lý yêu cầu đó dựa trên các quy tắc định tuyến
+		(routing rules) đã được định nghĩa trước đó. Cụ thể, bài này đề cập đến việc xác định các tham số được truyền trong URL 
+		và cách truy cập chúng từ controller.
+		
+	Ví dụ:
+		get '/clients/:status', to: 'clients#index', foo: 'bar'
+
+		=> Đoạn mã này khai báo một route cho phép truy cập vào danh sách các khách hàng (clients#index) thông qua một URL có
+		dạng /clients/:status, trong đó :status là một tham số có thể thay đổi.
+		
+		=> Khi một người dùng truy cập vào URL như /clients/active, framework Rails sẽ hiểu rằng :status có giá trị là "active".
+		Điều này có nghĩa là trong controller của bạn, bạn có thể truy cập giá trị của tham số này thông qua params[:status] và
+		giá trị của nó sẽ là "active".
+		
+		=> foo: 'bar' không phải là một tham số bắt buộc của URL, mà là một tham số tùy chỉnh được gắn với route đó. Khi người
+		dùng truy cập vào đường dẫn đã định nghĩa, thì trong controller của bạn, trong đối tượng params, bạn có thể truy cập vào
+		giá trị của foo.
+		
+Composite Key Parameters
+	Định nghĩa:
+		Tham số composite key chứa nhiều giá trị trong một tham số duy nhất. Điều này có thể xảy ra khi bạn muốn sử dụng nhiều
+		giá trị để xác định một bản ghi duy nhất trong cơ sở dữ liệu.
+		
+	Ví dụ:
+		class BooksController < ApplicationController
+		  def show
+		    # Extract the composite ID value from URL parameters.
+		    id = params.extract_value(:id)
+		    # Find the book using the composite ID.
+		    @book = Book.find(id)
+		    # use the default rendering behaviour to render the show view.
+		  end
+		end
+		
+		=> Phương thức extract_value để trích xuất giá trị của tham số composite key từ URL.
+		
+		Ngoài ra, cũng có một route được định nghĩa để ánh xạ đường dẫn URL /books/:id tới action show của controller
+		BooksController:
+		
+		get '/books/:id', to: 'books#show'
+
+		=> Khi một người dùng mở URL /books/4_2, controller sẽ trích xuất giá trị của tham số composite key :id, và theo đoạn 
+		mã, nó sẽ trích xuất thành một mảng ["4", "2"]. Sau đó, nó sử dụng mảng này để tìm bản ghi tương ứng trong cơ sở dữ 
+		liệu thông qua Book.find(id).
+		
+default_url_options
+	Định nghĩa:
+		- default_url_options là một phương thức trong Rails cho phép bạn thiết lập các tham số mặc định sẽ được sử dụng khi tạo
+		URL trong ứng dụng của mình. Điều này có thể hữu ích khi bạn muốn thêm các tham số mặc định vào tất cả các URL được tạo
+		ra trong ứng dụng của mình.
+		
+	Ví dụ:
+		class ApplicationController < ActionController::Base
+		  def default_url_options
+		    { locale: I18n.locale }
+		  end
+		end
+		
+		=> Trong ví dụ trên, default_url_options được định nghĩa trong ApplicationController. Phương thức này trả về một hash 
+		với một tham số mặc định là locale và giá trị của nó là I18n.locale.
+		
+	Cách hoạt động:
+		- Khi bạn tạo URL trong Rails (ví dụ: thông qua url_for), các tham số mặc định này sẽ được sử dụng như một điểm khởi 
+		đầu khi tạo URL.
+		
+		- Tuy nhiên, nếu bạn truyền các tham số tùy chỉnh vào url_for, chúng có thể ghi đè lên các tham số mặc định đã được định
+		nghĩa trong default_url_options.
+		
+		- Nếu bạn định nghĩa default_url_options trong ApplicationController, các tham số mặc định này sẽ áp dụng cho tất cả các 
+		URL được tạo ra trong ứng dụng.
+		
+		- Bạn cũng có thể định nghĩa default_url_options trong một controller cụ thể, khi đó chỉ ảnh hưởng đến việc tạo URL trong
+		controller đó.
+		
+	Performance:
+		Để tối ưu hiệu suất, phương thức default_url_options không được gọi mỗi khi tạo URL. Hash được trả về từ phương thức 
+		này được cache lại trong một request, nghĩa là chỉ có tối đa một lần gọi trong một request.
+		
+Strong Parameters
+	Tác dụng của Strong Parameters
+		Cấm sử dụng Action Controller parameters cho Active Model mass assignments cho đến khi chúng được phép:
+			- Trước khi sử dụng dữ liệu từ người dùng để thực hiện các phép gán giá trị đồng loạt vào các đối tượng của 
+			Active Record (các model), bạn cần phải "phê duyệt" các tham số mà bạn cho phép sử dụng. Điều này đảm bảo 
+			rằng chỉ những thông tin được phép mới có thể được sử dụng để tạo hoặc cập nhật dữ liệu trong cơ sở dữ liệu.
+			
+		Quyết định có ý thức về việc phê duyệt các thuộc tính cho việc cập nhật đồng loạt:
+			Khi sử dụng strong parameters, bạn phải đưa ra quyết định có ý thức về những thuộc tính nào được phép được 
+			cập nhật đồng loạt (mass update). Điều này có nghĩa là bạn phải chỉ định rõ ràng những thông tin nào có thể 
+			được cập nhật từ dữ liệu mà người dùng gửi đến. Việc này giúp ngăn chặn việc người dùng vô tình cập nhật 
+			những thuộc tính nhạy cảm của model.
+			
+		Lợi ích về bảo mật:
+			Sử dụng strong parameters là một thực hành bảo mật tốt hơn, giúp ngăn chặn ngẫu nhiên cho phép người dùng cập
+			nhật các thuộc tính nhạy cảm của model một cách không mong muốn, từ đó tăng cường bảo mật cho ứng dụng của bạn.
+			
+		Các tham số có thể được đánh dấu là bắt buộc và sẽ chảy qua một quy trình raise/rescue đã được xác định trước:
+			Bạn có thể đánh dấu các tham số là bắt buộc. Nếu không có đủ các tham số bắt buộc được truyền vào, chúng sẽ 
+			đi qua một luồng xử lý đã được định trước, kích hoạt một cơ chế raise/rescue. Kết quả là, sẽ trả về một lỗi 
+			400 Bad Request để thông báo rằng không đủ các tham số bắt buộc đã được truyền vào.
+			
+	Ví dụ:
+		class PeopleController < ActionController::Base
+		  def create
+		    Person.create(params[:person])
+		  end
+
+		  def update
+		    person = current_account.people.find(params[:id])
+		    person.update!(person_params)
+		    redirect_to person
+		  end
+
+		  private
+		  
+		    def person_params
+		      params.require(:person).permit(:name, :age)
+		    end
+		end
+		
+		=> Phương thức create:
+			+ Phương thức này được sử dụng để tạo một đối tượng Person mới. Nó sử dụng Person.create(params[:person]) để 
+			tạo một đối tượng Person dựa trên thông tin được gửi từ form hoặc request người dùng.
+			
+			+ Tuy nhiên, điều này có vấn đề về bảo mật vì nó sử dụng "mass assignment" mà không có việc phê duyệt (permit) 
+			rõ ràng. Nếu không có quá trình permit, sẽ gây ra lỗi ActiveModel::ForbiddenAttributesError, bảo vệ khỏi việc
+			người dùng có thể cập nhật các thuộc tính không được phép.
+		
+	Mass assignment
+		Định nghĩa:
+			Mass assignment là một kỹ thuật trong lập trình web,cho phép gán giá trị cho nhiều thuộc tính của đối tượng
+			(object) thông qua một yêu cầu từ người dùng một cách đồng thời. Điều này thường được sử dụng để gán dữ liệu 
+			từ các biểu mẫu hoặc yêu cầu HTTP của người dùng vào các đối tượng của ứng dụng.
+
+			Tuy nhiên, khi không được xử lý đúng cách, mass assignment có thể tạo ra lỗ hổng bảo mật trong ứng dụng. 
+			Trong một số trường hợp, người dùng có thể thay đổi hoặc gán giá trị cho các thuộc tính không được ủy quyền, 
+			hoặc thậm chí là các thuộc tính nhạy cảm của đối tượng mà họ không có quyền truy cập.
+			
+			Ví dụ, giả sử bạn có một model User trong Rails với các thuộc tính như name, email, và admin:
+
+			class User < ApplicationRecord
+			  # các thuộc tính: name, email, admin
+			end
+			
+			Nếu bạn không xử lý mass assignment một cách an toàn, người dùng có thể gửi một yêu cầu HTTP chứa các thông 
+			tin như sau:
+			
+			POST /users
+			{
+			  "user": {
+			    "name": "Người Dùng Mới",
+			    "email": "newuser@example.com",
+			    "admin": true  # người dùng có thể tự gán quyền admin cho chính mình
+			  }
+			}
+			
+			Trong trường hợp này, nếu không có các biện pháp bảo mật phù hợp, người dùng có thể tự gán cho mình quyền 
+			admin mà không được phép, gây ra lỗ hổng bảo mật. Điều này có thể dẫn đến việc người dùng tự thay đổi quyền 
+			hạn hoặc thông tin nhạy cảm một cách không mong muốn.
+			
+			Để ngăn chặn lỗ hổng bảo mật này, các framework thường cung cấp các cách để xử lý mass assignment an toàn, 
+			ví dụ như trong Rails, sử dụng phương thức strong parameters để chỉ định rõ các thuộc tính có thể được gán từ 
+			yêu cầu của người dùng, từ đó ngăn chặn việc gán giá trị cho các thuộc tính không mong muốn hoặc không được 
+			ủy quyền.
+	
+	Permitted Scalar Values
+		Ví dụ 1:
+			params.permit(:id)
+			
+			=> Chỉ chấp nhận 1 trường id và trường này  phải có giá trị scalar.
+			=> Các loại dữ liệu scalar được cho phép khi sử dụng permit là:
+				String (Chuỗi)
+				Symbol (Ký hiệu)
+				NilClass (Kiểu dữ liệu không có giá trị - nil)
+				Numeric (Kiểu số)
+				TrueClass (Kiểu boolean - true)
+				FalseClass (Kiểu boolean - false)
+				Date (Kiểu ngày)
+				Time (Kiểu thời gian)
+				DateTime (Kiểu ngày và thời gian)
+				StringIO (Kiểu đối tượng dữ liệu đọc/ghi từ chuỗi)
+				IO (Kiểu đối tượng đọc/ghi từ input/output)
+				ActionDispatch::Http::UploadedFile (Kiểu đối tượng file được tải lên trong Rails)
+				Rack::Test::UploadedFile (Kiểu đối tượng file được tải lên trong Rack test)
+				
+		Ví dụ 2:
+			params.permit(id: [])
+
+			=> Khi bạn sử dụng params.permit(id: []), Rails sẽ chấp nhận khóa :id nếu nó là một mảng và tất cả các phần 
+			tử trong mảng đều là các giá trị scalar được cho phép. Bất kỳ giá trị nào không phải là scalar sẽ bị loại bỏ 
+			khỏi danh sách cho phép. Điều này giúp bảo vệ ứng dụng của bạn khỏi việc chèn dữ liệu không mong muốn hoặc 
+			không an toàn từ người dùng.
+			
+			Ví dụ:
+				{
+				  id: [1, 2, 3],
+				  other_param: 'some_value'
+				}
+				
+				=> Trong trường hợp này, params.permit(id: []) sẽ cho phép mảng giá trị của id đi qua và loại bỏ
+				other_param.
+
+				=> Nếu giá trị của id không phải là một mảng hoặc một phần tử trong mảng không phải là scalar 
+				(ví dụ: một hash), Rails sẽ loại bỏ nó khi sử dụng permit. Điều này giúp đảm bảo chỉ các giá trị 
+				scalar được phép được chấp nhận, từ đó bảo vệ ứng dụng của bạn khỏi dữ liệu không mong muốn hoặc 
+				không hợp lệ từ người dùng.
+
+		Ví dụ 3:
+			params.permit(preferences: {})
+			
+			=> Bạn không biết chính xác các khóa bên trong preferences hoặc bạn không quan tâm đến chúng. Đoạn mã
+			params.permit(preferences: {}) được sử dụng để chỉ ra rằng bạn muốn cho phép tất cả các khóa và cấu trúc 
+			con (nested structures) trong preferences đi qua mà không cần biết chính xác chúng là gì.
+			
+			Ví dụ:
+				{
+				  preferences: {
+				    color: 'blue',
+				    size: 'medium',
+				    other: {
+				      nested: 'value'
+				    }
+				  },
+				  other_param: 'some_value'
+				}
+				
+				=> params.permit(preferences: {}) sẽ cho phép tất cả các khóa và cấu trúc con trong preferences đi qua,
+				nhưng không cho phép other_param đi qua.
+
+				=> Nếu loại dữ liệu không phải là scalar (như một mảng hoặc một hash khác), Rails sẽ loại bỏ nó khi sử
+				dụng permit. Điều này giúp bảo vệ ứng dụng khỏi dữ liệu không mong muốn hoặc không hợp lệ từ người
+				dùng.
+
+		Ví dụ 4:
+			params.require(:log_entry).permit!
+			
+			=> Phương thức permit! không thực hiện việc kiểm tra các giá trị để đảm bảo rằng chúng là các scalar được cho 
+			phép như các phương thức permit thông thường. Điều này có nghĩa là bất cứ dữ liệu nào cũng được chấp nhận, 
+			không quan trọng liệu chúng có phải là scalar được cho phép hay không.
+			
+	Nested Parameters
+		Dùng permit cho các tham số lồng nhau:
+		
+		Ví dụ:
+			params.permit(:name, { emails: [] },
+              			      friends: [ :name,
+                                                 { family: [ :name ], hobbies: [] }])
+                                                 
+                => emails mong đợi là mảng và phải là scalar
+                
+                => hobbies mong đợi là mảng và phải là scalar
+                                                                                                              		
+	More Examples
+		Ví dụ 1:			
+			params.fetch(:blog, {}).permit(:title, :author)
+			
+			=> fetch lấy khóa blog, nếu blog không có sẽ trả ra hash rỗng
+			
+		Ví dụ 2:
+			Cách đặt điều kiện cho accepts_nested_attributes_for
+			
+			params.require(:author).permit(:name, books_attributes: [:title, :id, :_destroy])
+			
+			=> (:author) yêu cầu khóa author và lấy thông tin của author
+			
+			=> điều kiên lấy là name và thông tin book
+			
+			=> điều kiện book là title, id, _destroy
+			
+		Ví dụ 3:
+			params.require(:book).permit(:title, chapters_attributes: [:title])
+			
+		ví dụ 4:
+			def product_params
+			  params.require(:product).permit(:name, data: {})
+			end
+			
+		So sánh require và fetch
+			- require: nếu khóa không tồn tại thì sẽ ném ra ngoại lệ, hữu ích khi bạn chắc chắn rằng một khóa cụ thể phải 
+			tồn tại trong hash.
+			
+			- fetch: nếu khóa không tồn tại thì sẽ ném ra một mặc định, tránh các lỗi nếu khóa không tồn tại.
+			
+	Outside the Scope of Strong Parameters
+		Việc phối hợp API Strong Parameters với mã của riêng bạn cho phép bạn mở rộng hoặc điều chỉnh cách thức xử lý tham số 
+		tùy thuộc vào yêu cầu cụ thể của ứng dụng, điều này giúp bạn tùy chỉnh việc xử lý tham số sao cho phù hợp với logic và
+		logic của ứng dụng của bạn một cách linh hoạt.
+		
+Session
+	Định nghĩa:
+		Trong ứng dụng Rails, có các cơ chế lưu trữ phiên sau:
+
+		- ActionDispatch::Session::CookieStore: Lưu trữ trên máy khách thông qua cookie.
+
+		- ActionDispatch::Session::CacheStore: Lưu trữ trong bộ nhớ cache của Rails.
+
+		- ActionDispatch::Session::MemCacheStore: Lưu trữ dữ liệu trong Memcached (cách tiếp cận cũ).
+
+		- ActionDispatch::Session::ActiveRecordStore: Lưu trữ dữ liệu trong cơ sở dữ liệu thông qua Active Record.
+
+		- Custom Store hoặc Store từ gem bên thứ ba: Có thể tạo hoặc sử dụng cơ chế lưu trữ tùy chỉnh từ các gem khác.
+
+		Mỗi cơ chế này có cách hoạt động và ưu nhược điểm riêng, phù hợp với các yêu cầu và tình huống sử dụng khác nhau của 
+		ứng dụng. Lựa chọn cụ thể sẽ phụ thuộc vào hiệu suất, bảo mật và yêu cầu của dự án.
+		
+	Tác dụng:
+		Lưu trữ phiên trong ứng dụng web là cần thiết để:
+
+			+ Duy trì trạng thái người dùng: Lưu thông tin cá nhân, đăng nhập và trạng thái tạm thời.
+
+			+ Quản lý quyền truy cập: Kiểm soát và xác thực người dùng.
+
+			+ Cải thiện trải nghiệm: Giữ người dùng ở trạng thái đã đăng nhập và lưu trạng thái trước đó.
+
+			+ Theo dõi và phân tích: Thu thập dữ liệu để phân tích hoạt động người dùng.
+			
+	Ví dụ 1:
+		Rails.application.config.session_store :cache_store
+	
+		=> Khi bạn gọi Rails.application.config.session_store :cache_store, nó thực hiện việc thiết lập cơ chế lưu trữ phiên
+		trong Rails application của bạn để sử dụng CacheStore. Điều này có nghĩa là mọi thông tin phiên của người dùng sẽ 
+		được lưu trữ và quản lý thông qua cơ chế cache được cấu hình trong ứng dụng, chẳng hạn như sử dụng Memcached hoặc Redis.
+		
+	Ví dụ 2:
+		Rails.application.config.session_store :cookie_store, key: '_your_app_session'
+		
+		=> key: '_your_app_session': Đây là cấu hình cho tên của cookie được sử dụng để lưu trữ session. Trong ví dụ này, 
+		tên của cookie session được đặt là '_your_app_session'.
+		
+		=> 
+
+		
+		
+	Accessing the Session
+	The Flash
+		flash.now
+Cookies
+Rendering
+Filters	
+	After Filters and Around Filters
+	Other Ways to Use Filters
+Request Forgery Protection
+The Request and Response Objects
+	The request Object
+		path_parameters, query_parameters, and request_parameters
+	The response Object
+		Setting Custom Headers
+HTTP Authentications
+	 HTTP Basic Authentication
+	 HTTP Digest Authentication
+	 HTTP Token Authentication
+Streaming and File Downloads
+	Sending Files
+	RESTful Downloads
+	Live Streaming of Arbitrary Data
+		Incorporating Live Streaming
+		Example Usage
+		Streaming Considerations
+Log Filtering
+	Parameters Filtering
+	Redirects Filtering
+Rescue
+	The Default 500 and 404 Templates
+	rescue_from
+Force HTTPS Protocol
+Built-in Health Check Endpoint
+
+
+
+
+
+
+	
+
+		
+			
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

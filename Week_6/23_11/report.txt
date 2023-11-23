@@ -1,0 +1,59 @@
+Lệnh tạo bootstrap chung tạo file
+	rails new video -j esbuild -c bootstrap
+	
+	=> esbuild dùng để xây dưng javascript
+	
+Nested form là gì ?
+	Định nghĩa:
+		Nested form là việc đặt một biểu mẫu (form) bên trong hoặc bên trong của một biểu mẫu khác trong lập trình web. 
+		Tuy nhiên, HTML không hỗ trợ trực tiếp nested form và thường cần sử dụng các phương pháp khác như JavaScript để 
+		thực hiện chức năng tương tự.
+		
+Gem cocoon là gì ?
+	Định nghĩa:
+		Gem Cocoon là một gem trong Ruby on Rails framework, được sử dụng để quản lý việc thêm và xóa các nested associations 
+		(mối quan hệ lồng nhau) trong form của Rails một cách dễ dàng. Nó cung cấp các công cụ giúp thêm và xóa các nested fields
+		một cách đơn giản và linh hoạt.
+		
+	Tác dụng:
+		Cocoon cho phép thêm các nested fields mà không cần phải viết quá nhiều mã JavaScript hoặc Ruby cụ thể. 
+		Nó giúp tạo, xóa và quản lý các record của associations như has_many hoặc has_one trong Rails forms một cách thuận tiện.
+		
+		Gem Cocoon giúp tối ưu hóa quá trình tạo và xử lý các nested forms trong Rails, giúp cho việc thêm và xóa các mối quan 
+		hệ lồng nhau trở nên dễ dàng hơn và giảm bớt việc phải viết mã JavaScript phức tạp.
+		
+nest attribute
+	addresses_attributes: [:id, :house_number, :society_name, :city, :area, :_destroy]
+	
+		Tại sao cần thêm khóa id ?
+			Khi bạn sử dụng nested attributes, thông thường bạn đang làm việc với một mối quan hệ như has_many hoặc has_one
+			giữa các mô hình. Khi người dùng tạo hoặc chỉnh sửa một bản ghi chứa các bản ghi lồng nhau (ví dụ: tạo hoặc chỉnh
+			sửa thông tin địa chỉ cho một người dùng), Rails cần biết cách quản lý các bản ghi đó:
+
+				:id cho phép Rails xác định bản ghi đã tồn tại nào sẽ được cập nhật và bản ghi nào sẽ được tạo mới.
+				
+				Khi một bản ghi có :id được gửi đi cùng với thông tin từ form, Rails hiểu rằng đó là việc cập nhật 
+				bản ghi có :id tương ứng.
+				
+				Nếu không có :id, Rails sẽ hiểu đây là việc tạo mới một bản ghi mới.
+				
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
