@@ -37,6 +37,12 @@ nest attribute
 				
 				Nếu không có :id, Rails sẽ hiểu đây là việc tạo mới một bản ghi mới.
 				
+get 'welcome/index'
+	đường link đến trang index
+	
+root 'welcome#index'
+	nếu đi đến trang gốc thì sẽ đi đến index trong welcome
+				
 		
 
 

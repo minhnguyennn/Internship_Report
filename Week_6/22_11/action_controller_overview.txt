@@ -572,13 +572,164 @@ Session
 		=> key: '_your_app_session': Đây là cấu hình cho tên của cookie được sử dụng để lưu trữ session. Trong ví dụ này, 
 		tên của cookie session được đặt là '_your_app_session'.
 		
-		=> 
-
+	Ví dụ 3:
+		# Be sure to restart your server when you modify this file.
+		Rails.application.config.session_store :cookie_store, key: '_your_app_session', domain: ".example.com"
+		
+		=> Tùy chọn domain: ".example.com" trong cấu hình session của Rails xác định rằng cookie session sẽ có hiệu lực cho 
+		tất cả các subdomain của tên miền chính "example.com", nhưng không chia sẻ với các tên miền khác.
+		
+	subdomain là gì ?
+		Định nghĩa:
+			Subdomain là một phần của tên miền (domain) trong cấu trúc DNS (Domain Name System). Nó là một phần trước 
+			tên miền chính và được ngăn cách bằng dấu chấm (.) trong tên miền đầy đủ.
+			
+		Ví dụ:
+			trong tên miền sub.example.com, "sub" được gọi là subdomain của "example.com". Đây là cách để tổ chức và phân 
+			chia không gian tên miền thành các phần nhỏ hơn, giúp quản lý và xác định các khu vực hoặc ứng dụng cụ thể trên
+			cùng một tên miền.
+	secret_key_base
+		Khi bạn thay đổi secret_key_base trong Rails khi sử dụng CookieStore, tất cả các phiên (sessions) hiện có sẽ trở thành
+		không hợp lệ, đòi hỏi người dùng phải đăng nhập lại.
+		
 		
 		
 	Accessing the Session
+		Lưu ý:
+			Trong Ruby on Rails, bạn có thể truy cập session thông qua phương thức instance của session trong controller.
+			Sessions được tải lười biếng (lazy load). Nếu bạn không truy cập vào session trong action của bạn, sessions sẽ
+			không được tải. Điều này có nghĩa là bạn không cần phải vô hiệu hóa session, chỉ cần không truy cập vào chúng sẽ
+			đủ để không tải sessions và không ảnh hưởng đến hiệu suất của ứng dụng.
+		
+		
+		VÍ dụ 1:
+			class ApplicationController < ActionController::Base
+			  private
+			    def current_user
+			      @_current_user ||= session[:current_user_id] &&
+				User.find_by(id: session[:current_user_id])
+			    end
+			end
+			
+			=> current_user_id lưu trong session
+			
+			=> session[:current_user_id] phải tồn tại
+			
+			=> User.find_by(id: session[:current_user_id]) : tìm người dùng theo id của người dùng tồn tại trong session
+			
+			=> ||= lưu 1 lần
+			
+		Ví dụ 2:
+			class LoginsController < ApplicationController
+			  def create
+			    if user = User.authenticate(params[:username], params[:password])
+			      session[:current_user_id] = user.id
+			      redirect_to root_url
+			    end
+			  end
+			end
+			
+			=> User.authenticate(params[:username], params[:password]) : kiểm tra xem đúng mk và tk không
+			
+			=> ( session[:current_user_id] = user.id ) lấy thông tin lưu vào session
+			
+		Ví dụ 3:
+			class LoginsController < ApplicationController
+			  def destroy
+			    session.delete(:current_user_id)
+			    @_current_user = nil
+			    redirect_to root_url, status: :see_other
+			  end
+			end
+			
+			=> session.delete(:current_user_id) : xóa thông tin trong session
+			
+			=> @_current_user = nil xóa thông tin trong biến
+			
+			=> status: :see_other dùng mã trạng thái HTTP 303 See Other , báo cho trình duyệt biết rằng nó 
+			nên chuyển hướng người dùng đến một địa chỉ khác
+		
 	The Flash
+		Định nghĩa:
+			- Tính tạm thời: Flash chỉ tồn tại trong request hiện tại và sẽ được xóa đi sau khi request kết thúc. 
+			Điều này có nghĩa là thông điệp hoặc dữ liệu bạn lưu trữ trong Flash chỉ có sẵn trong request tiếp theo, 
+			sau khi bạn đã gán nó.
+
+			- Được biểu diễn dưới dạng hash: Flash được xử lý như một hash, trong đó bạn có thể lưu trữ các thông điệp 
+			hoặc thông tin khác theo cặp key-value.
+			
+		Ví dụ:
+			class LoginsController < ApplicationController
+			  def destroy
+			    session.delete(:current_user_id)
+			    flash[:notice] = "You have successfully logged out."
+			    redirect_to root_url, status: :see_other
+			  end
+			end
+			
+			=> flash[:notice] lưu thông tin vào flash
+			
+		Ví dụ 2:
+			<html>
+			  <!-- <head/> -->
+			  <body>
+			    <% flash.each do |name, msg| -%>
+			      <%= content_tag :div, msg, class: name %>
+			    <% end -%>
+
+			    <!-- more content -->
+			  </body>
+			</html>
+			
+			=> name là key và msg là value
+			
+			=> (content_tag :div, msg, class: name)
+			
+			Ví dụ:
+				name = "error"
+				msg = "Something went wrong!"
+				content_tag :div, msg, class: name
+				
+				=> <div class="error">Something went wrong!</div>
+			
+		Ví dụ 3:
+			<% if flash[:just_signed_up] %>
+			  <p class="welcome">Welcome to our site!</p>
+			<% end %>
+			
+			=> nếu điều kiện đúng sẽ in ra p
+			
+		Ví dụ 4:
+			class MainController < ApplicationController
+			  def index
+			    flash.keep
+			    redirect_to users_url
+			  end
+			end
+			
+			=> Trong đoạn mã này, action index trong MainController của ứng dụng Rails đang sử dụng flash.keep để duy trì
+			thông tin trong biến flash qua các redirect tới users_url. Việc này giúp thông tin trong flash không bị xóa khi 
+			có các redirect diễn ra từ action này.
+			
+			
 		flash.now
+			Ví dụ:
+				class ClientsController < ApplicationController
+				  def create
+				    @client = Client.new(client_params)
+				    if @client.save
+				      # ...
+				    else
+				      flash.now[:error] = "Could not save client"
+				      render action: "new"
+				    end
+				  end
+				end
+				
+				=> flash.now[:error] thông báo này sẽ không tồn tại trong các request tiếp theo nhưng sẽ hiển thị 
+				ngay trong request hiện tại. Sau đó, controller sẽ render lại action "new", cho phép người dùng nhập 
+				thông tin của khách hàng một lần nữa để thử lại việc tạo mới với các dữ liệu hợp lệ.
+				
 Cookies
 Rendering
 Filters	

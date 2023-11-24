@@ -1,0 +1,120 @@
+devise
+	Định nghĩa:
+		Devise giúp việc xây dựng chức năng đăng nhập và xác thực người dùng trở nên dễ dàng hơn bằng cách cung cấp các
+		controllers, models và views cơ bản đã được tạo sẵn. Nó cũng hỗ trợ nhiều loại xác thực như xác thực thông qua 
+		tên người dùng và mật khẩu, xác thực qua bộ nhớ cookie, xác thực qua bộ nhớ phiên, và nhiều phương thức xác thực khác.
+		
+	Ví dụ trong migration:
+		t.string :email,              null: false, default: ""
+		
+		=> default: ""  giá trị mặc định rỗng khi cột email mới được tạo, null: false cột email không được chứa giá trị null
+		
+		t.string :encrypted_password, null: false, default: ""
+		
+		=> encrypted_password :  cột lưu trữ mật khẩu được mã hóa
+		
+		t.string :reset_password_token
+		
+		=> lưu trữ mã token được tạo ra khi người dùng yêu cầu đặt lại mật khẩu (forgot password).
+		
+		=> Mã token được sử dụng khi đặt lại mật khẩu để xác minh rằng người dùng có quyền truy cập vào địa chỉ email 
+		liên kết với tài khoản của họ và ngăn chặn việc thay đổi mật khẩu bởi người khác.
+		
+		t.datetime :reset_password_sent_at
+		
+		=> Cột này thường được sử dụng để lưu thời điểm mà yêu cầu đặt lại mật khẩu được gửi đi. Nó giúp kiểm tra xem 
+		yêu cầu đã được gửi và cần cập nhật lại mật khẩu trong khoảng thời gian nào.
+		
+		t.datetime :remember_created_at
+		
+		=> Cột remember_created_at trong cơ sở dữ liệu lưu thời điểm mà thông tin "Ghi nhớ đăng nhập" được tạo ra. 
+		Khi người dùng chọn tùy chọn này, thông tin đăng nhập sẽ được lưu lại để họ tự động đăng nhập vào ứng dụng khi 
+		quay lại sau một thời gian. Cột này giúp hệ thống xác định xem việc ghi nhớ đăng nhập có hợp lệ không để tự động 
+		đăng nhập người dùng.
+		
+		t.integer :role, default: 0
+		
+		=> role là tên của cột được tạo trong bảng cơ sở dữ liệu. Thông thường, đây là nơi lưu trữ thông tin về vai trò 
+		của người dùng, ví dụ như admin, user, moderator, và các loại vai trò khác.
+		
+	Ví dụ trong routes.rb
+	
+		devise_for :users
+		
+		=>  nó tự động tạo ra các routes cần thiết để quản lý việc đăng ký (sign up), đăng nhập (sign in), đăng xuất (sign out),
+		 và quản lý tài khoản người dùng (thay đổi mật khẩu, cập nhật thông tin cá nhân, quên mật khẩu, v.v.).
+		
+		
+		
+		
+		
+	Các lệnh chạy:
+		bundle add devise
+		rails generate devise:install
+		rails g devise User role:integer
+		rails db:migrate
+		rails g controller pages home
+		rails g devise:views
+		
+		rails c
+		@user = User.first
+		@user.role = 1
+		@user.role = 2
+		@user.save
+		
+		
+Action Text Overview
+	What is Action Text?
+		Định nghĩa:
+			Action Text giúp bạn thêm trường văn bản phong phú (rich text) vào mô hình của mình một cách dễ dàng thông qua 
+			tính năng has_rich_text. Nó sử dụng thư viện Trix - một trình soạn thảo văn bản phong phú được xây dựng bằng
+			JavaScript để cung cấp giao diện nhập liệu thuận tiện và hiệu suất cao.
+			
+		Tính năng:
+			Quản lý nội dung HTML: Cho phép người dùng nhập liệu văn bản có định dạng HTML thông qua giao diện soạn thảo 
+			đồ họa.
+
+			Tích hợp dễ dàng: Action Text tích hợp sẵn trong Rails, giúp tạo mối quan hệ một-nhiều giữa mô hình và 
+			trường văn bản phong phú.
+
+			Hỗ trợ tương thích với Active Storage: Action Text sử dụng Active Storage để lưu trữ và quản lý các tệp đính 
+			kèm trong nội dung văn bản phong phú.
+
+			Tùy chỉnh và mở rộng: Cho phép bạn tùy chỉnh và mở rộng các tính năng theo nhu cầu cụ thể của ứng dụng.
+			
+	Cách cài đặt
+		Dùng lệnh:
+			bin/rails action_text:install
+			
+	Creating Rich Text Content
+		Ví dụ:
+			# app/models/message.rb
+			class Message < ApplicationRecord
+			  has_rich_text :content
+			end
+
+			
+ 	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
