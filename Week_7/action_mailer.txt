@@ -1,0 +1,25 @@
+What is Action Mailer?
+	Định nghĩa:
+		Action Mailer là một phần của Ruby on Rails framework (một framework phát triển ứng dụng web bằng ngôn ngữ lập trình Ruby)
+		được sử dụng để gửi và quản lý việc gửi email từ ứng dụng web của bạn. Nó cung cấp cách tiện lợi để tạo và gửi email từ
+		mã nguồn của ứng dụng bằng cách sử dụng các mailer classes và views tương tự như cách bạn xây dựng controllers và views
+		cho các phần khác của ứng dụng Rails.
+		
+	Ứng dụng:
+		Action Mailer cho phép bạn xác định các email templates, thiết lập các thông số cần thiết cho việc gửi email như người 
+		gửi, người nhận, tiêu đề, nội dung, và cũng cung cấp các chức năng linh hoạt để tùy chỉnh quá trình gửi email theo nhu 
+		cầu cụ thể của ứng dụng.
+		
+	# app/mailers/application_mailer.rb
+		class ApplicationMailer < ActionMailer::Base
+		  default from: "from@example.com"
+		  layout 'mailer'
+		end
+		
+			=> (default from: "from@example.com"): Đây là cài đặt mặc định cho người gửi email. Trong trường hợp này, 
+			nếu không được chỉ định người gửi cụ thể trong mỗi email gửi đi, thì email sẽ được gửi từ địa chỉ from@example.com.
+			
+			=> layout 'mailer': Đây là cài đặt mặc định cho layout của email. Nó sử dụng layout có tên là 'mailer', cho 
+			phép bạn sử dụng layout này để bao bọc các nội dung email tạo ra từ mailer class.
+			
+	

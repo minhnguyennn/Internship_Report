@@ -1,21 +1,25 @@
-  class EmployeesController < ApplicationController
+# frozen_string_literal: true
+
+class EmployeesController < ApplicationController
   before_action :set_employee_params, only: %i[show edit update destroy]
 
   def index
     # @employees = Employee.all
 
-    @pagy, @employees = pagy(Employee.all)
+    #@pagy, @employees = pagy(Employee.all)
 
-    #Test trang bị tràn
+    # Test trang bị tràn
     # page_out_of_bounds = 20
     # @pagy, @employees = pagy(Employee.all, items: 10, page: page_out_of_bounds)
 
-    puts "============================"
-    puts "============#{@pagy.inspect}============="
-    puts "============================"
+    
 
-      @q = Employee.ransack(params[:q])
-      # @employees = @q.result(distinct: true)
+    @q = Employee.ransack(params[:q])
+    @employees = @q.result(distinct: true)
+
+    Rails.logger.debug '============================'
+    Rails.logger.debug "============#{@employees.inspect}============="
+    Rails.logger.debug '============================'
   end
 
   def new
@@ -64,6 +68,7 @@
   end
 
   def employee_params
-    params.require(:employee).permit(:employee_name, :gender, { hobbies: [] }, addresses_attributes: [:id, :house_number, :society_name, :area, :city, :_destroy])
+    params.require(:employee).permit(:employee_name, :gender, { hobbies: [] },
+                                     addresses_attributes: %i[id house_number society_name area city _destroy])
   end
 end

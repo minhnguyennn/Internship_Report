@@ -1,0 +1,17 @@
+<div class="set-center flex-column">
+  <div class="card shadow" style="width: 36rem;">
+    <div class="card-header">
+      <h2 class="text-center">Employee Form</h2>
+    </div>
+    <div class="card-body">
+      <!--Error Message-->
+      <% if flash[:errors] %>
+        <% flash[:errors].each do |error| %>
+          <p class="text-danger"><%= error %></p>
+        <% end %>
+      <% end %>
+      <!-- Form Started Here -->
+      <%= render 'form', employee: @employee %>
+    </div>
+  </div>
+</div>
