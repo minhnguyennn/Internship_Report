@@ -3,10 +3,18 @@
 
   <div class="d-flex mt-2">
     <%= search_form_for @q do |f| %>
+<!-- 
       <%= f.label :employee_name_cont %>
-      <%= f.search_field :employee_name_cont %>
+      <%= f.search_field :employee_name_cont %> -->
 
+      <%= f.label :created_at_gt, 'Ngày bắt đầu:' %>
+      <%= f.date_field :created_at_gt %>
+      <div> </div>
+      <%= f.label :created_at_lt, 'Ngày kết thúc:' %>
+      <%= f.date_field :created_at_lt %>
+       <div> </div>
       <%= f.submit "Search" %>
+
     <% end %>
 
   </div>
@@ -22,9 +30,11 @@
     <table class="table table-info table-striped">
       <ol class="fs-2">
         <thead class="table-secondary">
-          <td class="text-center"> Id </td>
-          <td class="text-center"> Name </td>
-          <td class="text-center"> Hobbies </td>
+          <td class="text-center"><%= sort_link(@q, :id, 'Id') %></td>
+          <td class="text-center"><%= sort_link(@q, :employee_name, 'Name') %></td>
+          <td class="text-center"><%= sort_link(@q, :hobbies, 'Hobbies') %></td>
+          <td class="text-center"><%= sort_link(@q, :created_at, 'Created At') %></td>
+          <td class="text-center"><%= sort_link(@q, :updated_at, 'Updated At') %></td>
           <td colspan=3 class="text-center"> Action </td>
         </thead>
         <% @employees.each do |e| %>
@@ -32,6 +42,10 @@
             <td class="text-center"> <%= e.id %> </td>
             <td class="text-center"> <%= link_to e.employee_name, employee_path(e) %> </td>
             <td class="text-center"> <%= e.hobbies %> </td>
+
+            <td class="text-center"> <%= e.created_at.strftime("%d-%m-%Y") %> </td>
+            <td class="text-center"> <%= e.updated_at.strftime("%d-%m-%Y") %> </td>
+
             <td class="text-center"><%= button_to "Show",employee_path(e),method: :get, class:"btn-success border-0 rounded-pill shadow px-3 py-2" %></td>
             <td class="text-center"><%= button_to "Edit",edit_employee_path(e),method: :get, class:"btn-primary border-0 rounded-pill shadow px-3 py-2" %></td>
             <td class="text-center"><%= button_to "Delete",employee_path(e),method: :delete, class:"btn-danger border-0 rounded-pill shadow px-3 py-2" %></td>

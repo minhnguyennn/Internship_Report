@@ -22,4 +22,41 @@ What is Action Mailer?
 			=> layout 'mailer': Đây là cài đặt mặc định cho layout của email. Nó sử dụng layout có tên là 'mailer', cho 
 			phép bạn sử dụng layout này để bao bọc các nội dung email tạo ra từ mailer class.
 			
+			
+Action Mailbox
+	Định nghĩa:
+		Action Mailbox là một tính năng trong Ruby on Rails, được sử dụng để định tuyến các email đến các hộp thư giống như
+		controller để xử lý trong ứng dụng Rails. Nó đi kèm với các công cụ để nhận email từ Mailgun, Mandrill, Postmark và
+		 SendGrid. Bạn cũng có thể xử lý email đến trực tiếp thông qua các ingresses tích hợp sẵn cho Exim, Postfix và Qmail.
+		 
+	Cách hoạt động:
+		Các email đến được chuyển đổi thành các bản ghi InboundEmail bằng cách sử dụng Active Record và đi kèm theo việc theo dõi
+		vòng đời, lưu trữ email gốc trên lưu trữ đám mây thông qua Active Storage và xử lý dữ liệu một cách an toàn với chế độ
+		tiêu hủy mặc định.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			
 	

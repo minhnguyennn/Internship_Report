@@ -84,6 +84,6 @@ class EmployeesController < ApplicationController
   end
 
   def search_params
-    params.fetch(:query, {}).permit(:employee_name_cont)
+    params.fetch(:query, {}).permit(:employee_name_cont, :s, :created_at_gt, :created_at_lt)
   end
 end
