@@ -2,23 +2,27 @@
 
 class Employee < ApplicationRecord
 
-  ransacker :start_date, type: :date do
-    Arel.sql('starts_at::date')
-  end
+  # ransacker :start_date, type: :date do
+  #   Arel.sql('starts_at::date')
+  # end
 
-  ransacker :start_time, type: :time do
-    Arel.sql('starts_at::time')
-  end
+  # ransacker :start_time, type: :time do
+  #   Arel.sql('starts_at::time')
+  # end
 
   # ransacker :end_time, type: :time do
   #   Arel.sql('ends_at::time')
   # end
 
+
   def self.ransackable_attributes(_auth_object = nil)
-    %w[id employee_name created_at updated_at hobbies gender email]
+    %w[id employee_name created_at updated_at hobbies gender email avatar]
   end
 
   has_many :addresses
+
+  has_one_attached :avatar
+  
   accepts_nested_attributes_for :addresses,
                                 allow_destroy: true,
                                 reject_if: proc { |att|

@@ -35,6 +35,7 @@
           <td class="text-center"><%= sort_link(@q, :hobbies, 'Hobbies') %></td>
           <td class="text-center"><%= sort_link(@q, :created_at, 'Created At') %></td>
           <td class="text-center"><%= sort_link(@q, :updated_at, 'Updated At') %></td>
+          <td class="text-center"> Avatar </td>
           <td colspan=3 class="text-center"> Action </td>
         </thead>
         <% @employees.each do |e| %>
@@ -46,9 +47,12 @@
             <td class="text-center"> <%= e.created_at.strftime("%d-%m-%Y") %> </td>
             <td class="text-center"> <%= e.updated_at.strftime("%d-%m-%Y") %> </td>
 
+            <td class="text-center"><%= image_tag(e.avatar, width: 50) if e.avatar.present? %></td>
+
             <td class="text-center"><%= button_to "Show",employee_path(e),method: :get, class:"btn-success border-0 rounded-pill shadow px-3 py-2" %></td>
             <td class="text-center"><%= button_to "Edit",edit_employee_path(e),method: :get, class:"btn-primary border-0 rounded-pill shadow px-3 py-2" %></td>
             <td class="text-center"><%= button_to "Delete",employee_path(e),method: :delete, class:"btn-danger border-0 rounded-pill shadow px-3 py-2" %></td>
+
           </tr>
         <% end %>
       </ol>

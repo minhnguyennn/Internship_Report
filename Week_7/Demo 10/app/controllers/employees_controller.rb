@@ -79,7 +79,7 @@ class EmployeesController < ApplicationController
   end
 
   def employee_params
-    params.require(:employee).permit(:employee_name, :gender, :email, { hobbies: [] },
+    params.require(:employee).permit(:employee_name, :gender, :avatar, :email, { hobbies: [] },
                                      addresses_attributes: %i[id house_number society_name area city _destroy])
   end
 
