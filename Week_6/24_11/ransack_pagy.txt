@@ -1,0 +1,496 @@
+Ransack
+	Định nghĩa:
+	 	Gem "Ransack" là một thư viện trong Ruby on Rails giúp tạo các biểu mẫu tìm kiếm linh hoạt và dễ dàng trong ứng dụng web
+	 	Rails. Nó cho phép xây dựng các truy vấn tìm kiếm động từ dữ liệu người dùng nhập vào và lọc dữ liệu trong cơ sở dữ liệu
+	 	một cách tiện lợi.
+	 	
+	 Cách cài đặt:
+	 	Gemfile
+	 		gem 'ransack'
+	 		
+	 Simple Mode
+	 	Ví dụ:
+	 		def index
+			  @q = Person.ransack(params[:q])
+			  @people = @q.result(distinct: true)
+			end
+			
+				=> params[:q] sẽ chứa thông tin tìm kiếm khi form submit lên server
+				
+				=> @q = Person.ransack(params[:q]) : nó sẽ xử lý thông tin trong params[:q] để tạo ra câu truy vấn SQL phù
+				 hợp với điều kiện tìm kiếm được chỉ định. Đối tượng Ransack sẽ tạo ra một câu truy vấn tương ứng để tìm
+				 các bản ghi trong bảng users (do User là model) thỏa mãn điều kiện tìm kiếm mà người dùng đã nhập vào
+				 form.
+				 
+				 => @people = @q.result(distinct: true) : Option distinct: true được sử dụng để chỉ định rằng kết quả trả
+				  về chỉ bao gồm các bản ghi không trùng lặp (không có các bản ghi trùng lặp với nhau) dựa trên các trường
+				  dữ liệu mà bạn đã xác định.
+				  
+		Ví dụ 2:
+			<%= form_for @q, url: users_path, method: :get do |f| %>
+			  <div class="field">
+			    <%= f.label :name_cont %>
+			    <%= f.text_field :name_cont %>
+			  </div>
+			  <div class="field">
+			    <%= f.label :age_gteq, 'Minimum Age' %>
+			    <%= f.number_field :age_gteq %>
+			  </div>
+			  <div class="actions">
+			    <%= f.submit 'Search' %>
+			  </div>
+			<% end %>
+			
+				=> form_for: Đây là một helper của Rails để tạo form dựa trên một đối tượng. Trong trường hợp này,
+				 form_for sẽ tạo một form dựa trên đối tượng @q.
+				 
+				=> Trong trường hợp sử dụng gem Ransack, khi bạn tạo form dựa trên đối tượng @q và submit form đó, 
+				thông tin tìm kiếm sẽ được gửi đến server thông qua URL dưới dạng query parameters (nếu method là GET)
+				hoặc trong body của request (nếu method là POST).
+				
+				=> url: users_path đương link đến action index nếu là GET/users
+				
+				=> method: :get: Xác định HTTP method sẽ được sử dụng khi form được submit, trong trường hợp này là GET
+				 method.
+				 
+				=> name_cont: Đây là một điều kiện tìm kiếm theo tên (hoặc trường dữ liệu nào đó có tên tương tự) và sử
+				  dụng toán tử "contains" (chứa) trong câu truy vấn SQL. Nó tạo ra điều kiện tìm kiếm để lấy các bản ghi
+				  có trường tên chứa một chuỗi cụ thể.
+				  
+				  Ví dụ:
+				  	SELECT * FROM products WHERE name LIKE '%shoes%';
+
+				=> age_gteq: Đây là một điều kiện tìm kiếm theo tuổi (hoặc trường dữ liệu nào đó có tên tương tự) và sử
+				  dụng toán tử "greater than or equal" (lớn hơn hoặc bằng) trong câu truy vấn SQL. Nó tạo ra điều kiện
+				  tìm kiếm để lấy các bản ghi có trường tuổi lớn hơn hoặc bằng một giá trị cụ thể.
+				  
+		Ví dụ 3:
+			def index
+			  @q = Person.ransack(params[:q])
+			  @people = @q.result.includes(:articles).page(params[:page])
+			end
+			
+				=> includes(:articles) :bao gồm cả các thông tin từ liên kết với :articles (mối quan hệ giữa Person và
+				 Article). Nó sẽ tối ưu hóa truy vấn bằng cách nạp tất cả các articles tương ứng với mỗi Person mà kết 
+				 quả tìm kiếm trả về, trong một truy vấn duy nhất.
+				 
+				 	Ví dụ sql:
+				 		SELECT * FROM people
+						LEFT JOIN articles ON people.id = articles.person_id
+						WHERE /* Điều kiện tìm kiếm */;
+
+				=> page(params[:page]) được sử dụng để phân trang kết quả tìm kiếm, trong đó params[:page] chứa số trang
+				 cần hiển thị.
+				 
+		Thay đổi khóa q param thành tên khác:
+			Ví dụ:
+				Ransack.configure do |c|
+				  # Change default search parameter key name.
+				  # Default key name is :q
+				  c.search_key = :query
+				end
+					=> Sử dụng trong tệp config/initializers/ransack.rb
+					
+					- Ransack.configure được sử dụng để cấu hình Ransack.
+					
+					- do |c| mở một block với biến c là một instance của Ransack::Configuration.
+					
+					- c.search_key = :query được sử dụng để thay đổi tên của tham số mặc định được sử dụng cho 
+					việc tìm kiếm.
+					
+					- tham số tìm kiếm mặc định được truyền qua URL là :q. Tuy nhiên, đoạn mã trên đã thay đổi tên
+					 tham số này thành :query.
+
+		Tắt khoảng trắng trong chuỗi truy vấn:
+			Ví dụ:
+				Ransack.configure do |c|
+				  # Change whitespace stripping behavior.
+				  # Default is true
+				  c.strip_whitespace = false
+				end
+				
+					 - Điều này có thể hữu ích trong trường hợp ứng dụng cần xử lý tìm kiếm với khoảng trắng ở đầu
+					 hoặc cuối chuỗi mà không muốn bị loại bỏ. Khi strip_whitespace là false, Ransack sẽ giữ nguyên
+					 các khoảng trắng này trong quá trình tìm kiếm.
+					 
+					 - Ví dụ:
+					 	SELECT * FROM products WHERE name = '   laptop   ';
+					 	
+		VÍ dụ 4:
+			<%= search_form_for @q do |f| %>
+
+			  # Search if the name field contains...
+			  <%= f.label :name_cont %>
+			  <%= f.search_field :name_cont %>
+
+			  # Search if an associated articles.title starts with...
+			  <%= f.label :articles_title_start %>
+			  <%= f.search_field :articles_title_start %>
+
+			  # Attributes may be chained. Search multiple attributes for one value...
+			  <%= f.label :name_or_description_or_email_or_articles_title_cont %>
+			  <%= f.search_field :name_or_description_or_email_or_articles_title_cont %>
+
+			  <%= f.submit %>
+			<% end %>
+			
+				=> (name_or_description_or_email_or_articles_title_cont) : một phương thức tìm kiếm cho phép tìm kiếm 
+				các bản ghi mà trường name, description, email, hoặc articles.title chứa chuỗi cụ thể.
+				
+				=> (articles_title_start) : tìm kiếm chuỗi bắt đầu
+				Ví dụ:
+					SELECT * FROM articles WHERE title LIKE 'ABC%';
+						=> Bắt đầu bằng ABC
+						
+				=> search_field là một helper method trong Rails dùng để tạo ra một input field trong form.
+				
+		Ví dụ 5:
+			<%= search_form_for(@q, format: :pdf) do |f| %>
+
+			<%= search_form_for(@q, format: :json) do |f| %>
+			
+				=> format: :pdf chỉ định rằng kết quả tìm kiếm sẽ được xuất ra ở định dạng PDF.
+				
+				=> format: :json chỉ định rằng kết quả tìm kiếm sẽ được xuất ra ở định dạng JSON.
+				
+		Search link helper
+		
+			<%= sort_link(@q, :name) %>
+			
+				=> Đoạn mã trên sẽ tạo ra một liên kết, khi người dùng nhấp vào nó, sẽ kích hoạt việc sắp xếp kết quả
+				 tìm kiếm theo trường dữ liệu name.
+				 
+				 
+			<%= sort_link(@q, :name, 'Last Name', default_order: :desc) %>
+			
+				=> trả về kết quả tìm kiếm được sắp xếp theo trường name theo thứ tự giảm dần và hiển thị tên 
+				"Last Name" trên giao diện cho người dùng.
+				
+				
+			<%= sort_link(@q, :name) do %>
+			  <strong>Player Name</strong>
+			<% end %>
+			
+				=> (<strong>Player Name</strong>) : Hiển thi tên cảu liên kết là Player name
+				
+				
+			<%= sort_link(@q, :last_name, [:last_name, 'first_name asc'], 'Last Name') %>
+				
+				=> [:last_name, 'first_name asc']: Là một mảng, định nghĩa thứ tự ưu tiên khi sắp xếp. Trong trường 
+				hợp này, kết quả tìm kiếm sẽ được sắp xếp theo trường last_name trước, sau đó là trường first_name 
+				theo thứ tự tăng dần (ascendant).
+				
+				
+			<%= sort_link(@q, :last_name, %i(last_name first_name),
+  			default_order: { last_name: 'asc', first_name: 'desc' }) %>
+  			
+  				=> %i(last_name first_name): Là một mảng các trường dữ liệu mà bạn muốn áp dụng cho sắp xếp. Trong 
+  				trường hợp này, nó chỉ là last_name và first_name.
+  				
+  				
+				=> default_order: { last_name: 'asc', first_name: 'desc' }: Đây là thứ tự mặc định sắp xếp. Theo đó, 
+				kết quả tìm kiếm sẽ được sắp xếp trước theo trường last_name theo thứ tự tăng dần (ascendant) và sau 
+				đó là trường first_name theo thứ tự giảm dần (descendant).
+
+				  
+			class Person < ActiveRecord::Base
+			  scope :sort_by_reverse_name_asc, lambda { order("REVERSE(name) ASC") }
+			  scope :sort_by_reverse_name_desc, lambda { order("REVERSE(name) DESC") }
+			...
+			
+				=> sort_by_reverse_name_asc sẽ sắp xếp dữ liệu theo trường name theo thứ tự đảo ngược (ngược lại) 
+				theo chiều tăng dần (ASC).
+				
+				=> sort_by_reverse_name_desc sẽ sắp xếp dữ liệu theo trường name theo thứ tự đảo ngược (ngược lại) 
+				theo chiều giảm dần (DESC).
+				
+			
+			Sau khi có hàm trên thì mới dùng được link:
+				<%= sort_link(@q, :reverse_name) %>
+				
+				
+				
+			Ransack.configure do |c|
+			  c.custom_arrows = {
+			    up_arrow: '<i class="custom-up-arrow-icon"></i>',
+			    down_arrow: 'U+02193',
+			    default_arrow: '<i class="default-arrow-icon"></i>'
+			  }
+			end
+			
+				=> cấu hình mũi tên sắp xếp
+				
+			
+			Ransack.configure do |c|
+			  c.hide_sort_order_indicators = true
+			end
+			
+				=>Khi bạn thiết lập hide_sort_order_indicators = true, Ransack sẽ ẩn các biểu tượng hoặc chỉ báo thứ 
+				tự sắp xếp trên liên kết sắp xếp. Thay vì hiển thị biểu tượng chỉ việc sắp xếp tăng hoặc giảm dần, 
+				chỉ đơn giản là tạo liên kết sắp xếp mà không có biểu tượng hoặc chỉ báo cụ thể nào cho người dùng.
+				
+				
+			<%= sort_link(@q, :name, hide_indicator: true) %>
+			
+				=> ở trên là tắt toàn bộ còn đây là tắt theo từng liên kết
+				
+				
+		sort_url
+			<%= sort_url(@q, :name, default_order: :desc) %>
+			
+			<%= sort_url(@q, :last_name, [:last_name, 'first_name asc']) %>
+			
+			<%= sort_url(@q, :last_name, %i(last_name first_name),
+  			default_order: { last_name: 'asc', first_name: 'desc' }) %>
+				  
+				  
+Pagy
+	  Định nghĩa:
+	  	Pagy là một thư viện phân trang cho Ruby on Rails, giúp tạo các trang phân trang linh hoạt và hiệu quả từ dữ liệu lớn 
+	  	mà không làm giảm hiệu suất ứng dụng.
+	  	
+	  Cách dùng:
+	  	Thêm vào application_controller.rb
+	  		include Pagy::Backend
+	  		
+	  	Thêm vào application_helper.rb
+	  		include Pagy::Frontend
+	  		
+	  	Thêm vào action indext
+	  		@pagy, @records = pagy(Product.all)
+	  		
+	  	Thêm vào index view
+	  		<%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+	  		
+	  	Cài đặt mặc định cho page trong config/initializers/pagy.rb
+	  		# Optionally override some pagy default with your own in the pagy initializer
+			Pagy::DEFAULT[:items] = 10        # items per page
+			Pagy::DEFAULT[:size]  = [1,4,4,1] # nav bar links
+			# Better user experience handled automatically
+			require 'pagy/extras/overflow'
+			Pagy::DEFAULT[:overflow] = :last_page
+			
+	Một số tiện ích
+		Control the items per page
+			Thêm vào config/initializers/pagy.rb
+			
+				Pagy::DEFAULT[:items] = 25
+				
+					=>  thiết lập số lượng mục mặc định cho mỗi trang là 25
+					
+					
+			Cách khác, thêm vào action index:
+					
+				@pagy, @records = pagy(Product.some_scope, items: 30)
+				
+				
+			Tránh sử dụng limit
+				
+				@pagy, @products = pagy(Product.limit(5), items: 10)
+
+					=> Product.limit(5) giới hạn danh sách sản phẩm trả về từ ActiveRecord là 5 bản ghi. 
+					Tuy nhiên, khi sử dụng pagy và truyền vào items: 10, giá trị :items sẽ ghi đè lên giới hạn 
+					ban đầu của Product.limit(5), do đó, kết quả trả về sẽ có tối đa 10 sản phẩm trên mỗi trang, 
+					thay vì giới hạn 5 ban đầu từ Product.limit(5).
+					
+					
+		Gearbox Extra
+			Định nghĩa:
+				"Gearbox Extra" là một tính năng của gem Pagy trong Ruby on Rails, cho phép tự động thay đổi số lượng 
+				mục trên mỗi trang dựa vào số trang hiện tại. Thay vì tạo ra tất cả các trang với một số lượng mục 
+				cố định, ứng dụng có thể cung cấp các trang với số lượng mục tăng dần để tăng tốc độ duyệt qua các 
+				trang và cải thiện trải nghiệm người dùng.
+				
+			Cách dùng:
+				Thêm vào pagy.rb (initializer)
+				
+					Pagy::DEFAULT[:gearbox_items] = [10, 20, 50]  
+					
+						=> Với cài đặt này, khi bạn sử dụng "Gearbox Extra" mà không đặt giá trị
+						 cho :gearbox_items, các trang sẽ có số lượng mục tăng dần theo dãy số trong mảng 
+						 [10, 20, 50]. Chẳng hạn, trang đầu tiên sẽ hiển thị 10 mục, trang thứ hai sẽ 
+						 hiển thị 20 mục, và các trang tiếp theo sẽ hiển thị 50 mục trên mỗi trang.
+						 
+					
+				Controller (action)
+					
+						@pagy, @records = pagy(Product.all, gearbox_items: [30, 60, 100], ...)	
+							  
+				  			=> Khi bạn sử dụng dòng code này, Pagy sẽ áp dụng tính năng "Gearbox Extra" cho
+				  			 tập hợp dữ liệu từ Product.all và sử dụng một dãy giá trị [30, 60, 100] làm số
+				  			 lượng mục trên mỗi trang tùy thuộc vào số trang hiện tại.
+				  			 
+				  			 
+				  		@pagy, @records = pagy(Product.all, gearbox_extra: false)
+				  			
+				  			=> Khi bạn sử dụng gearbox_extra: false, bạn đang yêu cầu Pagy không sử dụng 
+				  			tính năng "Gearbox Extra" cho việc phân trang dữ liệu từ Product.all
+				  			
+				  			
+				  		@pagy, @records = pagy(Product.all, items_extra: false)
+				  		
+				  			=> Khi bạn sử dụng items_extra: false, bạn đang yêu cầu Pagy không sử dụng tính
+				  			 năng "Items Extra" cho việc phân trang dữ liệu từ Product.all. Tính năng "Items
+				  			 Extra" cho phép người dùng yêu cầu một số lượng mục cụ thể trên mỗi trang. 
+				  			 Khi nó được tắt như trong ví dụ trên, Pagy sẽ không cung cấp cho người dùng 
+				  			 khả năng chọn số lượng mục mà mỗi trang hiển thị.
+				  			 
+				  			 
+				  		Sự khác nhau giữa Items Extra và Gearbox Extra
+				  		
+				  			Items Extra:
+				  				Cho phép người dùng yêu cầu một số lượng mục cụ thể trên mỗi trang. 
+				  				Người dùng có khả năng chọn số lượng mục mà họ muốn xem trên mỗi trang.
+				  				
+				  			Gearbox Extra:
+				  				Tự động thay đổi số lượng mục trên mỗi trang dựa vào số trang hiện tại.
+				  				Thay vì cố định một số lượng mục cho mỗi trang, "Gearbox Extra" cung cấp
+				  				khả năng thay đổi động số lượng mục theo quy tắc được thiết lập trước, 
+				  				ví dụ như [10, 20, 50], tức là số lượng mục tăng dần khi người dùng 
+				  				chuyển qua các trang tiếp theo.
+				  				
+				  			Tóm lại:
+				  				"Items Extra" cho phép người dùng chủ động chọn số lượng mục mà họ 
+				  				muốn xem trên mỗi trang. Điều này thường được sử dụng trong các trường
+				  				hợp khi người dùng muốn có quyền kiểm soát số lượng hiển thị.
+
+								"Gearbox Extra" tự động thay đổi số lượng mục dựa trên logic đã được
+								 thiết lập trước đó. Nó thích hợp cho các trang web muốn cải thiện trải
+								 nghiệm người dùng thông qua việc điều chỉnh số lượng mục hiển thị theo
+								 trang, giúp tối ưu hóa trải nghiệm duyệt qua các trang khác nhau.
+								 
+						
+						@pagy, @records = pagy(Product.all, items_extra: false, gearbox_items: [30, 60, 100])
+						
+							=> items_extra: false vô hiệu hóa tính năng "Items Extra", do đó không cho phép
+							người dùng chủ động chọn số lượng mục trên mỗi trang.
+
+				  
+		Items Extra
+			Định nghĩa:
+				Tính năng "Items Extra" trong gem Pagy cho phép người dùng yêu cầu một số lượng mục cụ thể trên mỗi 
+				trang khi sử dụng phân trang. Điểm mạnh của nó là cho phép người dùng tương tác và lựa chọn số lượng 
+				mục mà họ muốn hiển thị trên mỗi trang thông qua giao diện người dùng.
+				
+			Cụ thể:
+				Cụ thể, thông qua "Items Extra", bạn có thể cung cấp một cơ chế để người dùng có thể chọn số lượng 
+				mục muốn hiển thị trên trang. Thông thường, một UI như dropdown hoặc input field được cung cấp để 
+				người dùng lựa chọn số lượng mục mong muốn.
+				
+			Ví dụ:
+				Nếu bạn đang xây dựng một trang web hiển thị danh sách sản phẩm và muốn cho phép người dùng lựa chọn 
+				số lượng sản phẩm hiển thị trên mỗi trang, bạn có thể sử dụng "Items Extra" để cung cấp một giao diện 
+				cho phép người dùng chọn số lượng sản phẩm muốn xem (ví dụ: 10, 20, 50 sản phẩm trên mỗi trang).
+				
+			Cách dùng:
+				pagy.rb (initializer)
+					require 'pagy/extras/items'
+						=>  Dòng mã này cho phép bạn sử dụng tính năng "Items Extra" mà không cần cấu hình thêm.
+						
+				Controller				  	
+					@pagy, @records = pagy(Product.all, items_extra: false)
+						=> trong trường hợp này, tính năng "Items Extra" đã được vô hiệu hóa.
+
+					pagy.rb (initializer)
+					Pagy::DEFAULT[:items_extra] = false
+					
+					
+					require 'pagy/extras/overflow'
+					Pagy::DEFAULT[:overflow] = :last_page
+					
+						=> Bật tính năng tràn trang nếu bị tràn sẽ đi đến trang cuỗi cùng
+					
+					
+					@pagy, @records = pagy(Product.all, items_extra: true)
+						=> @records Biến chứa danh sách các sản phẩm từ cơ sở dữ liệu được phân trang.
+						
+						=> @pagy: Biến chứa thông tin về trang, như số trang, số mục trên mỗi trang, vị 
+						trí trang hiện tại, vv.
+						
+						=> (items_extra: true): nếu bạn có 27 mục và đặt 10 mục mỗi trang với items_extra: true,
+						trang cuối cùng sẽ hiển thị 7 mục (3 trang đầu mỗi trang 10 mục và trang cuối cùng có 7
+						mục thay vì chỉ 10 mục).
+						
+						
+					
+					Pagy::DEFAULT[:items_param] = :custom_param
+					Pagy::DEFAULT[:max_items]   = 200
+					
+						=> (Pagy::DEFAULT[:max_items] = 200): Dòng này đặt giá trị mặc định cho số lượng mục tối 
+						đa được phép trên mỗi trang khi sử dụng Pagy.
+						
+						=> Pagy::DEFAULT[:items_param] = :custom_param
+						
+							Sau khi thay đổi tham số mặc định thành :custom_param, bạn sẽ cần sử
+							dụng :custom_param thay vì :items:
+								@pagy, @records = pagy(Product.all, custom_param: 10)
+								
+						Ví dụ:
+							pagy(scope, items_param: :custom_param, max_items: 50)
+							Pagy.new(count: 100, items_param: :custom_param, max_items: 50)	
+							
+								=> Nếu count (tổng số mục) lớn hơn max_items (số lượng mục tối đa trên
+								mỗi trang), bạn sẽ cần nhiều trang để hiển thị tất cả các mục.
+								
+								
+					pagy = Pagy.new(count: 1000, page: 10, size: [3, 4, 4, 3])
+					pagy.series
+					#=> [1, 2, 3, :gap, 6, 7, 8, 9, "10", 11, 12, 13, 14, :gap, 48, 49, 50]
+					
+						=> (count: 1000): tổng số phần tử
+						
+						=> (page: 10): trang đang đứng ở hiện tại
+						
+						=> (size: [3, 4, 4, 3]): 3 trang đầu, 4 trang tiếp theo, 4 trang tiếp theo, và 3 trang
+						 cuối cùng
+						 
+						 => Phương thức pagy.series trong thư viện Pagy được sử dụng để tạo ra một chuỗi liên 
+						 kết trang dựa trên cấu hình và thông tin về phân trang cụ thể. Khi bạn gọi pagy.series,
+						 nó sẽ trả về một mảng chứa các số trang và biểu tượng :gap để biểu diễn các liên kết
+						 trang cần được hiển thị trên thanh điều hướng.
+						 
+						 
+					Bỏ qua các liên kết trang
+						pagy = Pagy.new count:1000, size: []
+						pagy.series
+						#=> []
+						
+							=> Lý do là vì khi bạn thiết lập size: [], bạn đã chỉ định không có thông tin về 
+							số lượng và vị trí của các liên kết trang trong thanh điều hướng. Điều này dẫn 
+							đến việc không có trang nào được tạo ra trong chuỗi liên kết trả về từ
+							pagy.series.
+							
+							
+					
+					
+
+						
+								
+								
+					
+
+						
+						
+							  
+				  	
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
