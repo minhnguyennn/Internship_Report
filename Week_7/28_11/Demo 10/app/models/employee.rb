@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Employee < ApplicationRecord
+  validates :employee_name, presence: true, length: { minimum: 3 }
+
   def self.ransackable_associations(_auth_object = nil)
     %w[employee_name_or_hobbies_cont]
   end
