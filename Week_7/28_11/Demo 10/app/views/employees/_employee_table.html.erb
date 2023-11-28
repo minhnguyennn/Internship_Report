@@ -1,0 +1,36 @@
+<table class="table table-info table-striped">
+  <thead class="table-secondary">
+    <tr>
+      <th class="text-center"><%= sort_link(@q, :id, 'Id') %></th>
+      <th class="text-center"><%= sort_link(@q, :employee_name, 'Name') %></th>
+      <th class="text-center"><%= sort_link(@q, :hobbies, 'Hobbies') %></th>
+      <th class="text-center"><%= sort_link(@q, :created_at, 'Created At') %></th>
+      <th class="text-center"><%= sort_link(@q, :updated_at, 'Updated At') %></th>
+      <th class="text-center">Avatar</th>
+      <th colspan="3" class="text-center">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @employees.each do |e| %>
+      <tr>
+        <td class="text-center"><%= e.id %></td>
+        <td class="text-center"><%= link_to e.employee_name, employee_path(e) %></td>
+        <td class="text-center"><%= e.hobbies %></td>
+        <td class="text-center"><%= e.created_at.strftime("%d-%m-%Y") %></td>
+        <td class="text-center"><%= e.updated_at.strftime("%d-%m-%Y") %></td>
+        <td class="text-center"><%= image_tag(e.avatar, width: 50) if e.avatar.present? %></td>
+        <td class="text-center">           
+          <%= button_to "Show", employee_path(e), method: :get, class: "btn-success border-0 rounded-pill shadow px-3 py-2" %>
+        </td>
+        <td class="text-center"><%= button_to "Edit", edit_employee_path(e), method: :get, class: "btn-primary border-0 rounded-pill shadow px-3 py-2" %></td>
+        <td class="text-center">
+          <button type="button" class="btn-danger border-0 rounded-pill shadow px-3 py-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Delete
+          </button>
+        </td>
+      </tr>
+      <!-- Modal -->
+     <%= render "modal", e: e %>
+    <% end %>
+  </tbody>
+</table>
