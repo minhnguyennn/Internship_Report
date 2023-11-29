@@ -1,0 +1,18 @@
+development:
+  cloud_name: "de7duhgep"
+  api_key: "389556177386685"
+  api_secret: "mhus_01SPrkUBnPTKAkdDGd6Fls"
+  enhance_image_tag: true
+  static_image_support: false
+production:
+  cloud_name: "de7duhgep"
+  api_key: "389556177386685"
+  api_secret: "mhus_01SPrkUBnPTKAkdDGd6Fls"
+  enhance_image_tag: true
+  static_image_support: true
+test:
+  cloud_name: "de7duhgep"
+  api_key: "389556177386685"
+  api_secret: "mhus_01SPrkUBnPTKAkdDGd6Fls"
+  enhance_image_tag: true
+  static_image_support: false
