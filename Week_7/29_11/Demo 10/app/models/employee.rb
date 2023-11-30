@@ -15,8 +15,6 @@ class Employee < ApplicationRecord
 
   has_one_attached :avatar
 
-  # has_rich__tetx :back_ground
-
   accepts_nested_attributes_for :addresses,
                                 allow_destroy: true,
                                 reject_if: proc { |att|

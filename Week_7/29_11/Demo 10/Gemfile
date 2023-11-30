@@ -77,11 +77,8 @@ group :development do
   
   #Gem for test
   gem 'rspec-rails'
-  gem 'rails-controller-testing'
   gem 'ffaker'
   gem 'faker'
-  gem 'simplecov', require: false
-
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
 
@@ -103,3 +100,7 @@ end
 group :development, :test do
   gem "factory_bot_rails"
 end
+
+gem 'simplecov', require: false, group: :test
+
+gem 'rails-controller-testing'
