@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # employees_controller_spec.rb
 require 'rails_helper'
 
@@ -27,7 +29,7 @@ RSpec.describe EmployeesController, type: :controller do
         patch :update, params: { id: employee.id, employee: invalid_attributes }
         employee.reload
 
-        expect(employee.employee_name).to (invalid_attributes[:employee_name])
+        expect(employee.employee_name).not_to(invalid_attributes[:employee_name])
       end
 
       it 'renders the edit template' do
