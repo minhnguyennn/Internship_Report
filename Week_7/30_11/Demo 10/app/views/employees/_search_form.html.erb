@@ -1,0 +1,10 @@
+<%= search_form_for @q do |f| %>
+  <div class="input-group">
+    <%= f.label :employee_name_or_hobbies_cont, "Employee name: ", class: "input-group-text" %>
+    <%= f.search_field :employee_name_or_hobbies_cont, placeholder: "Enter name", class: "form-control" %>
+
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </div>
+<% end %>
