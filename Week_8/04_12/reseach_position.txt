@@ -1,0 +1,93 @@
+Tìm hiểu và cho ví dụ về position: relative, absolute, fixed
+	position: relative
+		+ Định nghĩa:
+			Khi một phần tử được đặt với giá trị này, nó sẽ di chuyển dựa trên vị trí gốc của nó trong luồng tài liệu. 
+			Các thuộc tính top, right, bottom, và left có thể được sử dụng để điều chỉnh vị trí của phần tử đối với vị 
+			trí ban đầu của nó.
+			
+		+ Ví dụ:
+			+ HTML:
+				<div class="relative-container">
+				  <div class="relative-item">Báo mới</div>
+				</div>
+				
+			+ CSS:
+				.relative-container {
+				  position: relative;
+				  width: 300px;
+				  height: 200px;
+				  background-color: lightblue;
+				}
+
+				.relative-item {
+				  position: relative;
+				  top: 20px;
+				  left: 30px;
+				  background-color: lightgreen;
+				}
+				
+	position: absolute
+		+ Định nghĩa:
+			Phần tử được đặt với giá trị này sẽ di chuyển dựa trên vị trí của phần tử cha gần nhất có thuộc tính position 
+			là relative, absolute, hoặc fixed. Nếu không có phần tử cha nào có thuộc tính position khác static, nó sẽ di 
+			chuyển dựa trên cả body hoặc viewport.
+			
+		+ Ví dụ:
+			+ HTML:
+				<div class="absolute-container">
+				  <div class="absolute-item">Phần tử có position: absolute</div>
+				</div>
+				
+				
+			+ CSS:
+				.absolute-container {
+				  position: relative;
+				  width: 300px;
+				  height: 200px;
+				  background-color: lightblue;
+				}
+
+				.absolute-item {
+				  position: absolute;
+				  top: 50px;
+				  left: 50px;
+				  background-color: lightgreen;
+				}
+				
+				
+	position: fixed
+		Định nghĩa:
+			Phần tử được đặt với giá trị này sẽ di chuyển dựa trên vị trí của viewport (cửa sổ trình duyệt). 
+			Phần tử sẽ luôn hiển thị ở vị trí cố định trong trường hợp cuộn trang web.
+			
+		+ Ví dụ:
+			+ HTML:
+				<div class="fixed-item">Phần tử có position: fixed</div>
+				
+			+ CSS:
+				.fixed-item {
+				  position: fixed;
+				  top: 20px;
+				  right: 20px;
+				  background-color: lightgreen;
+				}
+				
+				
+	
+
+
+
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			

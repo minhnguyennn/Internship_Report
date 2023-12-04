@@ -52,13 +52,14 @@ class EmployeesController < ApplicationController
 
   def destroy
     if @employee.delete
-      flash[:errors] = 'Employee Deleted Successfully'
-      redirect_to root_path(@employee)
+      flash[:success] = 'Employee Deleted Successfully'
+      redirect_to root_path
     else
       flash[:errors] = @employee.errors.full_messages
-      redirect_to destroy_employee_path
+      redirect_to root_path
     end
   end
+  
 
   private
 

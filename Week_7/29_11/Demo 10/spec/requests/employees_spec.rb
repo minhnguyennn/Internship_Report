@@ -29,12 +29,12 @@ RSpec.describe EmployeesController, type: :controller do
         patch :update, params: { id: employee.id, employee: invalid_attributes }
         employee.reload
 
-        expect(employee.employee_name).not_to(invalid_attributes[:employee_name])
+        expect(employee.employee_name).not_to eq(invalid_attributes[:employee_name])
       end
 
       it 'renders the edit template' do
         patch :update, params: { id: employee.id, employee: invalid_attributes }
-        expect(response).to render_template(:edit)
+        expect(response).to render_template(edit_employee_path)
       end
     end
   end
